@@ -1,0 +1,12 @@
+2025-06-21 17:15:25 | add_buddyboss_asset called: handle=labgenz-group-management-css, targets=["group_single"], file=group-management.css
+2025-06-21 17:15:25 | add_buddyboss_asset: handle=labgenz-group-management-css, target=group_single, file=group-management.css
+bp_is_group: true
+bp_is_groups_directory: false
+bp_is_members_directory: false
+bp_is_activity_directory: false
+2025-06-21 17:15:25 | add_buddyboss_asset called: handle=labgenz-group-management-js, targets=["group_single"], file=group-management.js
+2025-06-21 17:15:25 | add_buddyboss_asset: handle=labgenz-group-management-js, target=group_single, file=group-management.js
+bp_is_group: true
+bp_is_groups_directory: false
+bp_is_members_directory: false
+bp_is_activity_directory: false

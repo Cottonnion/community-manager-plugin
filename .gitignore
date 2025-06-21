@@ -1,0 +1,26 @@
+# Ignore Composer dependencies if present
+/vendor/
+# Ignore node_modules if using npm/yarn
+default
+node_modules/
+# Ignore IDE and OS files
+.vscode/
+.DS_Store
+Thumbs.db
+# Ignore logs and environment files
+*.log
+.env
+# Ignore WordPress specific files
+wp-content/uploads/
+wp-content/cache/
+# Ignore build artifacts
+dist/
+build/
+# Ignore PHPStorm and VSCode settings
+.idea/
+.vscode/
+# Ignore backup files
+*.bak
+*.tmp
+# Ignore composer lock file if not needed
+composer.lock
