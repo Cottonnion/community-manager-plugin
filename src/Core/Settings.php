@@ -102,8 +102,10 @@ class Settings {
 		$settings = new self();
 		$menu_page_name = $settings->get('menu_page_name', 'Labgenz Community');
 		$slug = sanitize_title($menu_page_name);
+		// Add dynamic appearance page hook
 		return array(
 			$slug . '_page_labgenz-cm-settings',
+			$slug . '_page_labgenz-cm-appearance',
 			'toplevel_page_labgenz-cm',
 		);
 	}

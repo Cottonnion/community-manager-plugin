@@ -68,7 +68,10 @@ class LabgenzCmLoader {
 			'core.menu'      => \LABGENZ_CM\Core\MenuManager::class,
 			'core.settings'  => \LABGENZ_CM\Core\Settings::class,
 			'core.ajax'      => \LABGENZ_CM\Core\AjaxHandler::class,
+			'core.core'      => \LABGENZ_CM\Core\AppearanceSettingsHandler::class,
 			'core.admin_hooks' => \LABGENZ_CM\Admin\AdminHooks::class,
+			'core.invite_handler' => \LABGENZ_CM\Core\InviteHandler::class,
+			'core.remove_handler' => \LABGENZ_CM\Core\RemoveHandler::class,
 		);
 		// Manually require classes if not loaded (for non-PSR-4 autoloaded files)
 		foreach ( $this->components as $class ) {

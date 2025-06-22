@@ -43,6 +43,14 @@ class MenuManager {
 			'labgenz-cm-settings',
 			array( $this, 'render_settings_page' )
 		);
+		add_submenu_page(
+			'labgenz-cm',
+			__( 'Appearance', $this->textdomain ),
+			__( 'Appearance', $this->textdomain ),
+			'manage_options',
+			'labgenz-cm-appearance',
+			array( $this, 'render_appearance_page' )
+		);
 	}
 
 	public function render_main_menu_page(): void {
@@ -51,5 +59,9 @@ class MenuManager {
 
 	public function render_settings_page(): void {
 		include_once dirname(__DIR__) . '/admin/partials/settings-page.php';
+	}
+
+	public function render_appearance_page(): void {
+		include_once dirname(__DIR__) . '/admin/partials/appearance-page.php';
 	}
 }

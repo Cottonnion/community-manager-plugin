@@ -19,7 +19,21 @@ class AjaxHandler {
 	 */
 	public function register_ajax_actions(array $actions): void {
 		foreach ($actions as $action => $callback) {
-			add_action("wp_ajax_{$action}", $callback);
+			add_action("wp_ajax_{$action}", function() use ($action, $callback) {
+				if (defined('LABGENZ_LOGS_DIR')) {
+					$log_entry = date('Y-m-d H:i:s') . " | action={$action} | user=" . (is_user_logged_in() ? get_current_user_id() : 'guest') . " | POST=" . json_encode($_POST) . "\n";
+					error_log($log_entry, 3, LABGENZ_LOGS_DIR . '/ajax-called.txt');
+				}
+				try {
+					call_user_func($callback);
+				} catch (\Throwable $e) {
+					if (defined('LABGENZ_LOGS_DIR')) {
+						$err_entry = date('Y-m-d H:i:s') . " | action={$action} | error=" . $e->getMessage() . " | trace=" . $e->getTraceAsString() . "\n";
+						error_log($err_entry, 3, LABGENZ_LOGS_DIR . '/ajax-error.txt');
+					}
+					wp_send_json_error(['message' => $e->getMessage()], 500);
+				}
+			});
 			add_action("wp_ajax_nopriv_{$action}", array($this, 'handle_non_logged_user_requests'));
 		}
 	}
@@ -52,7 +66,7 @@ class AjaxHandler {
 	}
 
 	private function validate_nonce(string $nonce_action): void {
-		$token = $_POST['_nonce'] ?? $_POST['security'] ?? null;
+		$token = $_POST['_nonce'] ?? $_POST['security'] ?? $_POST['nonce'] ?? null;
 		if (!$token) {
 			throw new \Exception('Security token is missing', 403);
 		}

@@ -35,7 +35,10 @@ class AdminHooks
                         'message' => __('Menu name updated.', LABGENZ_CM_TEXTDOMAIN)
                     ];
                 }, 'labgenz_cm_save_menu_settings_nonce');
-            }
+            },
+            // Register appearance settings AJAX actions
+            'labgenz_save_appearance_settings' => [\LABGENZ_CM\Core\AppearanceSettingsHandler::class, 'save_appearance_settings_ajax'],
+            'labgenz_reset_appearance_settings' => [\LABGENZ_CM\Core\AppearanceSettingsHandler::class, 'reset_appearance_settings_ajax'],
         ]);
     }
 }

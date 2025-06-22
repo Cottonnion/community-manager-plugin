@@ -82,6 +82,8 @@ class AssetsManager {
                 'enqueue_in_footer' => $enqueue_in_footer,
                 'localization'      => $localization,
             );
+            // Logging asset registration
+            error_log('[add_admin_asset] handle=' . $handle . ', page=' . $page . ', file=' . $file . "\n", 3, LABGENZ_LOGS_DIR . '/menu-checks.txt');
             // Directly enqueue if on the correct admin page
             if (is_admin() && get_current_screen() && get_current_screen()->id === $page) {
                 $file_url = plugins_url(
@@ -186,6 +188,7 @@ class AssetsManager {
      * @param string $version
      * @param bool $enqueue_in_footer
      * @param string $type 'css' or 'js'
+     * @param array $localization Optional. Data to localize for JS assets.
      * @return void
      */
     public function add_buddyboss_asset(
@@ -195,7 +198,8 @@ class AssetsManager {
         array $dependencies = array(),
         string $version = LABGENZ_CM_VERSION,
         bool $enqueue_in_footer = true,
-        string $type = 'css'
+        string $type = 'css',
+        array $localization = array()
     ): void {
         foreach ($target_pages as $target) {
             $this->buddyboss_assets[$target][$handle] = array(
@@ -204,6 +208,7 @@ class AssetsManager {
                 'version' => $version,
                 'enqueue_in_footer' => $enqueue_in_footer,
                 'type' => $type,
+                'localization' => $localization,
             );
             // Directly add to frontend assets if on the correct BuddyBoss page
             $is_target = false;
@@ -219,6 +224,16 @@ class AssetsManager {
             if ($is_target) {
                 // Add to frontend assets array for later enqueueing
                 $this->add_frontend_asset($handle, [$target], $file, $dependencies, $version, $enqueue_in_footer, $type);
+                // If localization is provided and it's a JS asset, localize it immediately
+                if ($type === 'js' && !empty($localization)) {
+                    add_action('wp_enqueue_scripts', function() use ($handle, $localization) {
+                        wp_localize_script(
+                            $handle,
+                            str_replace('-', '_', $handle . '_data'),
+                            $localization
+                        );
+                    }, 100);
+                }
             }
         }
     }
@@ -230,16 +245,27 @@ class AssetsManager {
      * @return void
      */
     public function enqueue_admin_assets( string $hook ): void {
+        // Logging which hook is being enqueued and which assets are present
+        error_log('[enqueue_admin_assets] hook=' . $hook . ', handles=' . implode(',', array_keys($this->admin_assets[$hook] ?? [])) . "\n", 3, LABGENZ_LOGS_DIR . '/menu-checks.txt');
+        // Fallback: If appearance-admin.css is not registered for this hook, but is for another, register it here too
+        if (!isset($this->admin_assets[$hook]['labgenz-cm-appearance-css'])) {
+            // Search for appearance-admin.css in any other hook
+            foreach ($this->admin_assets as $registered_hook => $assets) {
+                if (isset($assets['labgenz-cm-appearance-css'])) {
+                    $this->admin_assets[$hook]['labgenz-cm-appearance-css'] = $assets['labgenz-cm-appearance-css'];
+                    error_log('[enqueue_admin_assets] Fallback registered labgenz-cm-appearance-css for hook=' . $hook . "\n", 3, LABGENZ_LOGS_DIR . '/menu-checks.txt');
+                    break;
+                }
+            }
+        }
         if ( ! isset( $this->admin_assets[ $hook ] ) ) {
             return;
         }
-
         foreach ( $this->admin_assets[ $hook ] as $handle => $asset ) {
             $file_url = plugins_url(
                 'src/admin/assets/' . ( 'css' === substr( $handle, -3 ) ? 'css/' : 'js/' ) . $asset['file'],
                 dirname(__DIR__, 2) . '/labgenz-community-management.php'
             );
-
             if ( 'css' === substr( $handle, -3 ) ) {
                 wp_enqueue_style(
                     $handle,
@@ -255,7 +281,6 @@ class AssetsManager {
                     $asset['version'],
                     $asset['enqueue_in_footer']
                 );
-
                 if ( ! empty( $asset['localization'] ) ) {
                     wp_localize_script(
                         $handle,
@@ -274,6 +299,24 @@ class AssetsManager {
      */
     public function register_assets_to_enqueue(): void {
         $hooks = \LABGENZ_CM\Core\Settings::get_admin_page_hooks();
+        // Dynamically get the current screen hook for the Appearance page if available
+        $appearance_hook = '';
+        if (function_exists('get_current_screen')) {
+            $screen = get_current_screen();
+            if ($screen && strpos($screen->id, 'appearance') !== false) {
+                $appearance_hook = $screen->id;
+            }
+        }
+        $appearance_hooks = array_filter(array_merge($hooks, [$appearance_hook]));
+        $this->add_admin_asset(
+            'labgenz-cm-appearance-css',
+            $appearance_hooks,
+            'appearance-admin.css',
+            array(),
+            array(),
+            LABGENZ_CM_VERSION,
+            false
+        );
         $this->add_admin_asset(
             'labgenz-cm-settings-css',
             array($hooks[0]),
@@ -304,6 +347,24 @@ class AssetsManager {
             LABGENZ_CM_VERSION,
             true
         );
+
+        $this->add_admin_asset(
+            'labgenz-appearance-admin',
+            $hooks,
+            'labgenz-appearance-admin.js',
+            array('jquery', 'sweetalert2'),
+            array(
+                'ajaxurl' => admin_url('admin-ajax.php'),
+                'nonce'   => wp_create_nonce('labgenz_appearance_nonce'),
+                'saveSettings' => __('Settings saved.', LABGENZ_CM_TEXTDOMAIN),
+                'saving'       => __('Saving...', LABGENZ_CM_TEXTDOMAIN),
+                'errorMessage' => __('An error occurred while saving settings.', LABGENZ_CM_TEXTDOMAIN),
+            ),
+            LABGENZ_CM_VERSION,
+            true
+        );
+
+
         $this->add_admin_asset(
             'labgenz-cm-settings-page-css',
             $hooks,
@@ -314,10 +375,10 @@ class AssetsManager {
             false
         );
         // Register single group page CSS for frontend using new method
-        $this->add_frontend_asset(
-            'labgenz-cm-single-group-page',
-            array(), // No specific page, will check in maybe_enqueue_frontend_assets
-            'single-group-page.css',
+        $this->add_buddyboss_asset(
+            'lab-single-group-page-css',
+            array('group_single'),
+            'lab-single-group-page.css',
             array(),
             LABGENZ_CM_VERSION,
             false,
@@ -325,22 +386,59 @@ class AssetsManager {
         );
         // Register group-management CSS and JS for BuddyBoss single group page only
         $this->add_buddyboss_asset(
-            'labgenz-group-management-css',
+            'lab-group-management-css',
             array('group_single'),
-            'group-management.css',
+            'lab-group-management.css',
             array(),
             LABGENZ_CM_VERSION,
             false,
             'css'
         );
         $this->add_buddyboss_asset(
-            'labgenz-group-management-js',
+            'lab-group-management-js',
             array('group_single'),
-            'group-management.js',
+            'lab-group-management.js',
             array('jquery'),
             LABGENZ_CM_VERSION,
             true,
             'js'
+        );
+        // Register group-invite JS for BuddyBoss single group page only
+        $this->add_buddyboss_asset(
+            'lab-group-invite',
+            array('group_single'),
+            'lab-group-invite-member.js',
+            array('jquery'),
+            LABGENZ_CM_VERSION,
+            true,
+            'js',
+            array(
+                'ajax_url' => admin_url('admin-ajax.php'),
+                'nonce' => wp_create_nonce('lab_group_management_nonce'),
+            )
+        );
+        $this->add_buddyboss_asset(
+            'lab-group-remove',
+            array('group_single'),
+            'lab-group-remove-member.js',
+            array('jquery'),
+            LABGENZ_CM_VERSION,
+            true,
+            'js',
+            array(
+                'ajax_url' => admin_url('admin-ajax.php'),
+                'nonce' => wp_create_nonce('labgenz_group_remove_nonce'),
+                'group_id' => bp_get_current_group_id(),
+            )
+        );
+        $this->add_admin_asset(
+            'labgenz-cm-appearance-css',
+            array($hooks[0], 'labgenz-cm-appearance'),
+            'appearance-admin.css',
+            array(),
+            array(),
+            LABGENZ_CM_VERSION,
+            false
         );
     }
 
@@ -369,6 +467,14 @@ class AssetsManager {
                         $asset['version'],
                         $asset['enqueue_in_footer']
                     );
+                    // Localize if data is present (for buddyboss assets)
+                    if (!empty($this->buddyboss_assets[$page][$handle]['localization'])) {
+                        wp_localize_script(
+                            $handle,
+                            str_replace('-', '_', $handle . '_data'),
+                            $this->buddyboss_assets[$page][$handle]['localization']
+                        );
+                    }
                 }
             }
         }
