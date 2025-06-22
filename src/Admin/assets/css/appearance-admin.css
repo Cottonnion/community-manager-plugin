@@ -1,0 +1,15 @@
+/* Appearance admin page styles for Labgenz Community Management */
+#labgenz-appearance-form {
+    background: #fff;
+    padding: 24px;
+    border-radius: 8px;
+    max-width: 600px;
+    margin-top: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+#labgenz-appearance-form input[type="color"] {
+    width: 48px;
+    height: 32px;
+    border: none;
+    margin-right: 12px;
+}
