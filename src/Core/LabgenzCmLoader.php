@@ -64,38 +64,35 @@ class LabgenzCmLoader {
 	 */
 	private function define_components(): void {
 		$this->components = array(
-			'core.assets'    => \LABGENZ_CM\Core\AssetsManager::class,
-			'core.menu'      => \LABGENZ_CM\Core\MenuManager::class,
-			'core.settings'  => \LABGENZ_CM\Core\Settings::class,
-			'core.ajax'      => \LABGENZ_CM\Core\AjaxHandler::class,
-			'core.core'      => \LABGENZ_CM\Core\AppearanceSettingsHandler::class,
-			'core.admin_hooks' => \LABGENZ_CM\Admin\AdminHooks::class,
+			'core.assets'         => \LABGENZ_CM\Core\AssetsManager::class,
+			'core.menu'           => \LABGENZ_CM\Core\MenuManager::class,
+			'core.settings'       => \LABGENZ_CM\Core\Settings::class,
+			'core.ajax'           => \LABGENZ_CM\Core\AjaxHandler::class,
+			'core.core'           => \LABGENZ_CM\Core\AppearanceSettingsHandler::class,
+			'core.admin_hooks'    => \LABGENZ_CM\Admin\AdminHooks::class,
 			'core.invite_handler' => \LABGENZ_CM\Core\InviteHandler::class,
 			'core.remove_handler' => \LABGENZ_CM\Core\RemoveHandler::class,
 		);
 		// Manually require classes if not loaded (for non-PSR-4 autoloaded files)
-		foreach ( $this->components as $class ) {
-			if ( ! class_exists( $class ) ) {
-				// PSR-4: convert namespace to path
-				$relative_path = str_replace('\\', '/', str_replace('LABGENZ_CM\\', '', $class)) . '.php';
-				$base_dirs = [
-					__DIR__ . '/../', // for Core, Admin, etc.
-					__DIR__ . '/../../admin/', // fallback for admin
-				];
-				$found = false;
-				foreach ($base_dirs as $base) {
-					$full_path = $base . $relative_path;
-					if (file_exists($full_path)) {
-						require_once $full_path;
-						$found = true;
-						break;
-					}
-				}
-				if (!$found) {
-					// Optionally log missing class file
-				}
-			}
-		}
+		// foreach ( $this->components as $class ) {
+		//  if ( ! class_exists( $class ) ) {
+		//      // PSR-4: convert namespace to path
+		//      $relative_path = str_replace( '\\', '/', str_replace( 'LABGENZ_CM\\', '', $class ) ) . '.php';
+		//      $base_dirs     = array(
+		//          __DIR__ . '/../', // for Core, Admin, etc.
+		//          __DIR__ . '/../../admin/', // fallback for admin
+		//      );
+		//      $found         = false;
+		//      foreach ( $base_dirs as $base ) {
+		//          $full_path = $base . $relative_path;
+		//          if ( file_exists( $full_path ) ) {
+		//              require_once $full_path;
+		//              $found = true;
+		//              break;
+		//          }
+		//      }
+		//  }
+		// }
 	}
 
 	/**
@@ -160,7 +157,7 @@ class LabgenzCmLoader {
 	 */
 	public function load_textdomain(): void {
 		load_plugin_textdomain(
-			LABGENZ_CM_TEXTDOMAIN,
+			LABGENZTEXTDOMAIN,
 			false,
 			dirname( plugin_basename( LABGENZ_CM_PATH . 'labgenz-community-management.php' ) ) . '/languages'
 		);
