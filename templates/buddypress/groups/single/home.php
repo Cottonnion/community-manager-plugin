@@ -1,7 +1,6 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define('LABGENZ_CM_GROUP_HOME_TEMPLATE_LOADED', true);
 get_header();
 
 function get_group_management_data() {
@@ -50,7 +49,7 @@ function get_group_management_data() {
     $members = groups_get_group_members( $args );
 
     // Get invited users
-    $invited_users = groups_get_groupmeta($group_id, '3dinst_invited', true);
+    $invited_users = groups_get_groupmeta($group_id, 'labgen_invited', true);
     if (!is_array($invited_users)) {
         $invited_users = array();
     }

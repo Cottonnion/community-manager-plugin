@@ -1,5 +1,7 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
+// Fetch appearance settings at the top
+$appearance_settings = get_option('labgenz_cm_appearance', []);
 $data = get_group_management_data();
 if ( ! $data['success'] ) {
     echo '<div class="notice error">' . esc_html( $data['error'] ) . '</div>';
@@ -21,32 +23,32 @@ if ( ! $data['is_organizer'] ) {
     
     <div class="invite-section">
         <h3>Invite New Member</h3>
-        <form id="invite-form" class="invite-form">
-            <?php if ( count( $data['organizer_groups'] ) > 1 ) : ?>
-                <div class="form-row">
-                    <label for="target-group">Select Group:</label>
-                    <select id="target-group" name="target_group" required>
-                        <?php foreach ( $data['organizer_groups'] as $org_group ) : ?>
-                            <option value="<?php echo esc_attr( $org_group['id'] ); ?>" 
-                                    <?php selected( $org_group['id'], $data['group_id'] ); ?>>
-                                <?php echo esc_html( $org_group['name'] ); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
+        <button id="labgenz-show-invite-popup" type="button">Invite Member</button>
+        <div id="labgenz-invite-popup" class="labgenz-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); z-index:9999; align-items:center; justify-content:center;">
+            <div style="background:#fff; padding:30px 24px; border-radius:8px; max-width:900px; width:90vw; margin:auto; position:relative; display:flex; gap:32px; flex-wrap:wrap;">
+                <button id="labgenz-close-invite-popup" style="position:absolute; top:10px; right:10px; background:none; border:none; font-size:20px; cursor:pointer;">&times;</button>
+                <div style="flex:1 1 320px; min-width:300px;">
+                    <h4>Invited Users</h4>
+                    <ul id="labgenz-invited-list-popup" style="max-height:400px; overflow-y:auto; padding-left:0; list-style:none;"></ul>
                 </div>
-            <?php else : ?>
-                <input type="hidden" id="target-group" value="<?php echo esc_attr( $data['group_id'] ); ?>">
-            <?php endif; ?>
-            
-            <div class="form-row">
-                <input type="email" id="user-email" placeholder="Enter email address" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid email address">
-                <input type="text" id="first-name" placeholder="First Name" required>
-                <input type="text" id="last-name" placeholder="Last Name" required>
+                <div style="flex:1 1 320px; min-width:300px;">
+                    <form id="labgenz-invite-form" class="invite-form">
+                        <div class="form-row">
+                            <input type="email" name="email" placeholder="Enter email address" required style="width:100%;margin-bottom:10px;">
+                            <input type="text" name="first_name" placeholder="First Name" required style="width:100%;margin-bottom:10px;">
+                            <input type="text" name="last_name" placeholder="Last Name" required style="width:100%;margin-bottom:10px;">
+                            <select name="profile_type" id="labgenz-profile-type-select" required style="width:100%;margin-bottom:10px;">
+                                <option value="">Loading profile types...</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <button type="submit">Send Invitation</button>
+                        </div>
+                        <div id="labgenz-invite-message" style="margin-top:10px;"></div>
+                    </form>
+                </div>
             </div>
-            <div class="form-row">
-                <button type="submit" class="invite-btn">Search & Invite Member</button>
-            </div>
-        </form>
+        </div>
     </div>
 
     <!-- Confirmation Modal -->
@@ -138,11 +140,19 @@ if ( ! $data['is_organizer'] ) {
             foreach ( $data['invited_users'] as $user_id => $invitation ) : 
                 $user = get_user_by('id', $user_id);
                 if (!$user) continue;
-                
+                // Fix: Ensure invitation is an array before accessing its keys
+                if (!is_array($invitation)) continue;
                 $role = $invitation['is_organizer'] ? 'Organizer' : 'Member';
+                // Use appearance settings directly, no fallbacks
+                $font_size = isset($appearance_settings['font_size']) ? $appearance_settings['font_size'] . 'px' : '';
+                $font_family = isset($appearance_settings['font_family']) ? $appearance_settings['font_family'] : '';
+                $text_color = isset($appearance_settings['text_color']) ? $appearance_settings['text_color'] : '';
+                $warning_color = isset($appearance_settings['warning_color']) ? $appearance_settings['warning_color'] : '';
+                $border_radius = isset($appearance_settings['border_radius']) ? $appearance_settings['border_radius'] . 'px' : '';
+                $accent_color = isset($appearance_settings['accent_color']) ? $appearance_settings['accent_color'] : '';
             ?>
                 <tr data-user-id="<?php echo $user_id; ?>" class="invited-row">
-                    <td style="font-size: 0.9em; padding: 5px;">
+                    <td style="font-size: <?php echo esc_attr($font_size); ?>; padding: 5px; font-family: <?php echo esc_attr($font_family); ?>;">
                         <?php echo bp_core_fetch_avatar( array( 
                             'item_id' => $user_id, 
                             'type' => 'thumb', 
@@ -150,27 +160,28 @@ if ( ! $data['is_organizer'] ) {
                             'height' => 40 
                         ) ); ?>
                     </td>
-                    <td style="font-size: 0.9em; padding: 5px;">
+                    <td style="font-size: <?php echo esc_attr($font_size); ?>; padding: 5px; font-family: <?php echo esc_attr($font_family); ?>; color: <?php echo esc_attr($text_color); ?>;">
                         <?php echo bp_core_get_userlink( $user_id ); ?>
                     </td>
-                    <td style="font-size: 0.9em; padding: 5px;">
+                    <td style="font-size: <?php echo esc_attr($font_size); ?>; padding: 5px; font-family: <?php echo esc_attr($font_family); ?>; color: <?php echo esc_attr($text_color); ?>;">
                         <?php echo esc_html( $user->user_email ); ?>
                     </td>
-                    <td style="font-size: 0.9em; padding: 5px;">
+                    <td style="font-size: <?php echo esc_attr($font_size); ?>; padding: 5px; font-family: <?php echo esc_attr($font_family); ?>; color: <?php echo esc_attr($text_color); ?>;">
                         <?php echo date( 'M j, Y', strtotime( $invitation['invited_date'] ) ); ?>
                     </td>
-                    <td style="font-size: 0.9em; padding: 5px;">
+                    <td style="font-size: <?php echo esc_attr($font_size); ?>; padding: 5px; font-family: <?php echo esc_attr($font_family); ?>; color: <?php echo esc_attr($text_color); ?>;">
                         <strong><?php echo $role; ?></strong>
                     </td>
-                    <td style="font-size: 0.9em; padding: 5px;">
-                        <span class="status-badge status-pending" style="background-color: #f0ad4e; color: white; padding: 5px; border-radius: 3px;">Pending</span>
+                    <td style="font-size: <?php echo esc_attr($font_size); ?>; padding: 5px;">
+                        <span class="status-badge status-pending" style="background-color: <?php echo esc_attr($warning_color); ?>; color: white; padding: 5px; border-radius: <?php echo esc_attr($border_radius); ?>;">Pending</span>
                     </td>
-                    <td style="font-size: 0.9em; padding: 5px;">
+                    <td style="font-size: <?php echo esc_attr($font_size); ?>; padding: 5px;">
                         <em>Awaiting Confirmation</em>
                         <a href="javascript:void(0)" 
                            class="cancel-link ajax-cancel-invitation"
                            data-user-id="<?php echo $user_id; ?>"
-                           data-group-id="<?php echo $data['group_id']; ?>">
+                           data-group-id="<?php echo $data['group_id']; ?>"
+                           style="color: <?php echo esc_attr($accent_color); ?>; border-color: <?php echo esc_attr($accent_color); ?>;">
                             Cancel
                         </a>
                     </td>
