@@ -1,0 +1,20 @@
+[2025-07-02 16:36:53] Checking group type for group ID: 72
+[2025-07-02 16:36:53] bp_groups_get_group_type returned: 'organization'
+[2025-07-02 16:36:59] Checking group type for group ID: 73
+[2025-07-02 16:36:59] bp_groups_get_group_type returned: false
+[2025-07-02 16:36:59] group_type meta returned: ''
+[2025-07-02 16:36:59] mlmmc_group_type meta returned: ''
+[2025-07-02 16:36:59] mlmmc_subscription_status meta returned: ''
+[2025-07-02 16:36:59] Group ID 73 is NOT an organization type
+[2025-07-02 16:37:01] Checking group type for group ID: 73
+[2025-07-02 16:37:01] bp_groups_get_group_type returned: false
+[2025-07-02 16:37:01] group_type meta returned: ''
+[2025-07-02 16:37:01] mlmmc_group_type meta returned: ''
+[2025-07-02 16:37:01] mlmmc_subscription_status meta returned: ''
+[2025-07-02 16:37:01] Group ID 73 is NOT an organization type
+[2025-07-02 16:37:20] Checking group type for group ID: 72
+[2025-07-02 16:37:20] bp_groups_get_group_type returned: 'organization'
+[2025-07-02 16:37:47] Checking group type for group ID: 72
+[2025-07-02 16:37:47] bp_groups_get_group_type returned: 'organization'
+[2025-07-02 16:37:58] Checking group type for group ID: 72
+[2025-07-02 16:37:58] bp_groups_get_group_type returned: 'organization'

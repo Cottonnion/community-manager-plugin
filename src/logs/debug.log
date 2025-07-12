@@ -1,0 +1,152 @@
+DEBUG: Init hook calledDEBUG: groups_create_group_steps filter calledDEBUG: Group Creation Steps:
+Slug: group-details
+  Structure: Array
+(
+    [name] => Details
+    [position] => 0
+)
+
+Slug: group-details-009
+  Structure: Array
+(
+    [slug] => group-details-009
+    [name] => Group Details Upper
+    [position] => 0
+    [screens] => Array
+        (
+            [create] => Array
+                (
+                    [name] => Group Details Upper
+                    [slug] => group-details-009
+                    [position] => 0
+                    [screen_callback] => labgenz_group_details_upper_screen
+                    [screen_save_callback] => labgenz_group_details_upper_save
+                )
+
+        )
+
+)
+
+DEBUG: Modified steps: Array
+(
+    [0] => group-details
+    [1] => group-details-009
+)
+DEBUG: bp_screens - Action: create, Variables: Array
+(
+    [0] => step
+    [1] => group-details-009
+)
+DEBUG: In group create, current step: group-details-009DEBUG: We are on group-details-009 step!DEBUG: Init hook calledDEBUG: groups_create_group_steps filter calledDEBUG: Group Creation Steps:
+Slug: group-details
+  Structure: Array
+(
+    [name] => Details
+    [position] => 0
+)
+
+Slug: group-details-009
+  Structure: Array
+(
+    [slug] => group-details-009
+    [name] => Group Details Upper
+    [position] => 0
+    [screens] => Array
+        (
+            [create] => Array
+                (
+                    [name] => Group Details Upper
+                    [slug] => group-details-009
+                    [position] => 0
+                    [screen_callback] => labgenz_group_details_upper_screen
+                    [screen_save_callback] => labgenz_group_details_upper_save
+                )
+
+        )
+
+)
+
+DEBUG: Modified steps: Array
+(
+    [0] => group-details
+    [1] => group-details-009
+)
+DEBUG: bp_screens - Action: create, Variables: Array
+(
+    [0] => step
+    [1] => group-details
+)
+DEBUG: In group create, current step: group-detailsDEBUG: Init hook calledDEBUG: groups_create_group_steps filter calledDEBUG: Group Creation Steps:
+Slug: group-details
+  Structure: Array
+(
+    [name] => Details
+    [position] => 0
+)
+
+Slug: group-details-009
+  Structure: Array
+(
+    [slug] => group-details-009
+    [name] => Group Details Upper
+    [position] => 0
+    [screens] => Array
+        (
+            [create] => Array
+                (
+                    [name] => Group Details Upper
+                    [slug] => group-details-009
+                    [position] => 0
+                    [screen_callback] => labgenz_group_details_upper_screen
+                    [screen_save_callback] => labgenz_group_details_upper_save
+                )
+
+        )
+
+)
+
+DEBUG: Modified steps: Array
+(
+    [0] => group-details
+    [1] => group-details-009
+)
+DEBUG: Init hook calledDEBUG: groups_create_group_steps filter calledDEBUG: Group Creation Steps:
+Slug: group-details
+  Structure: Array
+(
+    [name] => Details
+    [position] => 0
+)
+
+Slug: group-details-009
+  Structure: Array
+(
+    [slug] => group-details-009
+    [name] => Group Details Upper
+    [position] => 0
+    [screens] => Array
+        (
+            [create] => Array
+                (
+                    [name] => Group Details Upper
+                    [slug] => group-details-009
+                    [position] => 0
+                    [screen_callback] => labgenz_group_details_upper_screen
+                    [screen_save_callback] => labgenz_group_details_upper_save
+                )
+
+        )
+
+)
+
+DEBUG: Modified steps: Array
+(
+    [0] => group-details
+    [1] => group-details-009
+)
+DEBUG: bp_screens - Action: create, Variables: Array
+(
+    [0] => step
+    [1] => group-details-009
+)
+DEBUG: In group create, current step: group-details-009DEBUG: We are on group-details-009 step!

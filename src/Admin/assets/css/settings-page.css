@@ -1,0 +1,73 @@
+/* Stunning settings page styles for Labgenz Community Management */
+#labgenz-cm-settings-wrapper {
+    background: #fff;
+    padding: 2.5em 2em 2em 2em;
+    border-radius: 14px;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.08);
+    max-width: 540px;
+    margin: 40px auto;
+    border: 1px solid #e5e7eb;
+}
+.labgenz-cm-title {
+    font-size: 2.2em;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 1.2em;
+    text-align: center;
+    letter-spacing: 0.5px;
+}
+.labgenz-cm-form-group {
+    margin-bottom: 2em;
+}
+.labgenz-cm-form-group label {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: #374151;
+    display: block;
+    margin-bottom: 0.5em;
+}
+.labgenz-cm-input {
+    width: 100%;
+    padding: 0.7em 1em;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 1.1em;
+    background: #f9fafb;
+    transition: border-color 0.2s;
+}
+.labgenz-cm-input:focus {
+    border-color: #3182ce;
+    outline: none;
+    background: #fff;
+}
+.labgenz-cm-description {
+    color: #6b7280;
+    font-size: 0.98em;
+    margin-top: 0.3em;
+}
+.labgenz-cm-save-btn {
+    background: linear-gradient(90deg, #3182ce 0%, #00b4d8 100%);
+    color: #fff;
+    font-weight: 600;
+    font-size: 1.1em;
+    padding: 0.7em 2.2em;
+    border: none;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(49,130,206,0.08);
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+}
+.labgenz-cm-save-btn:hover {
+    background: linear-gradient(90deg, #2563eb 0%, #0096c7 100%);
+    box-shadow: 0 4px 16px rgba(49,130,206,0.13);
+}
+.labgenz-cm-status {
+    display: inline-block;
+    margin-left: 1em;
+    font-size: 1em;
+    color: #38a169;
+    font-weight: 500;
+}

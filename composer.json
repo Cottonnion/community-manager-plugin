@@ -1,0 +1,32 @@
+{
+  "name": "labgenz/community-management",
+  "description": "Labgenz Community Management WordPress Plugin",
+  "type": "wordpress-plugin",
+  "autoload": {
+    "psr-4": {
+      "LABGENZ_CM\\": "src/"
+    }
+  },
+  "license": "GPL-2.0+",
+  "require-dev": {
+    "lighthouseuk/buddyboss-theme-stubs": "^2.7",
+    "gin0115/buddypress-stubs": "^11.1",
+    "szepeviktor/phpstan-wordpress": "^2.0",
+    "squizlabs/php_codesniffer": "^3.13",
+    "wp-coding-standards/wpcs": "^3.1",
+    "dealerdirect/phpcodesniffer-composer-installer": "1.0",
+    "phpcompatibility/php-compatibility": "*",
+    "php-stubs/wordpress-stubs": "*",
+    "php-stubs/woocommerce-stubs": "*",
+    "php-stubs/wp-cli-stubs": "*",
+    "php-stubs/acf-pro-stubs": "*"
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
+  },
+  "require": {
+    "stellarwp/learndash-php-sniffs": "^1.1"
+  }
+}

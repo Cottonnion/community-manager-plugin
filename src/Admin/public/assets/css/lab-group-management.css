@@ -1,0 +1,56 @@
+.invite-form .form-row {
+    margin-bottom: 15px;
+}
+
+.invite-form .form-row label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.invite-form select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.invite-form input[type="email"],
+.invite-form input[type="text"] {
+    margin-right: 10px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    flex: 1;
+}
+
+.invite-form .form-row:first-child input {
+    margin-right: 0;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-weight: 500;
+}
+
+.status-active {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
+.status-pending {
+    background-color: #fce4ec;
+    color: #c2185b;
+}
+
+.invited-row {
+    opacity: 0.8;
+}
+
+.invited-row td {
+    color: #666;
+}

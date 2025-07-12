@@ -1,0 +1,524 @@
+/* Invite Section Styling */
+.lab-invite-section {
+    background: #ffffff;
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.lab-invite-section h3 {
+    margin: 0 0 20px 0;
+    color: #2c3e50;
+    font-size: 18px;
+    font-weight: 600;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 8px;
+}
+
+/* Invite Buttons */
+.lab-invite-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+/* Bulk Invite Form Styling */
+.lab-bulk-invite-form {
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    border: 1px solid #e5e5e5;
+    padding: 20px;
+    margin-top: 15px;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    overflow: hidden;
+}
+
+.lab-bulk-invite-form h4 {
+    margin-top: 0;
+    color: #2c3e50;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.lab-bulk-instructions {
+    background-color: #fff;
+    border-left: 4px solid #3498db;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 0 4px 4px 0;
+}
+
+.lab-bulk-instructions p {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.lab-bulk-instructions ol {
+    margin-left: 20px;
+    padding-left: 0;
+}
+
+.lab-bulk-instructions li {
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+.lab-bulk-instructions ul {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+/* Preview Table Styling */
+.lab-preview-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    border: 1px solid #e0e0e0;
+}
+
+.lab-preview-table th {
+    background-color: #f5f5f5;
+    font-weight: 600;
+    text-align: left;
+    padding: 10px;
+    border-bottom: 2px solid #ddd;
+}
+
+.lab-preview-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #e0e0e0;
+    vertical-align: middle;
+}
+
+.lab-preview-table td:last-child {
+    min-width: 150px;
+}
+
+.lab-preview-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.lab-preview-table tr:hover {
+    background-color: #f2f2f2;
+}
+
+/* Processing row highlight */
+.lab-preview-table tr.processing {
+    background-color: #fff8e5 !important;
+    transition: background-color 0.3s ease;
+}
+
+/* Status Column Styling */
+.lab-status-new {
+    color: #27ae60;
+    font-weight: bold;
+}
+
+.lab-status-invite {
+    color: #2980b9;
+    font-weight: bold;
+}
+
+.lab-status-member {
+    color: #7f8c8d;
+    font-style: italic;
+}
+
+.lab-status-invited {
+    color: #f39c12;
+    font-style: italic;
+}
+
+.lab-status-duplicate {
+    color: #e74c3c;
+    font-style: italic;
+}
+
+/* Status for error state */
+.lab-status-error {
+    color: #d63638;
+    font-weight: bold;
+}
+
+/* User Info Column Styling */
+.user-info {
+    font-size: 0.9em;
+    line-height: 1.4;
+    padding: 5px;
+    max-width: 250px;
+}
+
+.user-info div {
+    margin-bottom: 5px;
+    border-bottom: 1px dotted #eee;
+    padding-bottom: 3px;
+}
+
+.user-info div:last-child {
+    border-bottom: none;
+}
+
+.user-info .user-avatar {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 8px;
+    border-bottom: none;
+}
+
+.user-info .user-avatar img {
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #ccc;
+}
+
+.lab-invite-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.lab-form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.lab-form-row label {
+    font-weight: 500;
+    color: #34495e;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.lab-form-row select,
+.lab-form-row input[type="email"] {
+    /* padding: 12px 16px; */
+    border: 1px solid #cbd5e0;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    background-color: #ffffff;
+    color: #2d3748;
+}
+
+.lab-form-row select:focus,
+.lab-form-row input[type="email"]:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.lab-form-row input[type="email"]::placeholder {
+    color: #a0aec0;
+    font-style: italic;
+}
+
+.lab-invite-btn {
+    background: #8B4513 !important;
+    color: white;
+    border: none !important;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 4px rgba(52, 152, 219, 0.2);
+}
+
+.lab-invite-btn:hover {
+    background: linear-gradient(135deg, #2980b9, #1f639a);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+}
+
+.lab-invite-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(52, 152, 219, 0.2);
+}
+
+.lab-invite-btn:disabled {
+    background: #bdc3c7;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Send Invitations Button */
+#lab-send-bulk-invites {
+    background: #8B4513;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 4px rgba(139, 69, 19, 0.2);
+    margin: 15px auto 5px;
+    display: block;
+}
+
+#lab-send-bulk-invites:hover {
+    background: #6b340f;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(139, 69, 19, 0.3);
+}
+
+#lab-send-bulk-invites:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(139, 69, 19, 0.2);
+}
+
+#lab-send-bulk-invites:disabled {
+    background: #bdc3c7;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Loading Indicator */
+.lab-loading-indicator {
+    background-color: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 20px;
+    text-align: center;
+    margin: 15px 0;
+    font-style: italic;
+    color: #555;
+}
+
+.lab-loading-indicator .spinner {
+    float: none;
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+/* Preview Summary Stats */
+.lab-preview-summary {
+    background-color: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.lab-preview-summary p {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.lab-stats-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.lab-stats-list li {
+    background-color: #ffffff;
+    border-radius: 4px;
+    padding: 8px 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    font-size: 14px;
+}
+
+.lab-stats-list li span {
+    margin-right: 4px;
+    font-weight: bold;
+}
+
+/* Responsive Design */
+@media (min-width: 768px) {
+    .lab-invite-form {
+        flex-direction: row;
+        align-items: end;
+        gap: 12px;
+    }
+    
+    .lab-form-row:first-child {
+        flex: 1;
+    }
+    
+    .lab-form-row:nth-child(2) {
+        flex: 2;
+    }
+    
+    .lab-form-row:last-child {
+        flex: 0 0 auto;
+    }
+    
+    .lab-invite-btn {
+        white-space: nowrap;
+        height: fit-content;
+    }
+}
+
+/* Error state styling */
+.lab-form-row input.error,
+.lab-form-row select.error {
+    border-color: #e74c3c;
+    box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+}
+
+/* Success state styling */
+.lab-form-row input.success,
+.lab-form-row select.success {
+    border-color: #27ae60;
+    box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.1);
+}
+
+/* Loading state for button */
+.lab-invite-btn.loading {
+    position: relative;
+    color: transparent;
+}
+
+.lab-invite-btn.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    margin: -8px 0 0 -8px;
+    border: 2px solid #ffffff;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Responsive Table Styles */
+.lab-table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 20px;
+    position: relative;
+    border-radius: 6px;
+    background: #fff;
+}
+
+.lab-table-responsive::-webkit-scrollbar {
+    height: 8px;
+}
+
+.lab-table-responsive::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.lab-table-responsive::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.lab-table-responsive::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+.lab-members-table {
+    min-width: 750px; /* Ensure table has a minimum width for scrolling */
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+/* Class applied via JS when table is scrollable */
+.lab-table-responsive.is-scrollable::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 30px;
+    background: linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,1));
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+.lab-table-responsive.is-scrollable::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 30px;
+    background: linear-gradient(to left, rgba(255,255,255,0), rgba(255,255,255,1));
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.lab-table-responsive.is-scrolled::after {
+    opacity: 0.8;
+}
+
+.lab-table-responsive.at-scroll-end::before {
+    opacity: 0;
+}
+
+/* Mobile optimizations */
+@media (max-width: 767px) {
+    .lab-table-responsive {
+        border: 1px solid rgba(0,0,0,0.1);
+        border-radius: 6px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    
+    .lab-table-responsive::after {
+        content: "← Scroll →";
+        position: absolute;
+        bottom: -20px;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        font-size: 12px;
+        color: #888;
+        opacity: 0.8;
+    }
+    
+    .lab-members-table th,
+    .lab-members-table td {
+        white-space: nowrap;
+    }
+    
+    /* Highlight first and last columns */
+    .lab-members-table td:first-child,
+    .lab-members-table th:first-child {
+        position: sticky;
+        left: 0;
+        background-color: #fff;
+        z-index: 2;
+        box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+    }
+    
+    .lab-members-table td:last-child,
+    .lab-members-table th:last-child {
+        position: sticky;
+        right: 0;
+        background-color: #fff;
+        z-index: 2;
+        box-shadow: -2px 0 5px rgba(0,0,0,0.05);
+    }
+}
