@@ -70,30 +70,30 @@ function get_group_management_data() {
 
 $data = get_group_management_data();
 if ( ! $data['success'] ) {
-	echo '<div class="notice error">' . esc_html( $data['error'] ) . '</div>';
+	echo '<div class="notice error bb-notice bb-notice--error">' . esc_html( $data['error'] ) . '</div>';
 	return;
 }
 
 if ( ! $data['is_organizer'] ) {
-	echo '<div class="notice error">Access restricted. You must be a group organizer to view this page.</div>';
+	echo '<div class="notice error bb-notice bb-notice--error">Access restricted. You must be a group organizer to view this page.</div>';
 	return;
 }
 ?>
 
-<div class="group-management" 
+<div class="group-management bb-card" 
 	data-group-id="<?php echo esc_attr( $data['group_id'] ); ?>"
 	data-ajax-url="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>"
 	data-nonce="<?php echo esc_attr( $data['nonce'] ); ?>">
 	
 	<!-- Tab Navigation -->
-	<div class="tab-nav">
-		<button class="threedinst-tab-btn active" data-tab="members">Members Management</button>
-		<button class="threedinst-tab-btn" data-tab="progress">Members Progress</button>
-		<button class="threedinst-tab-btn" data-tab="settings">Content Settings</button>
+	<div class="tab-nav bb-tabs">
+		<button class="threedinst-tab-btn bb-tabs__tab bb-tabs__tab--active" data-tab="members">Members Management</button>
+		<button class="threedinst-tab-btn bb-tabs__tab" data-tab="progress">Members Progress</button>
+		<button class="threedinst-tab-btn bb-tabs__tab" data-tab="settings">Content Settings</button>
 	</div>
 
 	<!-- Tab Content -->
-	<div class="tab-content">
+	<div class="tab-content bb-tabs__content">
 		<?php
 		// Include tab templates
 		require __DIR__ . '/tabs/members-tab.php';

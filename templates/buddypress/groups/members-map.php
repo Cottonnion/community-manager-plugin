@@ -12,24 +12,24 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 $group = groups_get_current_group();
 ?>
 
-<div class="members-map-container">
+<div class="members-map-container bb-card bb-card--padding">
     
-    <div id="members-map-container" style="width: 100%; height: 500px; border: 1px solid #ddd; background: #f9f9f9; position: relative; display: block !important; visibility: visible !important; z-index: 1;">
-        <div id="map-init-indicator" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(255, 255, 255, 0.9); padding: 10px; border-radius: 4px; z-index: 1000;">
+    <div id="members-map-container" class="bb-card" style="width: 100%; height: 500px; border: 1px solid #ddd; background: #f9f9f9; position: relative; display: block !important; visibility: visible !important; z-index: 1;">
+        <div id="map-init-indicator" class="bb-notice bb-notice--info" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(255, 255, 255, 0.9); padding: 10px; border-radius: 4px; z-index: 1000;">
             Map is initializing...
         </div>
     </div>
     
-    <div class="members-map-legend">
-        <ul>
-            <li><span class="legend-admin"></span> <?php _e('Group Admin', 'buddyboss'); ?></li>
-            <li><span class="legend-mod"></span> <?php _e('Group Moderator', 'buddyboss'); ?></li>
-            <li><span class="legend-member"></span> <?php _e('Group Member', 'buddyboss'); ?></li>
+    <div class="members-map-legend bb-card bb-card--padding">
+        <ul class="bb-list">
+            <li class="bb-list__item"><span class="legend-admin bb-badge bb-badge--danger"></span> <?php _e('Group Admin', 'buddyboss'); ?></li>
+            <li class="bb-list__item"><span class="legend-mod bb-badge bb-badge--primary"></span> <?php _e('Group Moderator', 'buddyboss'); ?></li>
+            <li class="bb-list__item"><span class="legend-member bb-badge bb-badge--success"></span> <?php _e('Group Member', 'buddyboss'); ?></li>
         </ul>
     </div>
     
-    <div class="members-map-footer">
-        <p class="members-map-note"><?php _e('Note: Only members who have added their location will appear on the map.', 'buddyboss'); ?></p>
+    <div class="members-map-footer bb-card bb-card--padding">
+        <p class="members-map-note bb-text bb-text--muted"><?php _e('Note: Only members who have added their location will appear on the map.', 'buddyboss'); ?></p>
     </div>
 </div>
 

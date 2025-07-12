@@ -5,12 +5,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $data = get_group_management_data();
 if ( ! $data['success'] ) {
-	echo '<div class="notice error">' . esc_html( $data['error'] ) . '</div>';
+	echo '<div class="notice error bb-notice bb-notice--error">' . esc_html( $data['error'] ) . '</div>';
 	return;
 }
 
 if ( ! $data['is_organizer'] ) {
-	echo '<div class="notice error">Access restricted. You must be a group organizer to view this page.</div>';
+	echo '<div class="notice error bb-notice bb-notice--error">Access restricted. You must be a group organizer to view this page.</div>';
 	return;
 }
 
@@ -50,15 +50,15 @@ function toggle_course_status() {
 }
 ?>
 
-<div id="settings-tab" class="tab-pane">
-	<h2>Content Settings</h2>
+<div id="settings-tab" class="tab-pane bb-card">
+	<h2 class="bb-card__title">Content Settings</h2>
    
-	<div class="inst-3d-course-management-section">
+	<div class="inst-3d-course-management-section bb-card bb-card--padding">
 		<!-- Group Selector -->
-		<div class="inst-3d-group-selector">
-			<div class="inst-3d-form-group">
-				<label for="inst3d-manage-group">Select Group to Manage:</label>
-				<select id="inst3d-manage-group" name="manage_group" required>
+		<div class="inst-3d-group-selector bb-form">
+			<div class="inst-3d-form-group bb-form__row">
+				<label for="inst3d-manage-group" class="bb-label">Select Group to Manage:</label>
+				<select id="inst3d-manage-group" name="manage_group" class="bb-select" required>
 					<option value="" selected>Select a group...</option>
 					<?php foreach ( $data['organizer_groups'] as $org_group ) : ?>
 						<option value="<?php echo esc_attr( $org_group['id'] ); ?>">
@@ -71,26 +71,26 @@ function toggle_course_status() {
 		</div>
 
 		<!-- Course Management Section (initially hidden) -->
-		<div id="inst3d-course-management" style="display: none;">
+		<div id="inst3d-course-management" class="bb-card bb-card--padding" style="display: none;">
 			<div class="inst3d-section-header">
-				<h3>Course Management</h3>
+				<h3 class="bb-card__title">Course Management</h3>
 			</div>
 			
 			<div class="inst3d-course-list">
-				<div id="inst3d-loading" style="display: none;">Loading courses...</div>
-				<table class="inst3d-courses-table">
+				<div id="inst3d-loading" class="bb-notice bb-notice--info" style="display: none;">Loading courses...</div>
+				<table class="inst3d-courses-table bb-table">
 					<thead>
 						<tr>
-							<th>Category Name</th>
-							<th>Status</th>
-							<th>Actions</th>
+							<th class="bb-table__header">Category Name</th>
+							<th class="bb-table__header">Status</th>
+							<th class="bb-table__header">Actions</th>
 						</tr>
 					</thead>
-					<tbody id="inst3d-courses-table-body">
+					<tbody id="inst3d-courses-table-body" class="bb-table__body">
 						<!-- Category rows will be dynamically populated -->
-						<tr>
-							<td>Category Name</td>
-							<td>Assigned</td>
+						<tr class="bb-table__row">
+							<td class="bb-table__cell">Category Name</td>
+							<td class="bb-table__cell">Assigned</td>
 						</tr>
 					</tbody>
 				</table>

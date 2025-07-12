@@ -4,10 +4,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 ?>
 
-<div id="progress-tab" class="tab-pane">
-	<div class="under-construction">
-		<h2>Members Progress</h2>
-		<div class="construction-notice">
+<div id="progress-tab" class="tab-pane bb-card">
+	<div class="under-construction bb-card bb-card--padding">
+		<h2 class="bb-card__title">Members Progress</h2>
+		<div class="construction-notice bb-notice bb-notice--info">
 			<p>🚧 This section is under construction</p>
 			<p>Member progress tracking and analytics will be available soon.</p>
 		</div>

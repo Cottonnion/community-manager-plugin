@@ -66,45 +66,45 @@ function get_group_management_data() {
 
 $data = get_group_management_data();
 if ( ! $data['success'] ) {
-    echo '<div class="notice error">' . esc_html( $data['error'] ) . '</div>';
+    echo '<div class="notice error bb-notice bb-notice--error">' . esc_html( $data['error'] ) . '</div>';
     return;
 }
 
 if ( ! $data['is_organizer'] ) {
-    echo '<div class="notice error">Access restricted. You must be a group organizer to view this page.</div>';
+    echo '<div class="notice error bb-notice bb-notice--error">Access restricted. You must be a group organizer to view this page.</div>';
     return;
 }
 ?>
 
-<div id="lab-members-tab" class="lab-tab-pane active lab-default-tab">
+<div id="lab-members-tab" class="lab-tab-pane active lab-default-tab bb-card">
     <div id="lab-alert-container"></div>
     
     <?php if ( isset($message) ) echo $message; ?>
     
     <!-- <h2>Group Members Management</h2> -->
 
-    <div class="lab-invite-section">
-        <h3>Invite New Member To <?php echo esc_html( bp_get_current_group_name() ); ?></h3>
+    <div class="lab-invite-section bb-card bb-card--padding">
+        <h3 class="bb-card__title">Invite New Member To <?php echo esc_html( bp_get_current_group_name() ); ?></h3>
         
-        <div class="lab-invite-buttons" style="margin-bottom: 15px;">
-            <button type="button" id="lab-show-invite-form" class="lab-invite-btn" style="margin-right: 10px;">Search & Invite</button>
-            <button type="button" id="lab-bulk-invite" class="lab-invite-btn">Bulk Invite</button>
+        <div class="lab-invite-buttons bb-button-group" style="margin-bottom: 15px;">
+            <button type="button" id="lab-show-invite-form" class="lab-invite-btn bb-button bb-button--primary" style="margin-right: 10px;">Search & Invite</button>
+            <button type="button" id="lab-bulk-invite" class="lab-invite-btn bb-button bb-button--secondary">Bulk Invite</button>
         </div>
         
-        <form id="lab-invite-form" class="lab-invite-form" style="display: none;">
-            <div class="lab-form-row">
-                <input type="email" id="lab-user-email" placeholder="Enter email address" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid email address">
+        <form id="lab-invite-form" class="lab-invite-form bb-form" style="display: none;">
+            <div class="lab-form-row bb-form__row">
+                <input type="email" id="lab-user-email" class="bb-input" placeholder="Enter email address" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid email address">
             </div>
-            <div class="lab-form-row">
-                <button type="submit" class="lab-invite-btn">Send Invitation</button>
+            <div class="lab-form-row bb-form__row">
+                <button type="submit" class="lab-invite-btn bb-button bb-button--primary">Send Invitation</button>
             </div>
         </form>
 
         <!-- Bulk Invite Form -->
-        <div id="lab-bulk-invite-form" class="lab-bulk-invite-form" style="display: none; margin-top: 15px; padding: 15px; background-color: #f9f9f9; border-radius: 5px; border: 1px solid #e5e5e5;">
-            <h4 style="margin-top: 0;">Bulk Invite Members</h4>
+        <div id="lab-bulk-invite-form" class="lab-bulk-invite-form bb-card bb-card--padding" style="display: none; margin-top: 15px; padding: 15px; background-color: #f9f9f9; border-radius: 5px; border: 1px solid #e5e5e5;">
+            <h4 class="bb-card__title" style="margin-top: 0;">Bulk Invite Members</h4>
             
-            <div class="lab-bulk-instructions">
+            <div class="lab-bulk-instructions bb-notice bb-notice--info">
                 <p><strong>File Format:</strong></p>
                 <ol style="margin-left: 20px; line-height: 1.5;">
                     <li>Required columns: Email, First Name (optional), Last Name (optional), Role (optional)</li>
@@ -115,21 +115,21 @@ if ( ! $data['is_organizer'] ) {
             <div class="lab-bulk-upload-section" style="margin-top: 15px;">
                 <input type="hidden" name="lab_group_management_nonce" value="<?php echo esc_attr($data['nonce']); ?>" />
                 
-                <div class="lab-form-row" style="margin-bottom: 10px;">
-                    <label for="lab-csv-file">Upload File (Excel, CSV, or tab separated):</label>
-                    <input type="file" id="lab-csv-file" name="csv_file" accept=".xlsx, .xls, .csv, .txt, .tsv" required>
+                <div class="lab-form-row bb-form__row" style="margin-bottom: 10px;">
+                    <label for="lab-csv-file" class="bb-label">Upload File (Excel, CSV, or tab separated):</label>
+                    <input type="file" id="lab-csv-file" name="csv_file" class="bb-input" accept=".xlsx, .xls, .csv, .txt, .tsv" required>
                     <small style="display: block; margin-top: 5px; color: #666;">You can upload Excel files (.xlsx, .xls) or CSV/TSV files</small>
                 </div>
                 
-                <div class="lab-form-row" style="margin-top: 15px;">
-                    <button type="button" id="lab-process-bulk-invite" class="lab-invite-btn">Process Bulk Invite</button>
+                <div class="lab-form-row bb-form__row" style="margin-top: 15px;">
+                    <button type="button" id="lab-process-bulk-invite" class="lab-invite-btn bb-button bb-button--primary">Process Bulk Invite</button>
                 </div>
             </div>
 
             <div id="lab-bulk-preview" style="margin-top: 20px; display: none;">
-                <h4>Preview Invitations</h4>
+                <h4 class="bb-card__title">Preview Invitations</h4>
                 <div id="lab-bulk-preview-content"></div>
-                <button type="button" id="lab-send-bulk-invites" class="lab-invite-btn" style="margin-top: 15px;">Send Invitations</button>
+                <button type="button" id="lab-send-bulk-invites" class="lab-invite-btn bb-button bb-button--primary" style="margin-top: 15px;">Send Invitations</button>
             </div>
         </div>
     </div>
@@ -150,20 +150,20 @@ if ( ! $data['is_organizer'] ) {
         <!-- <h3>Group Members and Invitations</h3> -->
         
         <!-- Email Search Input -->
-        <input type="text" id="lab-email-search" placeholder="Search members and invitations" style="margin-bottom:10px; padding:5px; width:100%;">
+        <input type="text" id="lab-email-search" class="bb-input" placeholder="Search members and invitations" style="margin-bottom:10px; padding:5px; width:100%;">
 
         <!-- Responsive table wrapper -->
-        <div class="lab-table-responsive">
-            <table class="lab-members-table" id="lab-members-table">
+        <div class="lab-table-responsive bb-table-responsive">
+            <table class="lab-members-table bb-table" id="lab-members-table">
             <thead>
                 <tr>
-                    <th>Avatar</th>
-                    <th>Username</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th>Joined Date</th>
-                    <th>Status</th>
-                    <th>Actions</th>
+                    <th class="bb-table__header">Avatar</th>
+                    <th class="bb-table__header">Username</th>
+                    <th class="bb-table__header">Email</th>
+                    <th class="bb-table__header">Role</th>
+                    <th class="bb-table__header">Joined Date</th>
+                    <th class="bb-table__header">Status</th>
+                    <th class="bb-table__header">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -174,8 +174,8 @@ if ( ! $data['is_organizer'] ) {
                 $is_mod = groups_is_user_mod( $member->ID, $data['group_id'] );
                 $role = $is_admin ? 'Organizer' : ( $is_mod ? 'Moderator' : 'Member' );
             ?>
-                <tr data-user-id="<?php echo $member->ID; ?>" class="lab-member-row" style="transition: background-color 0.2s ease; border-bottom: 1px solid #f0f0f0;">
-                    <td style="font-size: 16px; padding: 12px 8px; text-align: center; vertical-align: middle;">
+                <tr data-user-id="<?php echo $member->ID; ?>" class="lab-member-row bb-table__row" style="transition: background-color 0.2s ease; border-bottom: 1px solid #f0f0f0;">
+                    <td class="bb-table__cell" style="font-size: 16px; padding: 12px 8px; text-align: center; vertical-align: middle;">
                         <?php echo bp_core_fetch_avatar( array( 
                             'item_id' => $member->ID, 
                             'type' => 'thumb', 
@@ -183,7 +183,7 @@ if ( ! $data['is_organizer'] ) {
                             'height' => 40 
                         ) ); ?>
                     </td>
-                    <td style="font-size: 15px; padding: 12px 8px; font-weight: 500; color: #2c3e50; vertical-align: middle;">
+                    <td class="bb-table__cell" style="font-size: 15px; padding: 12px 8px; font-weight: 500; color: #2c3e50; vertical-align: middle;">
                         <?php
                             $first_name = get_user_meta($member->ID, 'first_name', true);
                             $last_name = get_user_meta($member->ID, 'last_name', true);
@@ -191,24 +191,24 @@ if ( ! $data['is_organizer'] ) {
                             echo esc_html($full_name ? $full_name : bp_core_get_user_displayname($member->ID));
                         ?>
                     </td>
-                    <td style="font-size: 14px; padding: 12px 8px; color: #7f8c8d; vertical-align: middle; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                    <td class="bb-table__cell" style="font-size: 14px; padding: 12px 8px; color: #7f8c8d; vertical-align: middle; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
                         <?php echo esc_html( $member->user_email ); ?>
                     </td>
-                    <td style="font-size: 14px; padding: 12px 8px; vertical-align: middle;">
-                        <span class="lab-role-badge" style="background: <?php echo $is_admin ? '#8B4513' : ($is_mod ? '#3498db' : '#95a5a6'); ?>; color: white; padding: 3px 10px; border-radius: 15px; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">
+                    <td class="bb-table__cell" style="font-size: 14px; padding: 12px 8px; vertical-align: middle;">
+                        <span class="lab-role-badge bb-badge" style="background: <?php echo $is_admin ? '#8B4513' : ($is_mod ? '#3498db' : '#95a5a6'); ?>; color: white; padding: 3px 10px; border-radius: 15px; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">
                             <?php echo esc_html( $role ); ?>
                         </span>
                     </td>
-                    <td style="font-size: 13px; padding: 12px 8px; color: #95a5a6; vertical-align: middle; white-space: nowrap;">
+                    <td class="bb-table__cell" style="font-size: 13px; padding: 12px 8px; color: #95a5a6; vertical-align: middle; white-space: nowrap;">
                         <?php echo date( 'M j, Y', strtotime( $member->date_modified ) ); ?>
                     </td>
-                    <td style="font-size: 14px; padding: 12px 8px; vertical-align: middle;">
-                        <span class="lab-status-badge lab-status-active" style="background: #8B4513; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">Active</span>
+                    <td class="bb-table__cell" style="font-size: 14px; padding: 12px 8px; vertical-align: middle;">
+                        <span class="lab-status-badge lab-status-active bb-badge bb-badge--success" style="background: #8B4513; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">Active</span>
                     </td>
-                    <td style="font-size: 14px; padding: 12px 8px; vertical-align: middle; text-align: center;">
+                    <td class="bb-table__cell" style="font-size: 14px; padding: 12px 8px; vertical-align: middle; text-align: center;">
                         <?php if ( $member->ID !== $data['current_user_id'] && ! $is_admin ): ?>
                             <a href="javascript:void(0)" 
-                               class="lab-remove-link lab-ajax-remove-member"
+                               class="lab-remove-link lab-ajax-remove-member bb-button bb-button--danger bb-button--small"
                                data-user-id="<?php echo $member->ID; ?>"
                                data-user-name="<?php echo esc_attr( bp_core_get_user_displayname( $member->ID ) ); ?>"
                                style="color: #e74c3c; text-decoration: none; font-weight: 500; padding: 6px 12px; border-radius: 4px; transition: all 0.2s ease; border: 1px solid #e74c3c;"
@@ -237,8 +237,8 @@ if ( ! $data['is_organizer'] ) {
                 $last_name = get_user_meta($user_id, 'last_name', true);
                 $full_name = trim($first_name . ' ' . $last_name);
             ?>
-                <tr data-user-id="<?php echo $user_id; ?>" class="lab-invited-row" style="transition: background-color 0.2s ease; border-bottom: 1px solid #f0f0f0;">
-                    <td style="font-size: 16px; padding: 12px 8px; text-align: center; vertical-align: middle;">
+                <tr data-user-id="<?php echo $user_id; ?>" class="lab-invited-row bb-table__row" style="transition: background-color 0.2s ease; border-bottom: 1px solid #f0f0f0;">
+                    <td class="bb-table__cell" style="font-size: 16px; padding: 12px 8px; text-align: center; vertical-align: middle;">
                         <?php echo bp_core_fetch_avatar( array( 
                             'item_id' => $user_id, 
                             'type' => 'thumb', 
@@ -246,26 +246,26 @@ if ( ! $data['is_organizer'] ) {
                             'height' => 40 
                         ) ); ?>
                     </td>
-                    <td style="font-size: 15px; padding: 12px 8px; font-weight: 500; color: #2c3e50; vertical-align: middle;">
+                    <td class="bb-table__cell" style="font-size: 15px; padding: 12px 8px; font-weight: 500; color: #2c3e50; vertical-align: middle;">
                         <?php echo esc_html($full_name ? $full_name : $user->display_name); ?>
                     </td>
-                    <td style="font-size: 14px; padding: 12px 8px; color: #7f8c8d; vertical-align: middle; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                    <td class="bb-table__cell" style="font-size: 14px; padding: 12px 8px; color: #7f8c8d; vertical-align: middle; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
                         <?php echo esc_html( $user->user_email ); ?>
                     </td>
-                    <td style="font-size: 14px; padding: 12px 8px; vertical-align: middle;">
-                        <span class="lab-role-badge" style="background: #f39c12; color: white; padding: 3px 10px; border-radius: 15px; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">
+                    <td class="bb-table__cell" style="font-size: 14px; padding: 12px 8px; vertical-align: middle;">
+                        <span class="lab-role-badge bb-badge" style="background: #f39c12; color: white; padding: 3px 10px; border-radius: 15px; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">
                             <?php echo isset($invitation['is_organizer']) && $invitation['is_organizer'] ? 'Organizer' : 'Member'; ?> (Invited)
                         </span>
                     </td>
-                    <td style="font-size: 13px; padding: 12px 8px; color: #95a5a6; vertical-align: middle; white-space: nowrap;">
+                    <td class="bb-table__cell" style="font-size: 13px; padding: 12px 8px; color: #95a5a6; vertical-align: middle; white-space: nowrap;">
                         <?php echo date( 'M j, Y', strtotime( $invitation['invited_date'] ) ); ?>
                     </td>
-                    <td style="font-size: 14px; padding: 12px 8px; vertical-align: middle;">
-                        <span class="lab-status-badge lab-status-pending" style="background-color: #f0ad4e; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">Pending</span>
+                    <td class="bb-table__cell" style="font-size: 14px; padding: 12px 8px; vertical-align: middle;">
+                        <span class="lab-status-badge lab-status-pending bb-badge bb-badge--warning" style="background-color: #f0ad4e; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">Pending</span>
                     </td>
-                    <td style="font-size: 14px; padding: 12px 8px; vertical-align: middle; text-align: center;">
+                    <td class="bb-table__cell" style="font-size: 14px; padding: 12px 8px; vertical-align: middle; text-align: center;">
                         <a href="javascript:void(0)" 
-                           class="lab-cancel-link lab-ajax-cancel-invitation"
+                           class="lab-cancel-link lab-ajax-cancel-invitation bb-button bb-button--danger bb-button--small"
                            data-user-id="<?php echo $user_id; ?>"
                            data-group-id="<?php echo $data['group_id']; ?>"
                            style="color: #e74c3c; text-decoration: none; font-weight: 500; padding: 6px 12px; border-radius: 4px; transition: all 0.2s ease; border: 1px solid #e74c3c;"
@@ -280,7 +280,7 @@ if ( ! $data['is_organizer'] ) {
         </table>
         </div> <!-- End responsive wrapper -->
     <?php else: ?>
-        <div class="notice info">
+        <div class="notice info bb-notice bb-notice--info">
             <p style="margin:0px !important; font-weight:600 !important;">No members or pending invitations found in this group.</p>
         </div>
     <?php endif; ?>
