@@ -3,7 +3,6 @@ jQuery(document).ready(function($) {
     const labGroupInvite = lab_group_invite_data || {};
     const ajaxUrl = labGroupInvite.ajax_url;
     const nonce = labGroupInvite.nonce;
-    let currentUserData = null;
     
     // Function to show alerts using SweetAlert2
     function showAlert(message, type) {
@@ -37,7 +36,7 @@ jQuery(document).ready(function($) {
         const originalText = submitBtn.text();
         submitBtn.prop('disabled', true).text('Searching...');
         
-        // First search for the user to check their status
+        // Search for the user to check their status
         $.ajax({
             url: ajaxUrl,
             type: 'POST',
@@ -101,10 +100,6 @@ jQuery(document).ready(function($) {
                         }).then((result) => {
                             if (result.isConfirmed) {
                                 const isOrganizer = result.value;
-                                // const firstName = $('#first-name').length ? $('#first-name').val() : '';
-                                // const lastName = $('#last-name').length ? $('#last-name').val() : '';
-                                
-                                // Send the invitation
                                 sendInviteRequest(userEmail, isOrganizer);
                             }
                         });
@@ -126,51 +121,6 @@ jQuery(document).ready(function($) {
         });
     });
 
-    // Send the invitation after confirmation
-    function sendInviteRequest(email, isOrganizer) {
-        // Show loading state
-        Swal.fire({
-            title: 'Sending invitation...',
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
-        });
-        
-        $.ajax({
-            url: ajaxUrl,
-            method: 'POST',
-            data: {
-                action: 'lab_group_search_user',
-                email: email,
-                group_id: labGroupInvite.group_id,
-                nonce: nonce
-            },
-            success: function(response) {
-                if (response.success) {
-                    currentUserData = response.data;
-                    showUserConfirmation(response.data);
-                } else {
-                    Swal.fire({
-                        title: 'Error!',
-                        text: response.data || 'Error searching for user',
-                        icon: 'error'
-                    });
-                }
-            },
-            error: function() {
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'Network error occurred. Please try again.',
-                    icon: 'error'
-                });
-            }
-        });
-    }
-
-    // We can now remove the old searchUser and showUserConfirmation functions since
-    // they are integrated into the form submission handler
-
     // Send the actual invitation
     function sendInviteRequest(email, isOrganizer) {
         // Show loading state
@@ -187,8 +137,6 @@ jQuery(document).ready(function($) {
             group_id: labGroupInvite.group_id,
             nonce: nonce,
             email: email,
-            // first_name: firstName,
-            // last_name: lastName,
             is_organizer: isOrganizer ? 1 : 0
         };
         
@@ -208,8 +156,6 @@ jQuery(document).ready(function($) {
                     
                     // Clear form fields
                     $('#lab-user-email').val('');
-                    $('#first-name').val('');
-                    $('#last-name').val('');
                     
                     // Refresh the page to show updated member list
                     setTimeout(() => {

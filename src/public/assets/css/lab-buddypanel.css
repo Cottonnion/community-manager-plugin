@@ -526,9 +526,9 @@ aside.buddypanel {
 
 
 /* new styling -- the upper one is kept incase it breaks something*/
-.groups-nav{
-    display: none !important;
-}
+/* .groups-nav{ */
+    /* display: none !important;
+} */
 .buddypanel_logo_display_on{
     background-color: transparent !important;
 }
