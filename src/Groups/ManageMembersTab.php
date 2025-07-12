@@ -48,12 +48,12 @@ class ManageMembersTab {
         }
         
         // Check if this group has the organization group type
-        if ( !$this->has_organization_group_type( $group->id ) ) {
-            return;
-        }
+        // if ( !$this->has_organization_group_type( $group->id ) ) {
+        //     return;
+        // }
         
         if ( $this->is_user_group_organizer( $group->id, get_current_user_id() ) ) {
-                    // Add Manage Members tab
+            // Add Manage Members tab
             bp_core_new_subnav_item(
                 array(
                     'name'              => __( 'Manage Members', 'buddyboss' ),

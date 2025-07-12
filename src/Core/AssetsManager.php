@@ -411,7 +411,7 @@ class AssetsManager {
 			array( 'group_single' ),
 			'lab-group-management.css',
 			array(),
-			'1.7',
+			'1.9',
 			false,
 			'css'
 		);
@@ -421,7 +421,7 @@ class AssetsManager {
 			array( 'group_single' ),
 			'lab-group-management.js',
 			array( 'jquery', 'xlsx-js' ),
-			'2.7',
+			'3.3',
 			true,
 			'js',
 			array(
@@ -437,7 +437,7 @@ class AssetsManager {
 			array( 'group_single' ),
 			'lab-group-invite-member.js',
 			array( 'jquery' ),
-			'2.5',
+			'2.8',
 			true,
 			'js',
 			array(
