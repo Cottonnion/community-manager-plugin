@@ -30,10 +30,10 @@ class Settings {
 	 * @var array
 	 */
 	private array $defaults = [
-		'enable_feature_x' => true,
-		'default_role'     => 'member',
-		'community_label'  => 'Community',
-		'items_per_page'   => 20,
+		'enable_feature_x'   => true,
+		'default_role'       => 'member',
+		'community_label'    => 'Community',
+		'items_per_page'     => 20,
 		'allow_registration' => true,
 	];
 
@@ -58,31 +58,31 @@ class Settings {
 	 */
 	public function get_settings(): array {
 		$options = get_option( $this->option_name, [] );
-		return array_merge( $this->defaults, is_array($options) ? $options : [] );
+		return array_merge( $this->defaults, is_array( $options ) ? $options : [] );
 	}
 
 	/**
 	 * Get a single setting value.
 	 *
 	 * @param string $key
-	 * @param mixed $default
+	 * @param mixed  $default
 	 * @return mixed
 	 */
-	public function get( string $key, $default = null ) {
+	public function get( string $key, $fallback = null ) {
 		$settings = $this->get_settings();
-		return $settings[$key] ?? $default;
+		return $settings[ $key ] ?? $fallback;
 	}
 
 	/**
 	 * Update a single setting value.
 	 *
 	 * @param string $key
-	 * @param mixed $value
+	 * @param mixed  $value
 	 * @return bool
 	 */
 	public function set( string $key, $value ): bool {
-		$settings = $this->get_settings();
-		$settings[$key] = $value;
+		$settings         = $this->get_settings();
+		$settings[ $key ] = $value;
 		return update_option( $this->option_name, $settings );
 	}
 
@@ -99,14 +99,14 @@ class Settings {
 	 * @return array
 	 */
 	public static function get_admin_page_hooks(): array {
-		$settings = new self();
-		$menu_page_name = $settings->get('menu_page_name', 'Labgenz Community');
-		$slug = sanitize_title($menu_page_name);
+		$settings       = new self();
+		$menu_page_name = $settings->get( 'menu_page_name', 'Labgenz Community' );
+		$slug           = sanitize_title( $menu_page_name );
 		// Add dynamic appearance page hook
-		return array(
+		return [
 			$slug . '_page_labgenz-cm-settings',
 			$slug . '_page_labgenz-cm-appearance',
 			'toplevel_page_labgenz-cm',
-		);
+		];
 	}
 }

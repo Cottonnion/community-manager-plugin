@@ -1,0 +1,120 @@
+<?xml version="1.0"?>
+<ruleset name="Labgenz Community Management">
+	<description>PHP_CodeSniffer configuration for Labgenz Community Management Plugin</description>
+
+	<!-- Show progress -->
+	<arg value="p"/>
+	<!-- Show sniff codes in all reports -->
+	<arg value="s"/>
+	<!-- Use colors in output -->
+	<arg name="colors"/>
+	<!-- Show results with severity of 1 or higher -->
+	<arg name="severity" value="1"/>
+	<!-- Enable caching -->
+	<arg name="cache"/>
+	<!-- Parallel processing -->
+	<arg name="parallel" value="20"/>
+
+	<!-- What to scan -->
+	<file>.</file>
+
+	<!-- Exclude patterns -->
+	<exclude-pattern>vendor/*</exclude-pattern>
+	<exclude-pattern>node_modules/*</exclude-pattern>
+	<exclude-pattern>*.min.js</exclude-pattern>
+	<exclude-pattern>*.min.css</exclude-pattern>
+	<exclude-pattern>tests/*</exclude-pattern>
+	<exclude-pattern>*.log</exclude-pattern>
+	<exclude-pattern>docs/*</exclude-pattern>
+	<exclude-pattern>temp.php</exclude-pattern>
+	<exclude-pattern>testing-helpers.php</exclude-pattern>
+
+	<!-- Use WordPress-Extra standard -->
+	<rule ref="WordPress-Extra">
+		<!-- Allow array short syntax -->
+		<exclude name="Universal.Arrays.DisallowShortArraySyntax"/>
+		<!-- Allow short prefixes in hooks -->
+		<exclude name="WordPress.NamingConventions.ValidHookName.UseUnderscores"/>
+		<!-- Allow yoda conditions to be optional -->
+		<exclude name="WordPress.PHP.YodaConditions.NotYoda"/>
+		<!-- Allow file names with underscores -->
+		<exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
+		<!-- Allow missing text domain in some cases -->
+		<exclude name="WordPress.WP.I18n.MissingTranslatorsComment"/>
+		<!-- Allow direct database access for complex queries -->
+		<exclude name="WordPress.DB.DirectDatabaseQuery"/>
+		<!-- Allow prepare without placeholders for static queries -->
+		<exclude name="WordPress.DB.PreparedSQL.NotPrepared"/>
+		<!-- Allow missing text domain for debug/development -->
+		<exclude name="WordPress.WP.I18n.NonSingularStringLiteralDomain"/>
+	</rule>
+
+	<!-- Use WordPress-Docs standard -->
+	<rule ref="WordPress-Docs">
+		<!-- Allow missing documentation for some methods -->
+		<exclude name="Squiz.Commenting.FunctionComment.MissingParamComment"/>
+		<exclude name="Squiz.Commenting.FunctionComment.MissingParamTag"/>
+		<exclude name="Squiz.Commenting.VariableComment.Missing"/>
+		<exclude name="Squiz.Commenting.FileComment.Missing"/>
+		<exclude name="Squiz.Commenting.ClassComment.Missing"/>
+		<exclude name="Generic.Commenting.DocComment.MissingShort"/>
+	</rule>
+
+	<!-- Use PHPCompatibility standard -->
+	<rule ref="PHPCompatibility"/>
+
+	<!-- Set PHP version compatibility -->
+	<config name="testVersion" value="8.0-"/>
+
+	<!-- Text domain -->
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array" value="labgenz-community-management"/>
+		</properties>
+	</rule>
+
+	<!-- Prefix for hooks and functions -->
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array" value="labgenz,LABGENZ,labgenz_cm,LABGENZ_CM"/>
+		</properties>
+	</rule>
+
+	<!-- Enforce PSR-4 autoloading -->
+	<rule ref="PSR1.Classes.ClassDeclaration"/>
+	<rule ref="PSR1.Files.SideEffects"/>
+	<rule ref="PSR1.Methods.CamelCapsMethodName"/>
+
+	<!-- Additional rules for better code quality -->
+	<rule ref="Generic.Arrays.DisallowLongArraySyntax"/>
+	<rule ref="Generic.PHP.ForbiddenFunctions"/>
+	<rule ref="Generic.Functions.CallTimePassByReference"/>
+	<rule ref="Generic.Formatting.DisallowMultipleStatements"/>
+	<rule ref="Generic.CodeAnalysis.UnusedFunctionParameter"/>
+	<rule ref="Generic.CodeAnalysis.EmptyStatement"/>
+
+	<!-- Exclude some strict rules for WordPress development -->
+	<rule ref="WordPress.PHP.StrictInArray.MissingTrueStrict">
+		<exclude-pattern>*</exclude-pattern>
+	</rule>
+
+	<!-- Allow WordPress specific functions -->
+	<rule ref="WordPress.PHP.DiscouragedPHPFunctions">
+		<properties>
+			<property name="exclude" type="array" value="serialize,unserialize"/>
+		</properties>
+	</rule>
+
+	<!-- Custom severity levels -->
+	<rule ref="WordPress.Security.EscapeOutput">
+		<type>error</type>
+	</rule>
+
+	<rule ref="WordPress.Security.ValidatedSanitizedInput">
+		<type>error</type>
+	</rule>
+
+	<rule ref="WordPress.Security.NonceVerification">
+		<type>error</type>
+	</rule>
+</ruleset>

@@ -1,0 +1,766 @@
+/**
+ * Organization Access Admin Styles
+ */
+
+/* General Admin Styles */
+.labgenz-org-access-admin {
+    margin: 20px 0;
+}
+
+/* Table Styles */
+.wp-list-table .column-user {
+    width: 20%;
+}
+
+.wp-list-table .column-organization {
+    width: 25%;
+}
+
+.wp-list-table .column-type {
+    width: 15%;
+}
+
+.wp-list-table .column-status {
+    width: 10%;
+}
+
+.wp-list-table .column-date {
+    width: 15%;
+}
+
+.wp-list-table .column-actions {
+    width: 15%;
+}
+
+.wp-list-table .column-user small,
+.wp-list-table .column-organization small {
+    color: #666;
+    font-size: 12px;
+}
+
+/* Groups and Courses Column Styles */
+.column-groups,
+.column-courses {
+    width: 200px;
+    max-width: 200px;
+}
+
+.group-item,
+.course-item {
+    margin-bottom: 5px;
+    padding: 3px 6px;
+    background: #f8f9fa;
+    border-radius: 3px;
+    font-size: 12px;
+    line-height: 1.3;
+}
+
+.group-item.public {
+    background: #e8f5e8;
+    border-left: 3px solid #28a745;
+}
+
+.group-item.private {
+    background: #fff3cd;
+    border-left: 3px solid #ffc107;
+}
+
+.group-item a,
+.course-item a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.group-item a:hover,
+.course-item a:hover {
+    text-decoration: underline;
+}
+
+.group-name,
+.course-title {
+    display: block;
+    font-weight: 600;
+    color: #23282d;
+    margin-bottom: 2px;
+}
+
+.group-members,
+.course-progress {
+    display: block;
+    color: #666;
+    font-size: 11px;
+}
+
+.more-groups,
+.more-courses {
+    font-size: 11px;
+    color: #666;
+    font-style: italic;
+    margin-top: 5px;
+}
+
+.no-data {
+    color: #999;
+    font-style: italic;
+    font-size: 12px;
+}
+
+/* Status Badge Styles */
+.status-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-badge.status-pending {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.status-badge.status-approved {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.status-badge.status-rejected {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Button Styles */
+.button-small {
+    padding: 4px 8px;
+    font-size: 12px;
+    line-height: 1.4;
+    margin-right: 5px;
+}
+
+.approve-request {
+    background: #0073aa;
+    border-color: #0073aa;
+    color: white;
+}
+
+.approve-request:hover {
+    background: #005a87;
+    border-color: #005a87;
+}
+
+.reject-request {
+    background: #d63638;
+    border-color: #d63638;
+    color: white;
+}
+
+.reject-request:hover {
+    background: #b32d2e;
+    border-color: #b32d2e;
+}
+
+/* Tab Styles */
+.nav-tab-wrapper {
+    margin-bottom: 20px;
+}
+
+.nav-tab .count {
+    background: #0073aa;
+    color: white;
+    border-radius: 10px;
+    padding: 2px 6px;
+    font-size: 11px;
+    margin-left: 5px;
+}
+
+.nav-tab-active .count {
+    background: #005a87;
+}
+
+/* Modal Styles */
+.labgenz-modal {
+    display: none;
+    position: fixed;
+    z-index: 100000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.labgenz-modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 0;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+    max-height: 80vh; /* Limit height to 80% of viewport height */
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Prevent content from overflowing */
+}
+
+.labgenz-modal-header {
+    padding: 20px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0; /* Prevent header from shrinking */
+}
+
+.labgenz-modal-header h2 {
+    margin: 0;
+    font-size: 18px;
+    color: #333;
+}
+
+.labgenz-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #999;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.labgenz-modal-close:hover {
+    background: #f8f9fa;
+    color: #333;
+}
+
+.labgenz-modal-body {
+    padding: 20px;
+    overflow-y: auto; /* Enable vertical scrolling */
+    flex: 1; /* Take up remaining space */
+    max-height: calc(80vh - 80px); /* Account for header height */
+}
+
+/* Add a subtle fade at bottom when scrollable */
+.labgenz-modal-body.scrollable::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 20px;
+    background: linear-gradient(transparent, rgba(255,255,255,0.9));
+    pointer-events: none;
+}
+
+/* Add some padding to the last element in modal body */
+.labgenz-modal-body > *:last-child {
+    margin-bottom: 10px;
+}
+
+/* Custom scrollbar styling for modal */
+.labgenz-modal-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.labgenz-modal-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.labgenz-modal-body::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.labgenz-modal-body::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Scroll shadow indicator */
+.labgenz-modal-body {
+    background: 
+        /* Shadow covers */
+        linear-gradient(white 30%, rgba(255,255,255,0)),
+        linear-gradient(rgba(255,255,255,0), white 70%),
+        /* Shadows */
+        radial-gradient(50% 0, farthest-side, rgba(0,0,0,.2), rgba(0,0,0,0)),
+        radial-gradient(50% 100%, farthest-side, rgba(0,0,0,.2), rgba(0,0,0,0));
+    background-repeat: no-repeat;
+    background-color: white;
+    background-size: 100% 40px, 100% 40px, 100% 14px, 100% 14px;
+    background-attachment: local, local, scroll, scroll;
+}
+
+/* Request Details Styles */
+.request-details {
+    max-width: 600px;
+    margin: 0 auto;
+    font-size: 14px;
+}
+
+.request-details .detail-section {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 5px;
+    border-left: 4px solid #0073aa;
+}
+
+.request-details .detail-section:last-child {
+    border-bottom: none;
+}
+
+.request-details .detail-section h4 {
+    margin: 0 0 10px 0;
+    color: #23282d;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.request-details .detail-section p {
+    margin: 5px 0;
+    color: #666;
+    line-height: 1.5;
+}
+
+.request-details .detail-section strong {
+    color: #23282d;
+    font-weight: 600;
+}
+
+.request-details .detail-section a {
+    color: #0073aa;
+    text-decoration: none;
+}
+
+.request-details .detail-section a:hover {
+    text-decoration: underline;
+}
+
+/* Action Form Styles */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #333;
+}
+
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    resize: vertical;
+    min-height: 80px;
+}
+
+.form-group textarea:focus {
+    outline: none;
+    border-color: #0073aa;
+    box-shadow: 0 0 0 2px rgba(0, 115, 170, 0.1);
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+/* Bulk Actions */
+.bulkactions {
+    margin-bottom: 10px;
+}
+
+.bulkactions select {
+    margin-right: 10px;
+}
+
+/* Loading States */
+.button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Notice Styles */
+.notice {
+    margin: 20px 0;
+}
+
+.notice p {
+    margin: 10px 0;
+}
+
+.notice-dismiss {
+    float: right;
+    padding: 9px;
+    margin: -9px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    color: #666;
+}
+
+.notice-dismiss:hover {
+    color: #d63638;
+}
+
+/* User Profile Modal Styles */
+.user-profile-link {
+    color: #0073aa;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.user-profile-link:hover {
+    text-decoration: underline;
+}
+
+.user-profile-modal {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.user-profile-title {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.user-profile-header {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #e0e0e0;
+    margin-bottom: 20px;
+}
+
+.user-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    margin-right: 15px;
+    border: 2px solid #e0e0e0;
+}
+
+.user-info h3 {
+    margin: 0 0 5px 0;
+    color: #23282d;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.user-info p {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.user-profile-content {
+    padding: 0 20px 20px 20px;
+}
+
+.user-profile-links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.profile-link-item {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.profile-link-item:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.profile-link {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    text-decoration: none;
+    color: #23282d;
+    transition: background-color 0.3s ease;
+}
+
+.profile-link:hover {
+    background-color: #f8f9fa;
+    text-decoration: none;
+    color: #23282d;
+}
+
+.profile-link .dashicons {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    margin-right: 15px;
+    color: #0073aa;
+    flex-shrink: 0;
+}
+
+.profile-link-content {
+    flex: 1;
+}
+
+.profile-link-content strong {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #23282d;
+    margin-bottom: 3px;
+}
+
+.profile-link-content p {
+    font-size: 12px;
+    color: #666;
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* SweetAlert2 Custom Styles for WordPress Admin */
+.swal2-popup {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.swal2-title {
+    font-size: 1.5em;
+    font-weight: 600;
+    color: #23282d;
+}
+
+.swal2-content {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.6;
+}
+
+.swal2-confirm {
+    font-size: 14px;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 4px;
+}
+
+.swal2-cancel {
+    font-size: 14px;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 4px;
+}
+
+.swal2-timer-progress-bar {
+    background: #0073aa;
+}
+
+/* Loading spinner styles */
+.swal2-loading .swal2-icon {
+    border-color: #0073aa;
+}
+
+.swal2-loading .swal2-icon::before {
+    border-color: #0073aa transparent transparent;
+}
+
+/* Custom styles for bulk action confirmations */
+.swal2-popup.swal2-modal.swal2-show {
+    animation: swal2-show 0.3s ease-out;
+}
+
+@keyframes swal2-show {
+    0% {
+        transform: scale(0.7);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .labgenz-modal-content {
+        width: 95%;
+        margin: 2% auto;
+        max-height: 90vh; /* Increase height on mobile */
+    }
+    
+    .labgenz-modal-header,
+    .labgenz-modal-body {
+        padding: 15px;
+    }
+    
+    .labgenz-modal-body {
+        max-height: calc(90vh - 70px); /* Adjust for smaller header on mobile */
+    }
+    
+    .wp-list-table .column-actions {
+        width: 20%;
+    }
+    
+    .button-small {
+        display: block;
+        width: 100%;
+        margin: 2px 0;
+        text-align: center;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .form-actions .button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
+
+@media (max-width: 600px) {
+    .user-profile-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .user-avatar {
+        margin: 0 0 10px 0;
+    }
+    
+    .profile-link {
+        padding: 12px;
+    }
+    
+    .profile-link .dashicons {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        margin-right: 12px;
+    }
+}
+
+/* Animation for row updates */
+@keyframes highlight {
+    0% {
+        background-color: #fff3cd;
+    }
+    100% {
+        background-color: transparent;
+    }
+}
+
+.wp-list-table tr.updated {
+    animation: highlight 2s ease-out;
+}
+
+/* Empty state */
+.notice-info {
+    background: #f0f6fc;
+    border-left: 4px solid #0073aa;
+    padding: 15px;
+    margin: 20px 0;
+}
+
+.notice-info p {
+    margin: 0;
+    color: #333;
+}
+
+/* Groups and Courses Detail Styles in Modal */
+.group-detail-item,
+.course-detail-item {
+    margin-bottom: 10px;
+    padding: 8px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    border-left: 3px solid #0073aa;
+}
+
+.group-detail-item strong,
+.course-detail-item strong {
+    color: #23282d;
+    font-size: 14px;
+}
+
+.group-detail-item small,
+.course-detail-item small {
+    color: #666;
+    font-size: 12px;
+}
+
+.group-detail-item a,
+.course-detail-item a {
+    color: #0073aa;
+    text-decoration: none;
+    font-size: 12px;
+}
+
+.group-detail-item a:hover,
+.course-detail-item a:hover {
+    text-decoration: underline;
+}
+
+/* User Role Styles in Groups Modal */
+.user-role {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    margin-left: 8px;
+}
+
+.user-role.role-organizer {
+    background-color: #dc3545;
+    color: white;
+}
+
+.user-role.role-moderator {
+    background-color: #fd7e14;
+    color: white;
+}
+
+.user-role.role-member {
+    background-color: #28a745;
+    color: white;
+}
+
+.group-modal-item .group-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.group-modal-item .group-header strong {
+    flex-grow: 1;
+}
+
+.group-modal-item .group-status {
+    margin-right: 8px;
+    color: #666;
+    font-size: 12px;
+}

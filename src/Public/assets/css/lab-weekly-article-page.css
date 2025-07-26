@@ -1,0 +1,248 @@
+.weekly-article-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.weekly-article-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.weekly-article-title {
+    color: #2c3e50;
+    font-size: 2.2rem;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.weekly-article-meta {
+    color: #7f8c8d;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.weekly-article-content-wrapper {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 30px;
+    align-items: start;
+}
+
+.weekly-article-content {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    padding: 25px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.weekly-article-content:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+}
+
+/* Custom Article Styles */
+.weekly-article-custom {
+    max-width: 100%;
+}
+
+.article-featured-image {
+    margin-bottom: 25px;
+}
+
+.article-featured-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.article-categories {
+    margin-bottom: 15px;
+}
+
+.category-badge {
+    display: inline-block;
+    background: #3498db;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-right: 8px;
+    margin-bottom: 8px;
+}
+
+.article-title {
+    color: #2c3e50;
+    font-size: 2rem;
+    margin-bottom: 20px;
+    line-height: 1.3;
+}
+
+.article-meta {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.author-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.author-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.author-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.article-author {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 3px;
+}
+
+.article-date {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+}
+
+.article-read-time {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+    align-self: center;
+}
+
+.article-excerpt {
+    color: #34495e;
+    line-height: 1.7;
+    font-size: 1.05rem;
+}
+
+.article-excerpt p {
+    margin-bottom: 20px;
+}
+
+.read-more-link {
+    display: inline-block;
+    background: #3498db;
+    color: white;
+    padding: 12px 24px;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.read-more-link:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+
+.weekly-article-upsell {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    padding: 30px;
+    color: white;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 20px;
+}
+
+.upsell-content h3 {
+    margin-top: 0;
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    color: white;
+}
+
+.upsell-content p {
+    margin-bottom: 15px;
+    line-height: 1.6;
+}
+
+.upsell-content ul {
+    padding-left: 20px;
+    margin-bottom: 20px;
+}
+
+.upsell-content li {
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.upsell-button {
+    background: #fff;
+    color: #667eea;
+    border: none;
+    padding: 14px 28px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    margin: 15px 0;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.upsell-button:hover {
+    background: #f8f9fa;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+}
+
+.small-text {
+    font-size: 0.85rem;
+    opacity: 0.9;
+    text-align: center;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .weekly-article-content-wrapper {
+        grid-template-columns: 1fr;
+    }
+    
+    .weekly-article-upsell {
+        position: static;
+    }
+    
+    .weekly-article-container {
+        padding: 15px;
+    }
+    
+    .weekly-article-title {
+        font-size: 1.8rem;
+    }
+    
+    .article-title {
+        font-size: 1.6rem;
+    }
+    
+    .article-meta {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .author-info {
+        width: 100%;
+    }
+}

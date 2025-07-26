@@ -1,0 +1,338 @@
+/**
+ * Organization Access Frontend Styles
+ */
+
+/* Header Button Styles */
+.labgenz-org-access-button {
+	background: #0073aa;
+	color: white;
+	border: none;
+	padding: 8px 16px;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 14px;
+	font-weight: 500;
+	transition: all 0.3s ease;
+	margin-left: 10px;
+	text-decoration: none;
+	display: inline-block;
+}
+
+.labgenz-org-access-button:hover {
+	background: #005a87;
+	transform: translateY(-1px);
+	color: white;
+	text-decoration: none;
+}
+
+.labgenz-org-access-button:disabled {
+	background: #ccc;
+	cursor: not-allowed;
+	transform: none;
+}
+
+.labgenz-org-access-button.status-pending {
+	background: #f0ad4e;
+}
+
+.labgenz-org-access-button.status-approved {
+	background: #5cb85c;
+}
+
+.labgenz-org-access-button.status-rejected {
+	background: #d9534f;
+}
+
+/* Menu Item Styles */
+#menu-item-org-access {
+	position: relative;
+}
+
+/* Make the button look like a regular menu item */
+#menu-item-org-access .labgenz-org-access-button {
+	padding: 0;
+	margin: 0;
+	border-radius: 0;
+	font-size: inherit;
+	font-weight: inherit;
+	line-height: inherit;
+	display: block;
+	width: 100%;
+	text-align: left;
+	background: transparent !important;
+	color: inherit !important;
+	border: none;
+	transition: all 0.3s ease;
+	text-decoration: none;
+	box-shadow: none;
+}
+
+#menu-item-org-access .labgenz-org-access-button:hover {
+	background: transparent !important;
+	color: inherit !important;
+	transform: none;
+	text-decoration: none;
+}
+
+#menu-item-org-access .labgenz-org-access-button span {
+	display: inline-block;
+}
+
+/* Status indicators with colors */
+#menu-item-org-access .labgenz-org-access-button small {
+	font-size: 10px;
+	font-weight: normal;
+	margin-left: 5px;
+}
+
+/* Shortcode button wrapper to match menu style */
+.labgenz-org-access-status .menu-item-style-wrapper {
+	display: inline-block;
+}
+
+.labgenz-org-access-status .menu-item-style-wrapper .labgenz-org-access-button {
+	display: inline-block;
+	padding: 10px 15px;
+	background: #0073aa;
+	color: white;
+	text-decoration: none;
+	border-radius: 4px;
+	transition: all 0.3s ease;
+	border: none;
+	cursor: pointer;
+	font-size: 14px;
+	font-weight: 500;
+}
+
+.labgenz-org-access-status .menu-item-style-wrapper .labgenz-org-access-button:hover {
+	background: #005a87;
+	color: white;
+	text-decoration: none;
+	transform: translateY(-1px);
+}
+
+/* Floating Button (fallback) */
+#labgenz-org-access-floating {
+	position: fixed;
+	top: 50%;
+	right: 20px;
+	z-index: 9999;
+	transform: translateY(-50%);
+}
+
+#labgenz-org-access-floating .labgenz-org-access-button {
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	padding: 12px 20px;
+	font-size: 16px;
+}
+
+/* SweetAlert Modal Customization */
+.labgenz-org-access-modal .swal2-popup {
+	padding: 0;
+}
+
+.labgenz-org-access-popup {
+	border-radius: 8px;
+}
+
+/* Form Styles */
+.labgenz-org-access-form {
+	padding: 20px;
+	text-align: left;
+}
+
+.labgenz-org-access-form .form-group {
+	margin-bottom: 20px;
+}
+
+.labgenz-org-access-form label {
+	display: block;
+	margin-bottom: 5px;
+	font-weight: 600;
+	color: #333;
+}
+
+.labgenz-org-access-form label.required .required-asterisk {
+	color: #d9534f;
+	margin-left: 2px;
+}
+
+.labgenz-org-access-form input[type="text"],
+.labgenz-org-access-form input[type="email"],
+.labgenz-org-access-form input[type="url"],
+.labgenz-org-access-form input[type="tel"],
+.labgenz-org-access-form select,
+.labgenz-org-access-form textarea {
+	width: 100%;
+	padding: 10px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	font-size: 14px;
+	transition: border-color 0.3s ease;
+}
+
+.labgenz-org-access-form input:focus,
+.labgenz-org-access-form select:focus,
+.labgenz-org-access-form textarea:focus {
+	outline: none;
+	border-color: #0073aa;
+	box-shadow: 0 0 0 2px rgba(0, 115, 170, 0.1);
+}
+
+.labgenz-org-access-form input.error,
+.labgenz-org-access-form select.error,
+.labgenz-org-access-form textarea.error {
+	border-color: #d9534f;
+	box-shadow: 0 0 0 2px rgba(217, 83, 79, 0.1);
+}
+
+.labgenz-org-access-form textarea {
+	resize: vertical;
+	min-height: 80px;
+}
+
+.labgenz-org-access-form select {
+	background: white;
+	cursor: pointer;
+}
+
+/* Form Actions */
+.labgenz-org-access-form .form-actions {
+	display: flex;
+	gap: 10px;
+	justify-content: flex-end;
+	margin-top: 30px;
+	padding-top: 20px;
+	border-top: 1px solid #eee;
+}
+
+.labgenz-org-access-form .submit-button {
+	background: #0073aa;
+	color: white;
+	border: none;
+	padding: 12px 24px;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 14px;
+	font-weight: 500;
+	transition: background 0.3s ease;
+}
+
+.labgenz-org-access-form .submit-button:hover {
+	background: #005a87;
+}
+
+.labgenz-org-access-form .submit-button:disabled {
+	background: #ccc;
+	cursor: not-allowed;
+}
+
+.labgenz-org-access-form .cancel-button {
+	background: #f8f9fa;
+	color: #6c757d;
+	border: 1px solid #dee2e6;
+	padding: 12px 24px;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 14px;
+	font-weight: 500;
+	transition: all 0.3s ease;
+}
+
+.labgenz-org-access-form .cancel-button:hover {
+	background: #e9ecef;
+	border-color: #adb5bd;
+}
+
+/* Status Display Styles */
+.labgenz-org-access-status {
+	background: #f8f9fa;
+	padding: 20px;
+	border-radius: 8px;
+	margin: 20px 0;
+}
+
+.labgenz-org-access-status .request-status {
+	margin-bottom: 20px;
+}
+
+.labgenz-org-access-status .request-status h4 {
+	margin-bottom: 10px;
+	color: #333;
+}
+
+.labgenz-org-access-status .status-badge {
+	display: inline-block;
+	padding: 4px 12px;
+	border-radius: 20px;
+	font-size: 12px;
+	font-weight: 600;
+	text-transform: uppercase;
+	margin-bottom: 10px;
+}
+
+.labgenz-org-access-status .status-badge.status-pending {
+	background: #fff3cd;
+	color: #856404;
+	border: 1px solid #ffeaa7;
+}
+
+.labgenz-org-access-status .status-badge.status-approved {
+	background: #d4edda;
+	color: #155724;
+	border: 1px solid #c3e6cb;
+}
+
+.labgenz-org-access-status .status-badge.status-rejected {
+	background: #f8d7da;
+	color: #721c24;
+	border: 1px solid #f5c6cb;
+}
+
+.labgenz-org-access-status p {
+	margin: 5px 0;
+	color: #666;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+	.labgenz-org-access-button {
+		padding: 10px 14px;
+		font-size: 12px;
+	}
+
+	#labgenz-org-access-floating {
+		right: 10px;
+	}
+
+	.labgenz-org-access-form {
+		padding: 15px;
+	}
+
+	.labgenz-org-access-form .form-actions {
+		flex-direction: column;
+	}
+
+	.labgenz-org-access-form .submit-button,
+	.labgenz-org-access-form .cancel-button {
+		width: 100%;
+		margin-bottom: 10px;
+	}
+}
+
+/* Animation for status changes */
+@keyframes pulse {
+	0% {
+		transform: scale(1);
+	}
+	50% {
+		transform: scale(1.05);
+	}
+	100% {
+		transform: scale(1);
+	}
+}
+
+.labgenz-org-access-button.status-pending {
+	animation: pulse 2s infinite;
+}

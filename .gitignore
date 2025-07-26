@@ -10,9 +10,11 @@ Thumbs.db
 # Ignore logs and environment files
 *.log
 .env
+# Ignore temporary files
+/src/stubs-buddypress.php
 # Ignore WordPress specific files
 wp-content/uploads/
-wp-content/cache/
+wp-content/cache/st
 # Ignore build artifacts
 dist/
 build/

@@ -288,11 +288,11 @@
             this.clearMessages();
             // AJAX request to save settings
             $.ajax({
-                url: typeof labgenz_appearance_admin_data !== 'undefined' ? labgenz_appearance_admin_data.ajaxurl : ajaxurl,
+                url: labgenz_appearance_admin_data.ajaxurl,
                 type: 'POST',
                 data: {
                     action: 'labgenz_save_appearance_settings',
-                    nonce: typeof labgenz_appearance_admin_data !== 'undefined' ? labgenz_appearance_admin_data.nonce : '',
+                    nonce: labgenz_appearance_admin_data.nonce,
                     settings: settings
                 },
                 success: (response) => {

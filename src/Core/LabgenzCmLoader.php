@@ -28,14 +28,14 @@ class LabgenzCmLoader {
 	 *
 	 * @var array<string, object>
 	 */
-	private array $container = array();
+	private array $container = [];
 
 	/**
 	 * Plugin components that need initialization
 	 *
 	 * @var array<string, class-string>
 	 */
-	private array $components = array();
+	private array $components = [];
 
 	/**
 	 * Get class instance | singleton pattern
@@ -63,36 +63,37 @@ class LabgenzCmLoader {
 	 * @return void
 	 */
 	private function define_components(): void {
-		$this->components = array(
-			'core.assets'         => \LABGENZ_CM\Core\AssetsManager::class,
-			'core.menu'           => \LABGENZ_CM\Core\MenuManager::class,
-			'core.settings'       => \LABGENZ_CM\Core\Settings::class,
-			'core.ajax'           => \LABGENZ_CM\Core\AjaxHandler::class,
-			'core.core'           => \LABGENZ_CM\Core\AppearanceSettingsHandler::class,
-			'core.admin_hooks'    => \LABGENZ_CM\Admin\AdminHooks::class,
-			'core.invite_handler' => \LABGENZ_CM\Core\InviteHandler::class,
-			'core.remove_handler' => \LABGENZ_CM\Core\RemoveHandler::class,
-		);
-		// Manually require classes if not loaded (for non-PSR-4 autoloaded files)
-		// foreach ( $this->components as $class ) {
-		//  if ( ! class_exists( $class ) ) {
-		//      // PSR-4: convert namespace to path
-		//      $relative_path = str_replace( '\\', '/', str_replace( 'LABGENZ_CM\\', '', $class ) ) . '.php';
-		//      $base_dirs     = array(
-		//          __DIR__ . '/../', // for Core, Admin, etc.
-		//          __DIR__ . '/../../admin/', // fallback for admin
-		//      );
-		//      $found         = false;
-		//      foreach ( $base_dirs as $base ) {
-		//          $full_path = $base . $relative_path;
-		//          if ( file_exists( $full_path ) ) {
-		//              require_once $full_path;
-		//              $found = true;
-		//              break;
-		//          }
-		//      }
-		//  }
-		// }
+		$this->components = [
+			'core.assets'                   => \LABGENZ_CM\Core\AssetsManager::class,
+			'core.menu'                     => \LABGENZ_CM\Core\MenuManager::class,
+			'core.settings'                 => \LABGENZ_CM\Core\Settings::class,
+			'core.ajax'                     => \LABGENZ_CM\Core\AjaxHandler::class,
+			'core.admin_hooks'              => \LABGENZ_CM\Admin\AdminHooks::class,
+			'core.invite_handler'           => \LABGENZ_CM\Core\InviteHandler::class,
+			'core.remove_handler'           => \LABGENZ_CM\Core\RemoveHandler::class,
+			'core.profile_location_handler' => \LABGENZ_CM\Core\ProfileLocationHandler::class,
+			'core.organization_access'      => \LABGENZ_CM\Core\OrganizationAccess::class,
+			'core.page_access_controller'   => \LABGENZ_CM\Core\PageAccessController::class,
+
+			'admin.organization_access'     => \LABGENZ_CM\Admin\OrganizationAccessAdmin::class,
+			'admin.weekly_articles_admin'   => \LABGENZ_CM\Admin\WeeklyArticleAdmin::class,
+
+			'public.organization_access'    => \LABGENZ_CM\Public\OrganizationAccessPublic::class,
+
+			'xprofile.field_type_handler'   => \LABGENZ_CM\XProfile\XProfileFieldTypeHandler::class,
+
+			'groups.create_handler'         => \LABGENZ_CM\Groups\GroupCreationHandler::class,
+			'groups.member_handler'         => \LABGENZ_CM\Groups\GroupMembersHandler::class,
+			'groups.manage_members_tab'     => \LABGENZ_CM\Groups\ManageMembersTab::class,
+			'groups.members_map_handler'    => \LABGENZ_CM\Groups\MembersMapHandler::class,
+
+			'articles.handler'              => \LABGENZ_CM\Articles\ArticlesHandler::class,
+			'articles.weekly_handler'       => \LABGENZ_CM\Articles\WeeklyArticleHandler::class,
+
+			'gamipress.header_integration'  => \LABGENZ_CM\Gamipress\GamiPressHeaderIntegration::class,
+
+			'subscription.handler'          => \LABGENZ_CM\Subscriptions\SubscriptionHandler::class,
+		];
 	}
 
 	/**
@@ -102,14 +103,14 @@ class LabgenzCmLoader {
 	 */
 	private function init_hooks(): void {
 		// Plugin activation/deactivation
-		register_activation_hook( LABGENZ_CM_PATH . 'labgenz-community-management.php', array( self::class, 'activate' ) );
-		register_deactivation_hook( LABGENZ_CM_PATH . 'labgenz-community-management.php', array( self::class, 'deactivate' ) );
+		register_activation_hook( LABGENZ_CM_PATH . 'labgenz-community-management.php', [ self::class, 'activate' ] );
+		register_deactivation_hook( LABGENZ_CM_PATH . 'labgenz-community-management.php', [ self::class, 'deactivate' ] );
 
 		// Initialize components after plugins loaded
-		add_action( 'plugins_loaded', array( $this, 'init_components' ), 20 );
+		add_action( 'plugins_loaded', [ $this, 'init_components' ], 20 );
 
 		// Load textdomain
-		add_action( 'init', array( $this, 'load_textdomain' ) );
+		add_action( 'init', [ $this, 'load_textdomain' ] );
 	}
 
 	/**
@@ -124,6 +125,12 @@ class LabgenzCmLoader {
 					$this->container[ $key ] = $class::get_instance();
 				} else {
 					$this->container[ $key ] = new $class();
+				}
+
+				// Call init method if it exists
+				if ( method_exists( $this->container[ $key ], 'init' ) ) {
+					$this->container[ $key ]->init();
+					error_log( 'LabgenzCmLoader: Called init() on component: ' . $key );
 				}
 			}
 		}
@@ -194,6 +201,6 @@ class LabgenzCmLoader {
 	 * Run the plugin (for compatibility with main file)
 	 */
 	public function run(): void {
-		// Optionally, trigger component initialization here
+		// TODO: trigger component initialization here
 	}
 }

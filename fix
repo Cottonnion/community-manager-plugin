@@ -1,0 +1,4 @@
+#!/bin/bash
+# Quick PHPCS fix script - Usage: ./fix [file]
+cd "$(dirname "$0")"
+./phpcs-fix.sh "${1:-src/}"

@@ -25,11 +25,11 @@ class AjaxHandler {
 					try {
 						call_user_func( $callback );
 					} catch ( \Throwable $e ) {
-						wp_send_json_error( array( 'message' => $e->getMessage() ), 500 );
+						wp_send_json_error( [ 'message' => $e->getMessage() ], 500 );
 					}
 				}
 			);
-			add_action( "wp_ajax_nopriv_{$action}", array( $this, 'handle_non_logged_user_requests' ) );
+			add_action( "wp_ajax_nopriv_{$action}", [ $this, 'handle_non_logged_user_requests' ] );
 		}
 	}
 
@@ -37,7 +37,7 @@ class AjaxHandler {
 	 * Handles requests from non-authenticated users.
 	 */
 	public function handle_non_logged_user_requests(): void {
-		wp_send_json_error( array( 'message' => "You're not allowed to do that" ), 401 );
+		wp_send_json_error( [ 'message' => "You're not allowed to do that" ], 401 );
 	}
 
 	/**
@@ -54,10 +54,10 @@ class AjaxHandler {
 			wp_send_json_success( $response );
 		} catch ( \Exception $e ) {
 			wp_send_json_error(
-				array(
+				[
 					'message' => $e->getMessage(),
 					'code'    => $e->getCode(),
-				),
+				],
 				403
 			);
 		}
@@ -78,7 +78,7 @@ class AjaxHandler {
 	}
 
 	private function sanitize_request_data( array $data ): array {
-		$sanitized = array();
+		$sanitized = [];
 		foreach ( $data as $key => $value ) {
 			if ( is_array( $value ) ) {
 				$sanitized[ $key ] = $this->sanitize_request_data( $value );
