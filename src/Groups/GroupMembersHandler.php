@@ -362,7 +362,10 @@ class GroupMembersHandler
     }
 
     /**
-     * LearnDash Integration
+     * Sync LearnDash leadership roles
+     * 
+     * @param int $user_id The user ID
+     * @param int $bb_group_id The BuddyBoss group ID
      */
     private function sync_learndash_leadership($user_id, $bb_group_id)
     {
@@ -383,7 +386,10 @@ class GroupMembersHandler
     }
 
     /**
-     * Utility Methods
+     * Generate a unique username based on email
+     *
+     * @param string $email The user's email address
+     * @return string A unique username
      */
     public function generate_unique_username($email)
     {
@@ -399,6 +405,14 @@ class GroupMembersHandler
         return $username;
     }
 
+    /**
+     * Send group invitation email
+     *
+     * @param WP_User $user The user to invite
+     * @param int $group_id The group ID
+     * @param bool $is_organizer Whether the user is an organizer
+     * @param string $token The invitation token
+     */
     public function send_group_invitation_email($user, $group_id, $is_organizer, $token)
     {
         $group = groups_get_group($group_id);
