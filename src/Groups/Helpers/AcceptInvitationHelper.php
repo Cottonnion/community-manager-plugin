@@ -4,6 +4,13 @@ namespace LABGENZ_CM\Groups\Helpers;
 use LABGENZ_CM\Groups\GroupMembersHandler;
 
 class AcceptInvitationHelper {
+
+    /**
+     * Accepts a group invitation for the current user.
+     *
+     * @param array $post_data The POST data containing group ID and nonce.
+     * @return void
+     */
     public function accept_invitation($post_data) {
         if ( ! wp_verify_nonce( $post_data['nonce'], 'lab_group_management_nonce' ) ) {
             wp_send_json_error( 'Security check failed' );

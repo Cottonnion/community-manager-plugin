@@ -3,7 +3,11 @@ namespace LABGENZ_CM\Groups\Helpers;
 
 class SearchUserHelper {
 
-
+	/**
+	 * Searches for a user by email and checks their group membership status.
+	 * @param array $post_data The POST data containing email and group ID.
+	 * @return void
+	 */
     public function search_user($post_data) {
 		if ( ! wp_verify_nonce( $post_data['nonce'], 'lab_group_management_nonce' ) ) {
 			wp_send_json_error( 'Security check failed' );
