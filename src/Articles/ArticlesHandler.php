@@ -8,7 +8,7 @@ namespace LABGENZ_CM\Articles;
 class ArticlesHandler {
 	private const POSTS_PER_PAGE = 20;
 	private const NONCE_ACTION   = 'mlmmc_search_nonce';
-	private const POST_TYPE      = 'mlmmc_artiicle';
+	public  const POST_TYPE      = 'mlmmc_artiicle';
 	private const TEMPLATE_ID    = 42495;
 
 	/**
@@ -22,12 +22,24 @@ class ArticlesHandler {
 	 * Initialize class hooks.
 	 */
 	private function init_hooks(): void {
-		add_action( 'wp_ajax_search_mlmmc_articles', [ $this, 'handle_articles_search' ] );
+		// add_action( 'wp_ajax_search_mlmmc_articles', [ $this, 'handle_articles_search' ] );
 		add_action( 'wp_ajax_get_mlmmc_categories', [ $this, 'handle_get_categories' ] );
 		add_action( 'wp_ajax_get_mlmmc_authors', [ $this, 'handle_get_authors' ] );
 		// add_action('wp_ajax_nopriv_search_mlmmc_articles', '__return_false');
 		// add_action('wp_ajax_nopriv_get_mlmmc_categories', '__return_false');
 		// add_action('wp_ajax_nopriv_get_mlmmc_authors', '__return_false');
+		// add_filter('single_template', function ($single_template) {
+		// 	global $post;
+	
+		// 	if ($post->post_type === self::POST_TYPE) {
+		// 		$template_path = LABGENZ_CM_TEMPLATES_DIR . '/single-mlmmc-article.php';
+		// 		if (file_exists($template_path)) {
+		// 			return $template_path;
+		// 		}
+		// 	}
+	
+		// 	return $single_template;
+		// });
 	}
 
 	/**
@@ -40,7 +52,20 @@ class ArticlesHandler {
 			wp_die( 'Security check failed' );
 		}
 		$search_term = sanitize_text_field( $_POST['search_term'] ?? '' );
-		$category    = sanitize_text_field( $_POST['category'] ?? '' );
+		
+		// Handle categories - can be single string or array
+		$categories = [];
+		if ( isset( $_POST['categories'] ) ) {
+			if ( is_array( $_POST['categories'] ) ) {
+				$categories = array_map( 'sanitize_text_field', $_POST['categories'] );
+			} elseif ( is_string( $_POST['categories'] ) && $_POST['categories'] !== '' ) {
+				$categories = [ sanitize_text_field( $_POST['categories'] ) ];
+			}
+		} elseif ( isset( $_POST['category'] ) && $_POST['category'] !== '' ) {
+			// Backward compatibility for single category
+			$categories = [ sanitize_text_field( $_POST['category'] ) ];
+		}
+		
 		// Accept both single and multiple authors (array from JS)
 		$authors = [];
 		if ( isset( $_POST['authors'] ) ) {
@@ -56,7 +81,7 @@ class ArticlesHandler {
 			}
 		}
 		$page    = intval( $_POST['page'] ?? 1 ) ?: 1;
-		$query   = $this->build_search_query( $search_term, $category, $authors, $page );
+		$query   = $this->build_search_query( $search_term, $categories, $authors, $page );
 		$content = $this->render_search_results( $query, $search_term, $page );
 		wp_send_json_success(
 			[
@@ -71,12 +96,12 @@ class ArticlesHandler {
 	 * Build the search query.
 	 *
 	 * @param string $search_term
-	 * @param string $category
+	 * @param array  $categories
 	 * @param array  $authors
 	 * @param int    $page
 	 * @return \WP_Query
 	 */
-	private function build_search_query( string $search_term, string $category, array $authors, int $page ): \WP_Query {
+	private function build_search_query( string $search_term, array $categories, array $authors, int $page ): \WP_Query {
 		$args       = [
 			'post_type'      => self::POST_TYPE,
 			'post_status'    => 'publish',
@@ -86,12 +111,26 @@ class ArticlesHandler {
 			'search_columns' => [ 'post_title' ],
 		];
 		$meta_query = [];
-		if ( ! empty( $category ) ) {
-			$meta_query[] = [
-				'key'     => 'mlmmc_article_category',
-				'value'   => $category,
-				'compare' => '=',
-			];
+		if ( ! empty( $categories ) ) {
+			if ( count( $categories ) === 1 ) {
+				// Single category
+				$meta_query[] = [
+					'key'     => 'mlmmc_article_category',
+					'value'   => $categories[0],
+					'compare' => '=',
+				];
+			} else {
+				// Multiple categories
+				$category_query = ['relation' => 'OR'];
+				foreach ( $categories as $category ) {
+					$category_query[] = [
+						'key'     => 'mlmmc_article_category',
+						'value'   => $category,
+						'compare' => '=',
+					];
+				}
+				$meta_query[] = $category_query;
+			}
 		}
 		if ( ! empty( $authors ) ) {
 			$meta_query[] = [
@@ -128,6 +167,26 @@ class ArticlesHandler {
 	}
 
 	/**
+	 * Get author from ACF field for a specific article
+	 *
+	 * @param int $post_id The post ID
+	 * @return string The author name or empty string if not found
+	 */
+	public function get_article_author(int $post_id): string {
+		if (function_exists('get_field')) {
+			$author = get_field('mlmmc_article_author', $post_id);
+			if (!empty($author)) {
+				return $author;
+			}
+		}
+		
+		// Fallback to post meta if ACF function is not available
+		$author = get_post_meta($post_id, 'mlmmc_article_author', true);
+		
+		return !empty($author) ? $author : '';
+	}
+	
+	/**
 	 * Get all available authors from the ACF field.
 	 *
 	 * @return array
@@ -152,7 +211,7 @@ class ArticlesHandler {
 
 	/**
 	 * Get authors from ACF field choices or from existing articles.
-	 *
++	 *
 	 * @param int $post_id
 	 * @return array
 	 */
@@ -341,6 +400,25 @@ class ArticlesHandler {
 			}
 		}
 		return $this->get_available_categories();
+	}
+
+	/**
+	 * Get category from ACF field for a specific article
+	 * 
+	 * @param int $post_id The post ID
+	 * @return string The category name or empty string if not found
+	 */
+	public function get_article_category(int $post_id): string {
+		if (function_exists('get_field')) {
+			$category = get_field('mlmmc_article_category', $post_id);
+			if (!empty($category)) {
+				return $category;
+			}
+		}
+		
+		// Fallback to post meta if ACF function is not available
+		$category = get_post_meta($post_id, 'mlmmc_article_category', true);
+		return !empty($category) ? $category : '';
 	}
 
 	/**
