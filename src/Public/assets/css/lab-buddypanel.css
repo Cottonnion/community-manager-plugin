@@ -1,8 +1,36 @@
+:root {
+	/* Primary colors */
+	--lab-primary: #5271ff;
+	--lab-primary-light: #e3f0ff;
+	--lab-primary-dark: #1a237e;
+	--lab-accent: #51cbee;
+	--lab-accent-light: #e3f2fd;
+	
+	/* Background colors */
+	--lab-bg-light: #ffffff;
+	--lab-bg-light-alt: #f8fafc;
+	--lab-bg-card: #ffffff;
+	
+	/* Text colors */
+	--lab-text-dark: #333333;
+	--lab-text-medium: #666666;
+	--lab-text-light: #888888;
+	
+	/* Border colors */
+	--lab-border-light: #f1f1f4;
+	--lab-border-medium: #e0e0e0;
+	
+	/* Shadow */
+	--lab-shadow-sm: 0 1px 2px rgba(0,0,0,0.03);
+	--lab-shadow-md: 0 4px 24px rgba(0,0,0,0.07), 0 1.5px 4px rgba(0,0,0,0.03);
+	--lab-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
 aside.buddypanel {
-	background: #fff;
+	background: var(--lab-bg-light);
 	border-radius: 18px;
-	box-shadow: 0 4px 24px rgba(0,0,0,0.07), 0 1.5px 4px rgba(0,0,0,0.03);
-	border: 1px solid #f1f1f4;
+	box-shadow: var(--lab-shadow-md);
+	border: 1px solid var(--lab-border-light);
 	padding: 0 0 24px 0;
 	margin: 18px 0 18px 0;
 	min-width: 270px;
@@ -533,14 +561,14 @@ aside.buddypanel {
 }
 /* Glass UI styles for BuddyPanel */
 .buddypanel.glass-panel {
-	background: rgba(28, 30, 39, 0.9);
+	background: rgba(255, 255, 255, 0.95);
 	backdrop-filter: blur(10px);
 	-webkit-backdrop-filter: blur(10px);
 	border: 0px !important;
-	color: #fff;
+	color: var(--lab-text-dark);
 	padding: 20px 0;
 	height: 100%;
-	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+	box-shadow: var(--lab-shadow-lg);
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -554,7 +582,7 @@ aside.buddypanel {
 }
 .panel-inner {
 	padding: 0 20px;
-	/* background: linear-gradient(145deg, rgba(38, 41, 56, 0.8), rgba(28, 30, 39, 0.9)); */
+	/* background: linear-gradient(145deg, rgba(248, 250, 252, 0.8), rgba(255, 255, 255, 0.9)); */
 	height: 85%;
 }
 
@@ -564,7 +592,7 @@ aside.buddypanel {
 	align-items: center;
 	margin-bottom: 30px;
 	padding: 15px 0;
-	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	border-bottom: 1px solid var(--lab-border-light);
 }
 
 .site-logo {
@@ -575,15 +603,15 @@ aside.buddypanel {
 	width: 38px;
 	height: 38px;
 	border-radius: 8px;
-	box-shadow: 0 0 10px rgba(81, 203, 238, 0.3);
+	box-shadow: 0 0 10px rgba(82, 113, 255, 0.3);
 }
 
 .site-title {
 	font-size: 16px;
 	margin: 0;
-	color: #fff;
+	color: var(--lab-text-dark);
 	font-weight: 600;
-	text-shadow: 0 0 5px rgba(81, 203, 238, 0.5);
+	text-shadow: 0 0 5px rgba(82, 113, 255, 0.2);
 }
 
 /* Group selector */
@@ -594,7 +622,7 @@ aside.buddypanel {
 .selector-label {
 	display: block;
 	margin-bottom: 8px;
-	color: rgba(255, 255, 255, 0.9);
+	color: var(--lab-text-medium);
 	font-size: 14px;
 	font-weight: 500;
 	letter-spacing: 0.5px;
@@ -608,22 +636,22 @@ aside.buddypanel {
 .glass-select {
 	width: 100%;
 	/* padding: 12px 15px; */
-	background: white;
-	border: 1px solid rgba(81, 203, 238, 0.3);
+	background: var(--lab-bg-light);
+	border: 1px solid rgba(82, 113, 255, 0.3);
 	border-radius: 8px;
-	color: black;
+	color: var(--lab-text-dark);
 	font-size: 15px;
 	font-weight: bold;
 	cursor: pointer;
 	transition: all 0.3s ease;
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+	box-shadow: var(--lab-shadow-sm);
 }
 
 .glass-select:hover, .glass-select:focus {
-	background: rgba(255, 255, 255, 0.15);
-	border-color: rgba(81, 203, 238, 0.6);
+	background: var(--lab-primary-light);
+	border-color: rgba(82, 113, 255, 0.6);
 	outline: none;
-	box-shadow: 0 0 15px rgba(81, 203, 238, 0.3);
+	box-shadow: 0 0 15px rgba(82, 113, 255, 0.2);
 }
 
 .select-arrow {
@@ -635,7 +663,7 @@ aside.buddypanel {
 	height: 0;
 	border-left: 6px solid transparent;
 	border-right: 6px solid transparent;
-	border-top: 6px solid rgba(255, 255, 255, 0.7);
+	border-top: 6px solid var(--lab-text-medium);
 	pointer-events: none;
 }
 
@@ -645,18 +673,18 @@ aside.buddypanel {
 	align-items: center;
 	justify-content: center;
 	padding: 20px;
-	color: rgba(255, 255, 255, 0.8);
+	color: var(--lab-text-medium);
 	gap: 10px;
 }
 
 .spinner {
 	width: 20px;
 	height: 20px;
-	border: 2px solid rgba(255, 255, 255, 0.2);
+	border: 2px solid rgba(82, 113, 255, 0.2);
 	border-radius: 50%;
-	border-top-color: #51cbee;
+	border-top-color: var(--lab-primary);
 	animation: spin 1s linear infinite;
-	box-shadow: 0 0 10px rgba(81, 203, 238, 0.3);
+	box-shadow: 0 0 10px rgba(82, 113, 255, 0.2);
 }
 
 @keyframes spin {
@@ -678,9 +706,9 @@ aside.buddypanel {
 	display: flex;
 	align-items: center;
 	padding: 12px 15px;
-	background: rgba(255, 255, 255, 0.08);
+	background: rgba(248, 250, 252, 0.8);
 	border-radius: 8px;
-	color: #fff;
+	color: var(--lab-text-dark);
 	text-decoration: none;
 	transition: all 0.3s ease;
 	height: 48px;
@@ -688,10 +716,10 @@ aside.buddypanel {
 }
 
 .glass-menu-link:hover {
-	background: rgba(255, 255, 255, 0.12);
+	background: var(--lab-primary-light);
 	transform: translateY(-2px);
-	border-left: 3px solid rgba(81, 203, 238, 0.8);
-	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+	border-left: 3px solid var(--lab-primary);
+	box-shadow: 0 5px 15px rgba(82, 113, 255, 0.1);
 }
 
 .menu-icon {
@@ -703,18 +731,18 @@ aside.buddypanel {
 	justify-content: center;
 	width: 24px;
 	height: 24px;
-	color: #51cbee;
+	color: var(--lab-primary);
 }
 
 /* No groups message */
 .no-groups-message {
 	padding: 20px;
 	text-align: center;
-	color: rgba(255, 255, 255, 0.7);
+	color: var(--lab-text-medium);
 	font-style: italic;
-	background: rgba(255, 255, 255, 0.05);
+	background: rgba(248, 250, 252, 0.8);
 	border-radius: 8px;
-	border: 1px solid rgba(255, 255, 255, 0.1);
+	border: 1px solid var(--lab-border-light);
 }
 
 /* Toggle button */
@@ -724,8 +752,8 @@ aside.buddypanel {
 	right: 17%;
 	width: 36px;
 	height: 36px;
-	background: #1c1e27;
-	border: 1px solid #51cbee;
+	background: var(--lab-bg-light);
+	border: 1px solid var(--lab-primary);
 	/* border-radius: 50%; */
 	/* box-shadow: 0 2px 8px rgba(0,0,0,0.07); */
 	display: flex;
@@ -734,23 +762,23 @@ aside.buddypanel {
 	cursor: pointer;
 	z-index: 600 !important;
 	transition: all 0.3s ease;
-	color: white;
-	box-shadow: 0 0 10px rgba(81, 203, 238, 0.3);
+	color: var(--lab-text-dark);
+	box-shadow: 0 0 10px rgba(82, 113, 255, 0.2);
 }
 
 .buddypanel-toggle-btn:hover {
-	background: #262938;
-	box-shadow: 0 0 15px rgba(81, 203, 238, 0.5);
+	background: var(--lab-primary-light);
+	box-shadow: 0 0 15px rgba(82, 113, 255, 0.3);
 }
 
 .buddypanel-toggle-btn:focus {
-	background: #262938;
+	background: var(--lab-primary-light);
 	outline: none;
 }
 
 .toggle-icon {
 	font-size: 20px;
-	color: #51cbee;
+	color: var(--lab-primary);
 	font-weight: bold;
 	line-height: 1;
 }
@@ -820,9 +848,9 @@ body:not(.buddypanel-open) #buddypanel .glass-menu-item {
 	width: 100%;
 	padding: 10px;
 	border-radius: 6px;
-	border: 1px solid rgba(255, 255, 255, 0.2);
-	background-color: rgba(255, 255, 255, 0.1);
-	color: black;
+	border: 1px solid var(--lab-border-medium);
+	background-color: var(--lab-bg-light);
+	color: var(--lab-text-dark);
 	font-size: 14px;
 	font-weight: bold;
 }
@@ -836,14 +864,14 @@ body:not(.buddypanel-open) #buddypanel .glass-menu-item {
 	margin-right: 10px;
 	font-size: 18px;
 	opacity: 0.9;
-	color: #51cbee;
+	color: var(--lab-primary);
 }
 
 /* Mobile Menu Tab Navigation */
 .mobile-menu-tabs {
 	display: flex;
 	width: 100%;
-	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	border-bottom: 1px solid var(--lab-border-light);
 	margin-bottom: 15px;
 }
 
@@ -861,7 +889,7 @@ body:not(.buddypanel-open) #buddypanel .glass-menu-item {
 
 .mobile-menu-tab.active {
 	opacity: 1;
-	color: #51cbee;
+	color: var(--lab-primary);
 }
 
 .mobile-menu-tab.active:after {
@@ -871,8 +899,8 @@ body:not(.buddypanel-open) #buddypanel .glass-menu-item {
 	left: 0;
 	width: 100%;
 	height: 2px;
-	background: #51cbee;
-	box-shadow: 0 0 10px rgba(81, 203, 238, 0.5);
+	background: var(--lab-primary);
+	box-shadow: 0 0 10px rgba(82, 113, 255, 0.3);
 }
 
 .mobile-menu-content {

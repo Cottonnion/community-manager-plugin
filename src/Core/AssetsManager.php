@@ -28,7 +28,7 @@ class AssetsManager {
 	 * @var array<string, array<string, array>>
 	 */
 	private array $admin_assets = [];
-
+	
 	/**
 	 * Holds the array of frontend scripts and styles.
 	 *
@@ -56,6 +56,8 @@ class AssetsManager {
 			5
 		);
 
+		// Article filtering scripts are handled in ArticleCardDisplayHandler.php
+
 		add_action(
 			'admin_enqueue_scripts',
 			function () {
@@ -77,6 +79,8 @@ class AssetsManager {
 		add_action( 'wp_enqueue_scripts', [ $this, 'register_assets_to_enqueue' ], 20, 0 );
 		add_action( 'admin_init', [ $this, 'register_assets_to_enqueue' ], 20, 0 );
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_frontend_assets' ], 99, 0 );
+		add_action( 'wp_enqueue_scripts', [ __CLASS__, 'enqueue_location_field_scripts' ] );
+
 		add_action(
 			'wp_enqueue_scripts',
 			function () {
@@ -84,7 +88,7 @@ class AssetsManager {
 					'buddyboss-buddypanel-css',
 					LABGENZ_CM_URL . 'src/Public/assets/css/lab-buddypanel.css',
 					[],
-					'4.5.9'
+					'4.6.0'
 				);
 			},
 			1
@@ -351,6 +355,76 @@ class AssetsManager {
 				$appearance_hook = $screen->id;
 			}
 		}
+		
+		$this->add_admin_asset(
+			'labgenz-cm-reviews-admin-css',
+			['mlm-mastery-communities_page_article-reviews'],
+			'reviews-admin.css',
+			[],
+			[],
+			'1.0.3' // Bumped version
+		);
+		
+		// Add the new table sorting and search styles
+		$this->add_admin_asset(
+			'labgenz-cm-reviews-table-css',
+			['mlm-mastery-communities_page_article-reviews'],
+			'reviews-table.css',
+			[],
+			[],
+			'1.0.0'
+		);
+		$this->add_admin_asset(
+			'labgenz-cm-reviews-admin-js',
+			['mlm-mastery-communities_page_article-reviews'],
+			'article-reviews.js',
+			['jquery', 'sweetalert2'],
+			[
+				'ajaxUrl' => admin_url('admin-ajax.php'),
+				'nonce' => wp_create_nonce('mlmmc_reviews_action'),
+				'confirmDelete' => __('Are you sure you want to delete this review?', 'labgenz-cm'),
+				'confirmDeleteText' => __('This action cannot be undone.', 'labgenz-cm'),
+				'confirmBulkDelete' => __('Are you sure you want to delete the selected reviews?', 'labgenz-cm'),
+				'messages' => [
+					'submitting' => __('Submitting...', 'labgenz-cm'),
+					'success' => __('Rating submitted successfully!', 'labgenz-cm'),
+					'error' => __('Error submitting rating. Please try again.', 'labgenz-cm')
+				]
+			],
+			'1.0.4'
+		);
+		
+		// Add the new table sorting and search functionality
+		$this->add_admin_asset(
+			'labgenz-cm-reviews-table-js',
+			['mlm-mastery-communities_page_article-reviews'],
+			'reviews-table.js',
+			['jquery'],
+			[
+				'noResults' => __('No reviews found matching your search criteria.', 'labgenz-cm')
+			],
+			'1.0.0'
+		);
+
+		// Add frontend assets for article reviews
+		$this->add_frontend_asset(
+			'mlmmc-article-reviews',
+			[''],  // Empty array means it will be loaded on all pages
+			'reviews.js',
+			['jquery'],
+			'1.6.0', // Bumped version
+			true,
+			'js',
+			[
+				'ajaxUrl' => admin_url('admin-ajax.php'),
+				'nonce' => wp_create_nonce('mlmmc_article_review'),
+				'messages' => [
+					'submitting' => __('Submitting...', 'labgenz-cm'),
+					'success' => __('Thank you for your rating!', 'labgenz-cm'),
+					'error' => __('Error submitting rating. Please try again.', 'labgenz-cm')
+				]
+			]
+		);
 		$appearance_hooks = array_filter( array_merge( $hooks, [ $appearance_hook ] ) );
 		$this->add_admin_asset(
 			'labgenz-cm-settings-css',
@@ -428,7 +502,7 @@ class AssetsManager {
 			[ 'group_single' ],
 			'lab-group-management.css',
 			[],
-			'1.7',
+			'1.7.2',
 			false,
 			'css'
 		);
@@ -438,7 +512,7 @@ class AssetsManager {
 			[ 'group_single' ],
 			'lab-group-management.js',
 			[ 'jquery', 'xlsx-js' ],
-			'2.7',
+			'2.7.3',
 			true,
 			'js',
 			[
@@ -454,7 +528,7 @@ class AssetsManager {
 			[ 'group_single' ],
 			'lab-group-invite-member.js',
 			[ 'jquery' ],
-			'2.5',
+			'2.6.3',
 			true,
 			'js',
 			[
@@ -539,6 +613,17 @@ class AssetsManager {
 		);
 
 		$this->add_frontend_asset(
+			'gamipress-header',
+			[ '' ],
+			'gamipress-header.js',
+			[ 'jquery' ],
+			'1.1.7',
+			true,
+			'js',
+			array()
+		);
+
+		$this->add_frontend_asset(
 			'labgenz-gamipress-header-css',
 			[ '' ],
 			'lab-gamipress-header.css',
@@ -547,6 +632,27 @@ class AssetsManager {
 			false,
 			'css'
 		);
+
+		$this->add_frontend_asset(
+			'articles-review-css',
+			[ '' ],
+			'article-reviews.css',
+			[],
+			'2.6.5', // Bumped version
+			false,
+			'css'
+		);
+
+		$this->add_frontend_asset(
+			'location-common-css',
+			[ '' ],
+			'location-field.css',
+			[],
+			'1.0.1',
+			false,
+			'css'
+		);
+
 		$this->add_frontend_asset(
 			'labgenz-weekly-article-css',
 			[ '' ],
@@ -556,6 +662,17 @@ class AssetsManager {
 			false,
 			'css'
 		);
+
+        /// Register debug dropdown CSS
+        $this->add_frontend_asset(
+            'single-article-css',
+			[' '],
+			'single-article.css',
+			[],
+            '1.0.0',
+			false,
+			'css'
+        );
 	}
 
 	/**
@@ -645,15 +762,52 @@ class AssetsManager {
 				'lab-group-members-map-css',
 				LABGENZ_CM_URL . 'src/Public/assets/css/lab-group-members-map.css',
 				[ 'leaflet-markercluster-default-css' ],
-				'7.0.4'
+				'7.0.6'
 			);
 
-			// Enqueue our custom JS
+			// Enqueue our modular JS files
+			// Core map module
+			wp_enqueue_script(
+				'map-core-js',
+				LABGENZ_CM_URL . 'src/Public/assets/js/map-modules/map-core.js',
+				[ 'jquery', 'leaflet-js' ],
+				'7.0.8',
+				true
+			);
+			
+			// Marker manager module
+			wp_enqueue_script(
+				'marker-manager-js',
+				LABGENZ_CM_URL . 'src/Public/assets/js/map-modules/marker-manager.js',
+				[ 'jquery', 'leaflet-js', 'leaflet-markercluster-js', 'map-core-js' ],
+				'7.0.9',
+				true
+			);
+			
+			// Data handler module
+			wp_enqueue_script(
+				'data-handler-js',
+				LABGENZ_CM_URL . 'src/Public/assets/js/map-modules/data-handler.js',
+				[ 'jquery' ],
+				'7.0.8',
+				true
+			);
+			
+			// Map utilities module
+			wp_enqueue_script(
+				'map-utils-js',
+				LABGENZ_CM_URL . 'src/Public/assets/js/map-modules/map-utils.js',
+				[ 'jquery', 'leaflet-js' ],
+				'7.0.8',
+				true
+			);
+			
+			// Main map JS
 			wp_enqueue_script(
 				'members-map-js',
-				LABGENZ_CM_URL . 'src/Public/assets/js/members-map.js',
-				[ 'jquery', 'leaflet-js', 'leaflet-markercluster-js' ],
-				'7.0.4',
+				LABGENZ_CM_URL . 'src/Public/assets/js/members-map-new.js',
+				[ 'jquery', 'leaflet-js', 'leaflet-markercluster-js', 'map-core-js', 'marker-manager-js', 'data-handler-js', 'map-utils-js' ],
+				'7.0.7',
 				true
 			);
 
@@ -670,4 +824,177 @@ class AssetsManager {
 			);
 		}
 	}
+	
+	/**
+     * Adds a frontend script or style for specific post types.
+     *
+     * @param string $handle
+     * @param array  $post_types Array of post types where the asset should be loaded
+     * @param string $file
+     * @param array  $dependencies
+     * @param string $version
+     * @param bool   $enqueue_in_footer
+     * @param string $type 'css' or 'js'
+     * @param array  $localization Optional. Data to localize for JS assets.
+     * @return void
+     */
+    public function add_frontend_asset_for_post_types(
+        string $handle,
+        array $post_types,
+        string $file,
+        array $dependencies = [],
+        string $version = LABGENZ_CM_VERSION,
+        bool $enqueue_in_footer = true,
+        string $type = 'css',
+        array $localization = []
+    ): void {
+        add_action('wp_enqueue_scripts', function () use (
+            $handle,
+            $post_types,
+            $file,
+            $dependencies,
+            $version,
+            $enqueue_in_footer,
+            $type,
+            $localization
+        ) {
+            if (is_singular($post_types)) {
+                $file_url = LABGENZ_CM_URL . 'src/Public/assets/' . ( 'css' === $type ? 'css/' : 'js/' ) . $file;
+                if ('css' === $type) {
+                    wp_enqueue_style(
+                        $handle,
+                        $file_url,
+                        $dependencies,
+                        $version
+                    );
+                } else {
+                    wp_enqueue_script(
+                        $handle,
+                        $file_url,
+                        $dependencies,
+                        $version,
+                        $enqueue_in_footer
+                    );
+                    // Localize script if localization data is provided
+                    if (!empty($localization)) {
+                        wp_localize_script(
+                            $handle,
+                            str_replace('-', '_', $handle . '_data'),
+                            $localization
+                        );
+                    }
+                }
+            }
+        });
+    }
+	/**
+	 * Enqueue scripts and styles for this field type
+	 */
+	public static function enqueue_location_field_scripts() {
+		// Only enqueue on profile edit pages
+		if ( ! function_exists( 'bp_is_user_profile_edit' ) ||
+			( ! bp_is_user_profile_edit() && ! bp_is_register_page() ) ) {
+			return;
+		}
+	
+		// Enqueue Leaflet for map display
+		wp_enqueue_style(
+			'leaflet-css',
+			'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
+			[],
+			'1.9.4'
+		);
+	
+		wp_enqueue_script(
+			'leaflet-js',
+			'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
+			[],
+			'1.9.4',
+			true
+		);
+	
+		// Enqueue our custom script
+		wp_enqueue_script(
+			'location-field-js',
+			LABGENZ_CM_URL . 'src/Public/assets/js/location-field.js',
+			[ 'jquery', 'leaflet-js' ],
+			LABGENZ_CM_VERSION,
+			true
+		);
+		
+		// Enqueue visibility fix script
+		wp_enqueue_script(
+			'location-field-visibility-fix-js',
+			LABGENZ_CM_URL . 'src/Public/assets/js/location-field-visibility-fix.js',
+			[ 'jquery', 'location-field-js' ],
+			'1.0.2',
+			true
+		);
+	
+		// Add script to apply custom classes to visibility options
+		wp_add_inline_script(
+			'location-field-visibility-fix-js',
+			'
+			jQuery(document).ready(function($) {
+				// Add classes and info icons to visibility options
+				function addClassesToVisibilityOptions() {
+					$(".field-visibility-settings .bp-radio-wrap label").each(function() {
+						// Get the input associated with this label
+						var input = $(this).prev("input");
+						var inputValue = input.val();
+						
+						if (inputValue) {
+							// Add class to the label
+							$(this).addClass("visibility-option-" + inputValue);
+							
+							// Don\'t add the icon twice
+							if ($(this).find(".visibility-info-icon").length === 0) {
+								// Add info icon with different tooltip for each option
+								var tooltipText = "";
+								
+								if (inputValue === "exact_location") {
+									tooltipText = "Shows your exact location coordinates on the map";
+								} else if (inputValue === "privacy_offset") {
+									tooltipText = "Shows your location with a random offset for privacy (500m-2km)";
+								} else if (inputValue === "hidden") {
+									tooltipText = "Your location will not be visible to other members";
+								}
+								
+								if (tooltipText) {
+									// Append to the field-visibility-text span
+									$(this).find(".field-visibility-text").after(\'<span class="visibility-info-icon" title="\' + tooltipText + \'">ⓘ</span>\');
+								}
+							}
+						}
+					});
+				}
+				
+				// Call initially
+				addClassesToVisibilityOptions();
+				
+				// Also call when visibility settings are toggled
+				$(document).on("click", ".visibility-toggle-link", function() {
+					setTimeout(addClassesToVisibilityOptions, 100);
+				});
+			});
+			'
+		);
+	
+		// Localize script with AJAX data
+		wp_localize_script(
+			'location-field-js',
+			'LocationFieldData',
+			[
+				'ajaxurl' => admin_url( 'admin-ajax.php' ),
+				'nonce'   => wp_create_nonce( 'location_field_nonce' ),
+				'strings' => [
+					'detecting'      => __( 'Detecting...', 'buddypress' ),
+					'detect_failed'  => __( 'Could not detect your location. Please enter manually.', 'buddypress' ),
+					'geocode_failed' => __( 'Could not find location. Please try a different search.', 'buddypress' ),
+					'searching'      => __( 'Searching...', 'buddypress' ),
+				],
+			]
+		);
+	}
 }
+

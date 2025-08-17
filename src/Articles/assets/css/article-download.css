@@ -1,0 +1,27 @@
+/**
+ * Styles for article PDF generation and download button
+ */
+
+.article-meta {
+    background-color: #f7f7f7;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.article-meta p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.article-footer {
+    font-size: 12px;
+    color: #666;
+    font-style: italic;
+}
+
+/* Ensure images don't overflow */
+.article-content img {
+    max-width: 100%;
+    height: auto;
+}

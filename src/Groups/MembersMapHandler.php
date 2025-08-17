@@ -1,15 +1,22 @@
 <?php
 namespace LABGENZ_CM\Groups;
 
+use LABGENZ_CM\Groups\GroupMemberVisibility;
+use LABGENZ_CM\Database\Database;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 /**
- * Handles member map functionality
+ * Handles member map functionality with privacy protection
  */
 class MembersMapHandler {
 	private static $instance = null;
+
+	// Privacy settings - configurable offset range in meters
+	private const MIN_OFFSET_METERS = 500;  // Minimum offset distance
+	private const MAX_OFFSET_METERS = 1000;  // Maximum offset distance
 
 	/**
 	 * Get singleton instance
@@ -28,7 +35,7 @@ class MembersMapHandler {
 	 */
 	private function __construct() {
 		add_action( 'wp_ajax_get_group_members_location', [ $this, 'ajax_get_group_members_location' ] );
-		add_action( 'wp_ajax_nopriv_get_group_members_location', [ $this, 'ajax_get_group_members_location' ] );
+		// add_action( 'wp_ajax_nopriv_get_group_members_location', [ $this, 'ajax_get_group_members_location' ] );
 	}
 
 	/**
@@ -55,26 +62,18 @@ class MembersMapHandler {
 			return;
 		}
 
-		// Get group members
+		// Get group members with privacy-protected locations
 		$members = $this->get_group_members_with_location( $group_id );
 
 		// Add debug info to the response
 		$response = [
 			'members' => $members,
-			'debug'   => [
-				'group_id'              => $group_id,
-				'group_name'            => $group->name,
-				'member_count'          => count( $members ),
-				'timestamp'             => current_time( 'mysql' ),
-				'user_id_with_location' => wp_get_current_user()->ID, // Test with current user
-			],
 		];
 
 		// Test with current user if no members found
 		if ( empty( $members ) ) {
-			$current_user_id                                 = wp_get_current_user()->ID;
-			$test_location                                   = $this->get_member_location_data( $current_user_id );
-			$response['debug']['current_user_location_test'] = $test_location;
+			$current_user_id		= wp_get_current_user()->ID;
+			$test_location			= $this->get_member_location_data( $current_user_id );
 		}
 
 		// Return members data
@@ -88,7 +87,8 @@ class MembersMapHandler {
 	 * @return array Array of members with location data
 	 */
 	private function get_group_members_with_location( $group_id ) {
-		$members_with_location = [];
+		try {
+			$members_with_location = [];
 
 		// Get group members
 		$group_members = groups_get_group_members(
@@ -105,18 +105,39 @@ class MembersMapHandler {
 
 		// Loop through members
 		foreach ( $group_members['members'] as $member ) {
+			// Check user visibility
+			$database = Database::get_instance();
+			$field_id = 4;
+			$visibility = $database->get_user_field_visibility($field_id, $member->ID);
+
+			if ($visibility === 'hidden') {
+				continue; // Skip hidden members
+			}
+
 			// Get member's location data (xprofile fields or user meta)
-			$location_data = $this->get_member_location_data( $member->ID );
+			$location_data = $this->get_member_location_data($member->ID);
 
 			// Skip if no location data
-			if ( empty( $location_data ) ) {
+			if (empty($location_data)) {
 				continue;
 			}
+
+			// Apply privacy offset unless visibility is exact_location
+			$privacy_coords = ($visibility === 'exact_location')
+				? [
+					'latitude' => $location_data['latitude'],
+					'longitude' => $location_data['longitude'],
+				]
+				: $this->apply_privacy_offset(
+					$location_data['latitude'],
+					$location_data['longitude'],
+					$member->ID
+				);
 
 			// Get member's role in the group
 			$role = $this->get_member_role_in_group( $member->ID, $group_id );
 
-			// Add member to array
+			// Add member to array with privacy-protected coordinates
 			$members_with_location[] = [
 				'id'          => $member->ID,
 				'name'        => bp_core_get_user_displayname( $member->ID ),
@@ -131,13 +152,71 @@ class MembersMapHandler {
 				),
 				'profile_url' => bp_core_get_user_domain( $member->ID ),
 				'role'        => $role,
-				'location'    => $location_data['address'],
-				'latitude'    => $location_data['latitude'],
-				'longitude'   => $location_data['longitude'],
+				'latitude'    => $privacy_coords['latitude'],
+				'longitude'   => $privacy_coords['longitude'],
 			];
 		}
 
 		return $members_with_location;
+		} catch ( \Exception $e ) {
+			wp_send_json_error( [ 'message' => 'Error retrieving members: ' . $e->getMessage() ] );
+		} catch ( \Error $err ) {
+			wp_send_json_error( [ 'message' => 'Error retrieving members: ' . $err->getMessage() ] );
+		}
+	}
+
+	/**
+	 * Apply privacy offset to coordinates
+	 * 
+	 * @param float $lat Original latitude
+	 * @param float $lng Original longitude  
+	 * @param int $user_id User ID for consistent offset
+	 * @return array Offset coordinates
+	 */
+	private function apply_privacy_offset( $lat, $lng, $user_id ) {
+		// Use user ID as seed for consistent but random offset per user
+		mt_srand( $user_id );
+		
+		// Generate random distance within our range
+		$distance_meters = mt_rand( self::MIN_OFFSET_METERS, self::MAX_OFFSET_METERS );
+		
+		// Generate random bearing (0-360 degrees)
+		$bearing_degrees = mt_rand( 0, 360 );
+		
+		// Convert bearing to radians
+		$bearing_rad = deg2rad( $bearing_degrees );
+		
+		// Earth's radius in meters
+		$earth_radius = 6371000;
+		
+		// Convert original coordinates to radians
+		$lat_rad = deg2rad( $lat );
+		$lng_rad = deg2rad( $lng );
+		
+		// Calculate new coordinates using haversine formula
+		$angular_distance = $distance_meters / $earth_radius;
+		
+		$new_lat_rad = asin(
+			sin( $lat_rad ) * cos( $angular_distance ) +
+			cos( $lat_rad ) * sin( $angular_distance ) * cos( $bearing_rad )
+		);
+		
+		$new_lng_rad = $lng_rad + atan2(
+			sin( $bearing_rad ) * sin( $angular_distance ) * cos( $lat_rad ),
+			cos( $angular_distance ) - sin( $lat_rad ) * sin( $new_lat_rad )
+		);
+		
+		// Convert back to degrees
+		$new_lat = rad2deg( $new_lat_rad );
+		$new_lng = rad2deg( $new_lng_rad );
+		
+		// Restore random seed
+		mt_srand();
+		
+		return [
+			'latitude'  => round( $new_lat, 6 ),
+			'longitude' => round( $new_lng, 6 )
+		];
 	}
 
 	/**
@@ -164,6 +243,13 @@ class MembersMapHandler {
 		];
 
 		foreach ( $meta_key_pairs as $pair ) {
+
+			// Skips users who are hidden in the group - most likely site admins with manage_options capability
+			$group_visibility = new GroupMemberVisibility();
+			if( $group_visibility->is_member_hidden( bp_get_current_group_id(), $user_id ) ) {
+				continue; // Skip hidden members
+			}
+			
 			$lat = get_user_meta( $user_id, $pair[0], true );
 			$lng = get_user_meta( $user_id, $pair[1], true );
 

@@ -68,15 +68,27 @@ class LabgenzCmLoader {
 			'core.menu'                     => \LABGENZ_CM\Core\MenuManager::class,
 			'core.settings'                 => \LABGENZ_CM\Core\Settings::class,
 			'core.ajax'                     => \LABGENZ_CM\Core\AjaxHandler::class,
-			'core.admin_hooks'              => \LABGENZ_CM\Admin\AdminHooks::class,
-			'core.invite_handler'           => \LABGENZ_CM\Core\InviteHandler::class,
-			'core.remove_handler'           => \LABGENZ_CM\Core\RemoveHandler::class,
+			'core.woo_helper'               => \LABGENZ_CM\Core\WooCommerceHelper::class,
 			'core.profile_location_handler' => \LABGENZ_CM\Core\ProfileLocationHandler::class,
 			'core.organization_access'      => \LABGENZ_CM\Core\OrganizationAccess::class,
 			'core.page_access_controller'   => \LABGENZ_CM\Core\PageAccessController::class,
+			'core.user_menu_handler'        => \LABGENZ_CM\Core\UserMenuHandler::class,
+
+			/**
+			 * @deprecated components 
+			 * their functionality either been refactored or not needed anymore.
+			 * 
+			*/
+			// 'core.admin_hooks'           => \LABGENZ_CM\Admin\AdminHooks::class,
+			// 'core.invite_handler'        => \LABGENZ_CM\Core\InviteHandler::class,
+			// 'core.remove_handler'		=> \LABGENZ_CM\Core\RemoveHandler::class,
+			
+			'database.database'				=> \LABGENZ_CM\Database\Database::class,
 
 			'admin.organization_access'     => \LABGENZ_CM\Admin\OrganizationAccessAdmin::class,
-			'admin.weekly_articles_admin'   => \LABGENZ_CM\Admin\WeeklyArticleAdmin::class,
+			'admin.weekly_articles_admin'   => \LABGENZ_CM\Admin\DailyArticleAdmin::class,
+			'admin.reviews'                 => \LABGENZ_CM\Admin\ReviewsAdmin::class,
+			'admin.subscription_admin'      => \LABGENZ_CM\Admin\SubscriptionsAdmin::class,
 
 			'public.organization_access'    => \LABGENZ_CM\Public\OrganizationAccessPublic::class,
 
@@ -86,13 +98,22 @@ class LabgenzCmLoader {
 			'groups.member_handler'         => \LABGENZ_CM\Groups\GroupMembersHandler::class,
 			'groups.manage_members_tab'     => \LABGENZ_CM\Groups\ManageMembersTab::class,
 			'groups.members_map_handler'    => \LABGENZ_CM\Groups\MembersMapHandler::class,
-
-			'articles.handler'              => \LABGENZ_CM\Articles\ArticlesHandler::class,
-			'articles.weekly_handler'       => \LABGENZ_CM\Articles\WeeklyArticleHandler::class,
+			'groups.member_visibility'      => \LABGENZ_CM\Groups\GroupMemberVisibility::class,
+			'groups.filters_handler'        => \LABGENZ_CM\Groups\GroupFiltersHandler::class,
+			
+			'articles.articles_post_type'   => \LABGENZ_CM\Articles\ArticlesPostType::class,
+			'articles.core_handler'         => \LABGENZ_CM\Articles\ArticlesHandler::class,
+			'articles.weekly_handler'       => \LABGENZ_CM\Articles\DailyArticleHandler::class,
+			'articles.reviews_handler'      => \LABGENZ_CM\Articles\ReviewsHandler::class,
+			'articles.download_handler'     => \LABGENZ_CM\Articles\SingleArticleHandler::class,
+			'articles.card_display'         => \LABGENZ_CM\Articles\ArticleCardDisplayHandler::class,
 
 			'gamipress.header_integration'  => \LABGENZ_CM\Gamipress\GamiPressHeaderIntegration::class,
+			'gamipress.currency_handler'    => \LABGENZ_CM\Gamipress\GamipressCurrencyHandler::class,
 
 			'subscription.handler'          => \LABGENZ_CM\Subscriptions\SubscriptionHandler::class,
+			'subscription.shortcode'	    => \LABGENZ_CM\Subscriptions\Shortcodes\SubscriptionDetailsShortcode::class,
+			'widgets.widgets.elementor'		=> \LABGENZ_CM\Widgets\Elementor\ElementorIntegration::class,
 		];
 	}
 
@@ -123,8 +144,10 @@ class LabgenzCmLoader {
 			if ( ! isset( $this->container[ $key ] ) ) {
 				if ( method_exists( $class, 'get_instance' ) ) {
 					$this->container[ $key ] = $class::get_instance();
+					error_log( 'LabgenzCmLoader: Called init() on component: ' . $key );
 				} else {
 					$this->container[ $key ] = new $class();
+					error_log( 'LabgenzCmLoader: Called init() on component: ' . $key );
 				}
 
 				// Call init method if it exists

@@ -5,14 +5,33 @@
  * Handles admin-specific hooks and actions for the plugin.
  *
  * @package LABGENZ_CM\Admin
+ * @deprecated since 1.0.0
  */
 
 namespace LABGENZ_CM\Admin;
 
 use LABGENZ_CM\Core\AjaxHandler;
 use LABGENZ_CM\Core\Settings;
+use LABGENZ_CM\Core\AssetsManager;
 
 class AdminHooks {
+
+	/**
+	 * Assets Manager instance.
+	 *
+	 * @var AssetsManager
+	 */
+	private static $assets_manager;
+
+	/**
+	 * Initialize the class and set its properties.
+	 */
+	public static function init() {
+		self::$assets_manager = new AssetsManager();
+		
+		// Initialize the Subscriptions Admin.
+		// new SubscriptionsAdmin(self::$assets_manager);
+	}
 
 	/**
 	 * Register AJAX actions for the plugin.
@@ -46,5 +65,8 @@ class AdminHooks {
 		);
 	}
 }
+
+// Initialize the admin hooks
+add_action('plugins_loaded', [AdminHooks::class, 'init']);
 
 add_action( 'init', [ AdminHooks::class, 'register_ajax' ] );

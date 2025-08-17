@@ -88,7 +88,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 							$status_constants = array(
 								'STATUS_PENDING' => 'pending',
 								'STATUS_APPROVED' => 'approved', 
-								'STATUS_REJECTED' => 'rejected'
+								'STATUS_REJECTED' => 'rejected',
+								'STATUS_COMPLETED' => 'completed',
 							);
 						}
 						?>

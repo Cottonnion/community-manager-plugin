@@ -1,9 +1,8 @@
 <?php
 /**
  * Plugin Name:       Labgenz Community Management
- * Plugin URI:        https://labgenz.com/plugins/labgenz-community-management
- * Description:       Community management tools for WordPress.
- * Version:           1.0.0
+ * Description:       Organization management tools.
+ * Version:           1.0.1
  * Author:            Labgenz
  * Author URI:        https://Labgenz.com/
  * License:           GPL-2.0+
@@ -18,7 +17,7 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 // Plugin constants
-define( 'LABGENZ_CM_VERSION', '1.0.0' );
+define( 'LABGENZ_CM_VERSION', '1.0.1' );
 define( 'LABGENZ_CM_PATH', plugin_dir_path( __FILE__ ) );
 define( 'LABGENZ_CM_URL', plugin_dir_url( __FILE__ ) );
 define( 'LABGENZTEXTDOMAIN', 'labgenz-community-management' );

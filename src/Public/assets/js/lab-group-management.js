@@ -19,6 +19,231 @@ jQuery(document).ready(function ($) {
         });
     }
     
+    // Handle member action buttons
+    $(document).on('click', '.lab-member-actions', function() {
+        const userId = $(this).data('user-id');
+        const userName = $(this).data('user-name');
+        const userEmail = $(this).data('email');
+        const userRole = $(this).data('role');
+        
+        Swal.fire({
+            title: 'Member Actions',
+            html: `<p>Select an action for <strong>${userName}</strong></p>`,
+            showCancelButton: true,
+            cancelButtonText: 'Close',
+            showConfirmButton: false,
+            showDenyButton: true,
+            denyButtonText: 'Remove from group',
+            denyButtonColor: '#e74c3c',
+            customClass: {
+                container: 'lab-actions-popup'
+            },
+            didOpen: () => {
+                // Add custom buttons in the footer
+                const footer = Swal.getFooter();
+                if (footer) {
+                    footer.style.flexDirection = 'column';
+                    footer.style.alignItems = 'stretch';
+                }
+            }
+        }).then((result) => {
+            if (result.isDenied) {
+                // Handle remove member action
+                removeMember(userId, userName);
+            }
+        });
+    });
+    
+// Handle invitation action buttons
+$(document).on('click', '.lab-invitation-actions', function() {
+    const userId = $(this).data('user-id');
+    const userName = $(this).data('name');
+    const userEmail = $(this).data('email');
+    const groupId = $(this).data('group-id');
+    
+    Swal.fire({
+        title: 'Invitation Actions',
+        html: `<p>Select an action for <strong>${userName}</strong>'s invitation</p>`,
+        showCancelButton: false,
+        showConfirmButton: false,
+        showDenyButton: false,
+        footer: `
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button type="button" class="swal2-confirm swal2-styled lab-resend-btn" style="background-color: #3498db;">
+                    Resend Invitation
+                </button>
+                <button type="button" class="swal2-deny swal2-styled lab-cancel-btn" style="background-color: #e74c3c;">
+                    Cancel Invitation
+                </button>
+            </div>
+        `,
+        customClass: {
+            container: 'lab-actions-popup'
+        },
+        didOpen: () => {
+            // Add event listener for resend button
+            $('.lab-resend-btn').on('click', function() {
+                resendInvitation(userId, userName, userEmail, groupId);
+                Swal.close();
+            });
+            
+            // Add event listener for cancel button
+            $('.lab-cancel-btn').on('click', function() {
+                cancelInvitation(userId, userName, groupId);
+                Swal.close();
+            });
+        }
+    });
+});
+    
+    // Function to resend invitation
+    function resendInvitation(userId, userName, userEmail, groupId) {
+        Swal.fire({
+            title: 'Resending invitation...',
+            didOpen: () => {
+                Swal.showLoading();
+            },
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            showConfirmButton: false
+        });
+        
+        $.ajax({
+            url: labGroupManagement.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'lab_group_resend_invitation',
+                user_id: userId,
+                group_id: groupId,
+                email: userEmail,
+                nonce: labGroupManagement.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    showAlert(`Invitation resent to ${userName}`, 'success');
+                } else {
+                    showAlert(response.data || 'Failed to resend invitation', 'error');
+                }
+            },
+            error: function() {
+                showAlert('Network error while resending invitation', 'error');
+            }
+        });
+    }
+    
+    // Function to remove a member
+    function removeMember(userId, userName) {
+        Swal.fire({
+            title: 'Remove Member',
+            text: `Are you sure you want to remove ${userName} from this group?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, remove them',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Show loading state
+                Swal.fire({
+                    title: 'Removing member...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+                
+                $.ajax({
+                    url: labGroupManagement.ajax_url,
+                    method: 'POST',
+                    data: {
+                        action: 'lab_group_remove_member',
+                        group_id: groupId,
+                        user_id: userId,
+                        nonce: labGroupManagement.nonce
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire({
+                                title: 'Success!',
+                                text: response.data,
+                                icon: 'success',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                            $(`tr[data-user-id="${userId}"]`).fadeOut(300, function() {
+                                $(this).remove();
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Error!',
+                                text: response.data || 'Error removing member',
+                                icon: 'error'
+                            });
+                        }
+                    },
+                    error: function() {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Network error occurred. Please try again.',
+                            icon: 'error'
+                        });
+                    }
+                });
+            }
+        });
+    }
+    
+    // Function to cancel invitation
+    function cancelInvitation(userId, userName, groupId) {
+        // Show loading state
+        Swal.fire({
+            title: 'Cancelling invitation...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+        
+        $.ajax({
+            url: labGroupManagement.ajax_url,
+            method: 'POST',
+            data: {
+                action: 'lab_group_cancel_invitation',
+                group_id: groupId,
+                user_id: userId,
+                nonce: labGroupManagement.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: response.data,
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                    $(`tr[data-user-id="${userId}"]`).fadeOut(300, function() {
+                        $(this).remove();
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: response.data || 'Error cancelling invitation',
+                        icon: 'error'
+                    });
+                }
+            },
+            error: function() {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Network error occurred. Please try again.',
+                    icon: 'error'
+                });
+            }
+        });
+    }
+    
     // Helper function to validate email
     function isValidEmail(email) {
         // More permissive email validation that accepts most valid email formats
@@ -199,28 +424,50 @@ jQuery(document).ready(function ($) {
         $('#' + tabId).show();
     });
 
-    // Show single invite form
+    // Toggle single invite form
     $('#lab-show-invite-form').on('click', function () {
         $('#lab-bulk-invite-form').hide();
-        $('#lab-invite-form').show().css({
-            'max-height': '0',
-            'opacity': '0'
-        }).animate({
-            'max-height': '500px',
-            'opacity': '1'
-        }, 300);
+        
+        // Check if form is already visible
+        if ($('#lab-invite-form').is(':visible')) {
+            $('#lab-invite-form').animate({
+                'max-height': '0',
+                'opacity': '0'
+            }, 300, function() {
+                $(this).hide();
+            });
+        } else {
+            $('#lab-invite-form').show().css({
+                'max-height': '0',
+                'opacity': '0'
+            }).animate({
+                'max-height': '500px',
+                'opacity': '1'
+            }, 300);
+        }
     });
     
-    // Show bulk invite form
+    // Toggle bulk invite form
     $('#lab-bulk-invite').on('click', function () {
         $('#lab-invite-form').hide();
-        $('#lab-bulk-invite-form').show().css({
-            'max-height': '0',
-            'opacity': '0'
-        }).animate({
-            'max-height': '1000px',
-            'opacity': '1'
-        }, 300);
+        
+        // Check if form is already visible
+        if ($('#lab-bulk-invite-form').is(':visible')) {
+            $('#lab-bulk-invite-form').animate({
+                'max-height': '0',
+                'opacity': '0'
+            }, 300, function() {
+                $(this).hide();
+            });
+        } else {
+            $('#lab-bulk-invite-form').show().css({
+                'max-height': '0',
+                'opacity': '0'
+            }).animate({
+                'max-height': '1000px',
+                'opacity': '1'
+            }, 300);
+        }
     });
 
     // Process file for bulk invite
@@ -508,7 +755,7 @@ jQuery(document).ready(function ($) {
             showCancelButton: true,
             confirmButtonText: 'Yes, send invitations',
             cancelButtonText: 'Cancel',
-            confirmButtonColor: '#8B4513',
+            confirmButtonColor: 'var(--bb-primary-button-background-regular) !important',
             reverseButtons: true
         }).then((result) => {
             if (result.isConfirmed) {

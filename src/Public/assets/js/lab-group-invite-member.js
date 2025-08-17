@@ -88,7 +88,7 @@ jQuery(document).ready(function($) {
                             text: text,
                             icon: 'question',
                             showCancelButton: true,
-                            confirmButtonColor: '#8B4513',
+                            confirmButtonColor: 'var(--bb-primary-button-background-regular)',
                             cancelButtonColor: '#d33',
                             confirmButtonText: 'Yes, invite them',
                             cancelButtonText: 'Cancel',
@@ -101,8 +101,21 @@ jQuery(document).ready(function($) {
                         }).then((result) => {
                             if (result.isConfirmed) {
                                 const isOrganizer = result.value;
-                                // const firstName = $('#first-name').length ? $('#first-name').val() : '';
-                                // const lastName = $('#last-name').length ? $('#last-name').val() : '';
+                                
+                                // Validate first name and last name if user doesn't exist
+                                if (data.status === 'user_not_exists') {
+                                    const firstName = $('#lab-user-firstname').val().trim();
+                                    const lastName = $('#lab-user-lastname').val().trim();
+                                    
+                                    if (!firstName || !lastName) {
+                                        Swal.fire({
+                                            title: 'Missing Information',
+                                            text: 'First name and last name are required to create a new user account.',
+                                            icon: 'warning'
+                                        });
+                                        return;
+                                    }
+                                }
                                 
                                 // Send the invitation
                                 sendInviteRequest(userEmail, isOrganizer);
@@ -182,13 +195,17 @@ jQuery(document).ready(function($) {
             }
         });
         
+        // Get first and last name values from the form
+        const firstName = $('#lab-user-firstname').val().trim();
+        const lastName = $('#lab-user-lastname').val().trim();
+        
         const postData = {
             action: 'lab_group_invite_user',
             group_id: labGroupInvite.group_id,
             nonce: nonce,
             email: email,
-            // first_name: firstName,
-            // last_name: lastName,
+            first_name: firstName,
+            last_name: lastName,
             is_organizer: isOrganizer ? 1 : 0
         };
         
@@ -208,8 +225,8 @@ jQuery(document).ready(function($) {
                     
                     // Clear form fields
                     $('#lab-user-email').val('');
-                    $('#first-name').val('');
-                    $('#last-name').val('');
+                    $('#lab-user-firstname').val('');
+                    $('#lab-user-lastname').val('');
                     
                     // Refresh the page to show updated member list
                     setTimeout(() => {
@@ -270,7 +287,7 @@ jQuery(document).ready(function($) {
             url: ajaxUrl,
             method: 'POST',
             data: {
-                action: 'lab_cancel_invitation',
+                action: 'lab_group_cancel_invitation',
                 group_id: groupId,
                 user_id: userId,
                 nonce: nonce

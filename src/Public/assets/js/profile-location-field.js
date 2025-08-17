@@ -6,6 +6,9 @@
  * 
  * It adds an autocomplete dropdown to the location field and stores 
  * the latitude and longitude as user meta when a location is selected.
+ * 
+ * @deprecated This script is deprecated and replaced by the new location field handler.
+ * @see src/Public/assets/js/location-field.js
  */
 (function($) {
     'use strict';
@@ -18,6 +21,10 @@
             debounceTime: 500, // Delay before making geocoding request
             minChars: 3, // Minimum characters before triggering autocomplete
             maxResults: 5, // Maximum number of results to show
+            mapHeight: 250, // Height of the map in pixels
+            defaultZoom: 2, // Default zoom level for the map
+            maxPreciseZoom: 12, // Maximum zoom level for precise location (privacy protection)
+            locationOffset: 250 // Offset in meters to protect exact location at high zoom levels
         },
 
         // DOM elements
@@ -29,6 +36,9 @@
             latitudeField: null,
             longitudeField: null,
             hiddenFields: null,
+            mapContainer: null,
+            map: null,
+            marker: null
         },
 
         // Data
@@ -49,7 +59,16 @@
             
             this.createAutocompleteElements();
             this.createHiddenFields();
+            this.createMapContainer();
             this.bindEvents();
+            
+            // Initialize the map if Leaflet is available
+            if (typeof L !== 'undefined') {
+                this.initializeMap();
+            } else {
+                // If Leaflet is not loaded, load it dynamically
+                this.loadLeafletLibrary();
+            }
         },
 
         /**
@@ -145,6 +164,23 @@
                         font-size: 12px;
                         color: #666;
                     }
+                    .location-map-container {
+                        cursor: crosshair;
+                    }
+                    .location-map-instructions {
+                        margin-top: 5px;
+                        font-size: 12px;
+                        color: #666;
+                        font-style: italic;
+                    }
+                    /* Leaflet Popup Styling */
+                    .leaflet-popup-content-wrapper {
+                        border-radius: 4px;
+                    }
+                    .leaflet-popup-content {
+                        margin: 8px 12px;
+                        font-size: 13px;
+                    }
                 `)
                 .appendTo('head');
         },
@@ -165,6 +201,180 @@
             
             // Add container after the location field
             this.elements.locationField.after(this.elements.hiddenFields);
+        },
+        
+        /**
+         * Create map container for interactive location selection
+         */
+        createMapContainer: function() {
+            // Create map container element
+            this.elements.mapContainer = $('<div class="location-map-container" style="height: ' + this.config.mapHeight + 'px; margin-top: 15px; border: 1px solid #ddd; border-radius: 4px;"></div>');
+            
+            // Create map instruction text
+            var mapInstructions = $('<div class="location-map-instructions" style="margin-top: 5px; font-size: 12px; color: #666;">Click anywhere on the map to select a location</div>');
+            
+            // Add container after the location field
+            this.elements.locationField.parent().append(this.elements.mapContainer);
+            this.elements.mapContainer.after(mapInstructions);
+        },
+        
+        /**
+         * Load Leaflet library if not already loaded
+         */
+        loadLeafletLibrary: function() {
+            var self = this;
+            
+            // Add Leaflet CSS
+            $('head').append('<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />');
+            
+            // Add Leaflet JS
+            var script = document.createElement('script');
+            script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+            script.onload = function() {
+                // Initialize map once Leaflet is loaded
+                self.initializeMap();
+            };
+            document.body.appendChild(script);
+        },
+        
+        /**
+         * Initialize Leaflet map
+         */
+        initializeMap: function() {
+            var self = this;
+            
+            // Initialize map
+            this.elements.map = L.map(this.elements.mapContainer[0]).setView([0, 0], this.config.defaultZoom);
+            
+            // Add tile layer
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(this.elements.map);
+            
+            // Check if we have existing coordinates to display
+            if (this.elements.latitudeField.val() && this.elements.longitudeField.val()) {
+                var lat = parseFloat(this.elements.latitudeField.val());
+                var lng = parseFloat(this.elements.longitudeField.val());
+                this.setMapMarker(lat, lng);
+            }
+            
+            // Add click event to map
+            this.elements.map.on('click', function(e) {
+                var lat = e.latlng.lat;
+                var lng = e.latlng.lng;
+                
+                // Set marker at clicked location
+                self.setMapMarker(lat, lng);
+                
+                // Reverse geocode to get address
+                self.reverseGeocodeLocation(lat, lng);
+            });
+            
+            // Fix map display issues
+            setTimeout(function() {
+                self.elements.map.invalidateSize();
+            }, 100);
+        },
+        
+        /**
+         * Set marker on map at given coordinates
+         */
+        setMapMarker: function(lat, lng) {
+            // Remove existing marker if any
+            if (this.elements.marker) {
+                this.elements.map.removeLayer(this.elements.marker);
+            }
+            
+            // Create new marker
+            this.elements.marker = L.marker([lat, lng]).addTo(this.elements.map);
+            
+            // Center map on marker
+            this.elements.map.setView([lat, lng], 13);
+            
+            // Update hidden fields with coordinates
+            this.elements.latitudeField.val(lat);
+            this.elements.longitudeField.val(lng);
+        },
+        
+        /**
+         * Reverse geocode coordinates to get address
+         */
+        reverseGeocodeLocation: function(lat, lng) {
+            var self = this;
+            
+            // Show loading indicator
+            this.elements.loadingIndicator.show();
+            
+            // Build Nominatim API URL for reverse geocoding
+            var apiUrl = 'https://nominatim.openstreetmap.org/reverse';
+            var params = {
+                lat: lat,
+                lon: lng,
+                format: 'json',
+                addressdetails: 1
+            };
+            
+            // Make AJAX request
+            $.ajax({
+                url: apiUrl,
+                data: params,
+                dataType: 'json',
+                headers: {
+                    'Accept-Language': 'en', // Prefer English results
+                    'User-Agent': 'BuddyPress Location Field' // Required by Nominatim usage policy
+                },
+                success: function(data) {
+                    self.elements.loadingIndicator.hide();
+                    
+                    if (data && data.display_name) {
+                        // Update location field with address
+                        self.elements.locationField.val(data.display_name);
+                        
+                        // Save as selected location
+                        self.data.selectedLocation = {
+                            name: data.display_name,
+                            latitude: lat,
+                            longitude: lng
+                        };
+                        
+                        // Show coordinates
+                        self.showCoordinates(lat, lng);
+                    }
+                },
+                error: function() {
+                    self.elements.loadingIndicator.hide();
+                    console.error('Reverse geocoding failed');
+                    
+                    // Still update with generic location name
+                    var locationName = 'Location at ' + lat.toFixed(6) + ', ' + lng.toFixed(6);
+                    self.elements.locationField.val(locationName);
+                    
+                    // Save as selected location
+                    self.data.selectedLocation = {
+                        name: locationName,
+                        latitude: lat,
+                        longitude: lng
+                    };
+                    
+                    // Show coordinates
+                    self.showCoordinates(lat, lng);
+                }
+            });
+        },
+        
+        /**
+         * Show coordinates display
+         */
+        showCoordinates: function(lat, lng) {
+            // Show coordinates for debugging (optional)
+            if (this.elements.locationField.closest('.editfield').find('.location-coordinates').length === 0) {
+                var coordinates = $('<div class="location-coordinates">Coordinates: ' + 
+                                   lat + ', ' + lng + '</div>');
+                this.elements.locationField.closest('.editfield').append(coordinates);
+            } else {
+                this.elements.locationField.closest('.editfield').find('.location-coordinates')
+                    .text('Coordinates: ' + lat + ', ' + lng);
+            }
         },
 
         /**
@@ -368,15 +578,13 @@
             // Save selected location
             this.data.selectedLocation = location;
             
-            // Show coordinates for debugging (optional)
-            if (this.elements.locationField.closest('.editfield').find('.location-coordinates').length === 0) {
-                var coordinates = $('<div class="location-coordinates">Coordinates: ' + 
-                                   location.latitude + ', ' + location.longitude + '</div>');
-                this.elements.locationField.closest('.editfield').append(coordinates);
-            } else {
-                this.elements.locationField.closest('.editfield').find('.location-coordinates')
-                    .text('Coordinates: ' + location.latitude + ', ' + location.longitude);
+            // Update map marker if map is initialized
+            if (this.elements.map) {
+                this.setMapMarker(parseFloat(location.latitude), parseFloat(location.longitude));
             }
+            
+            // Show coordinates for debugging (optional)
+            this.showCoordinates(location.latitude, location.longitude);
         },
 
         /**
@@ -389,6 +597,12 @@
             
             // Remove coordinates display
             this.elements.locationField.closest('.editfield').find('.location-coordinates').remove();
+            
+            // Remove marker from map if it exists
+            if (this.elements.marker && this.elements.map) {
+                this.elements.map.removeLayer(this.elements.marker);
+                this.elements.marker = null;
+            }
         }
     };
 

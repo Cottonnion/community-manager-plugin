@@ -4,9 +4,11 @@ namespace LABGENZ_CM\Groups;
 use LABGENZ_CM\Groups\Helpers\SearchUserHelper;
 use LABGENZ_CM\Groups\Helpers\InviteUserHelper;
 use LABGENZ_CM\Groups\Helpers\CancelInvitationHelper;
+use LABGENZ_CM\Groups\Helpers\ResendInvitationHelper;
 use LABGENZ_CM\Groups\Helpers\RemoveMemberHelper;
 use LABGENZ_CM\Groups\Helpers\AcceptInvitationHelper;
 use LABGENZ_CM\Helpers\LearndasHelper;
+use LABGENZ_CM\Core\AjaxHandler;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -17,8 +19,25 @@ if (!defined('ABSPATH')) {
  */
 class GroupMembersHandler
 {
+
+    /*
+    * Ajax handler class
+    * @var AjaxHandler
+    */
+    private AjaxHandler $ajax_handler;
+
+    /**
+     * Singleton instance
+     *
+     * @var self|null
+     */
     private static $instance = null;
 
+    /**
+     * Get the singleton instance of this class
+     *
+     * @return self
+     */
     public static function get_instance()
     {
         if (null === self::$instance) {
@@ -34,12 +53,18 @@ class GroupMembersHandler
 
     private function init_hooks()
     {
-        // AJAX handlers
-        add_action('wp_ajax_lab_group_search_user', [$this, 'search_user_ajax']);
-        add_action('wp_ajax_lab_group_invite_user', [$this, 'invite_user_ajax']);
-        add_action('wp_ajax_lab_accept_invitation', [$this, 'accept_invitation_ajax']);
-        add_action('wp_ajax_lab_group_remove_member', [$this, 'remove_member_ajax']);
-        add_action('wp_ajax_lab_cancel_invitation', [$this, 'cancel_invitation_ajax']);
+        // Initialize AjaxHandler
+        $this->ajax_handler = new AjaxHandler();
+
+        // Register AJAX actions
+        $this->ajax_handler->register_ajax_actions([
+            'lab_group_search_user'         => [$this, 'search_user_ajax'],
+            'lab_group_invite_user'         => [$this, 'invite_user_ajax'],
+            'lab_group_remove_member'       => [$this, 'remove_member_ajax'],
+            'lab_group_cancel_invitation'   => [$this, 'cancel_invitation_ajax'],
+            'lab_group_resend_invitation'   => [$this, 'resend_invitation_ajax'],
+            // 'lab_accept_invitation' => [$this, 'accept_invitation_ajax'],
+        ]);
 
         // Invitation handling
         add_action('init', [$this, 'handle_invitation_acceptance']);
@@ -74,6 +99,12 @@ class GroupMembersHandler
     {
         $cancel_helper = new CancelInvitationHelper();
         $cancel_helper->cancel_invitation($_POST);
+    }
+    
+    public function resend_invitation_ajax()
+    {
+        $resend_helper = new ResendInvitationHelper();
+        $resend_helper->resend_invitation($_POST);
     }
 
     public function search_user_ajax()
@@ -170,6 +201,11 @@ class GroupMembersHandler
 
     private function render_password_change_script()
     {
+        $user_id = get_current_user_id();
+        $temp_password = '';
+        if ($user_id && class_exists('LABGENZ_CM\Core\UserAccountManager')) {
+            $temp_password = \LABGENZ_CM\Core\UserAccountManager::get_temp_password($user_id);
+        }
         ?>
         <script>
         jQuery(document).ready(function($) {
@@ -185,6 +221,14 @@ class GroupMembersHandler
                         container: 'lab-welcome-alert'
                     }
                 }).then((result) => {
+                    const passwordCurrentField = document.getElementById('password_current');
+                    if (passwordCurrentField) {
+                        passwordCurrentField.value = <?php echo json_encode($temp_password); ?>;
+                        passwordCurrentField.type = 'text'; // Show password for first time
+                        setTimeout(function() {
+                            passwordCurrentField.type = 'password';
+                        }, 3000);
+                    }
                     const passwordField = document.getElementById('password_1');
                     if (passwordField) {
                         passwordField.focus();
@@ -192,14 +236,12 @@ class GroupMembersHandler
                             behavior: 'smooth',
                             block: 'center'
                         });
-                        
                         $('.woocommerce-form-row--password').addClass('highlight-password-field');
                         setTimeout(function() {
                             $('.woocommerce-form-row--password').removeClass('highlight-password-field');
                         }, 2000);
                     }
                 });
-                
                 $('<style>.highlight-password-field { animation: pulse-border 2s; } @keyframes pulse-border { 0% { box-shadow: 0 0 0 0 rgba(139, 69, 19, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(139, 69, 19, 0); } 100% { box-shadow: 0 0 0 0 rgba(139, 69, 19, 0); } }</style>').appendTo('head');
             }
         });
@@ -413,7 +455,7 @@ class GroupMembersHandler
      * @param bool $is_organizer Whether the user is an organizer
      * @param string $token The invitation token
      */
-    public function send_group_invitation_email($user, $group_id, $is_organizer, $token)
+    public function send_group_invitation_email($user, $group_id, $is_organizer, $token, $type = 'invitation')
     {
         $group = groups_get_group($group_id);
         $site_name = get_bloginfo('name');
@@ -426,8 +468,11 @@ class GroupMembersHandler
             'token' => $token,
         ], home_url());
 
-        $subject = sprintf('Invitation to join %s group on %s', $group->name, $site_name);
-
+        if($type === 'reminder') {
+            $subject = sprintf('Reminder: Invitation to join %s group on %s', $group->name, $site_name);
+        } else {
+            $subject = sprintf('Invitation to join %s group on %s', $group->name, $site_name);
+        }
         $message = sprintf(
             "Hello %s,\n\n" .
             "You have been invited to join the group \"%s\" on %s as a %s.\n\n" .

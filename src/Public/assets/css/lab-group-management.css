@@ -17,6 +17,59 @@
 	padding-bottom: 8px;
 }
 
+/* Member Action Toolbar Styling */
+.lab-member-action {
+	cursor: pointer;
+	color: #3498db;
+}
+
+.lab-member-action:hover {
+	color: #2980b9;
+	text-decoration: underline;
+}
+
+/* SweetAlert Custom Styling */
+.lab-action-btn {
+	margin: 5px;
+	padding: 8px 15px;
+	border-radius: 4px;
+	font-weight: 500;
+	transition: all 0.3s ease;
+}
+
+.lab-action-btn.lab-action-primary {
+	background-color: #3498db;
+	color: white;
+	border: 1px solid #3498db;
+}
+
+.lab-action-btn.lab-action-primary:hover {
+	background-color: #2980b9;
+	border-color: #2980b9;
+}
+
+.lab-action-btn.lab-action-danger {
+	background-color: #e74c3c;
+	color: white;
+	border: 1px solid #e74c3c;
+}
+
+.lab-action-btn.lab-action-danger:hover {
+	background-color: #c0392b;
+	border-color: #c0392b;
+}
+
+.lab-action-btn.lab-action-secondary {
+	background-color: #95a5a6;
+	color: white;
+	border: 1px solid #95a5a6;
+}
+
+.lab-action-btn.lab-action-secondary:hover {
+	background-color: #7f8c8d;
+	border-color: #7f8c8d;
+}
+
 /* Invite Buttons */
 .lab-invite-buttons {
 	display: flex;
@@ -195,8 +248,9 @@
 }
 
 .lab-form-row select,
-.lab-form-row input[type="email"] {
-	/* padding: 12px 16px; */
+.lab-form-row input[type="email"],
+.lab-form-row input[type="text"] {
+	padding: 12px 16px;
 	border: 1px solid #cbd5e0;
 	border-radius: 6px;
 	font-size: 14px;
@@ -218,7 +272,7 @@
 }
 
 .lab-invite-btn {
-	background: #8B4513 !important;
+	background: var(--bb-primary-button-background-regular) !important;
 	color: white;
 	border: none !important;
 	padding: 12px 24px;
@@ -233,7 +287,7 @@
 }
 
 .lab-invite-btn:hover {
-	background: linear-gradient(135deg, #2980b9, #1f639a);
+	background: var(--bb-primary-button-background-hover);
 	transform: translateY(-1px);
 	box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
 }
@@ -252,7 +306,7 @@
 
 /* Send Invitations Button */
 #lab-send-bulk-invites {
-	background: #8B4513;
+	background: var(--bb-primary-button-background-regular) !important;
 	color: white;
 	border: none;
 	padding: 12px 24px;
@@ -269,7 +323,7 @@
 }
 
 #lab-send-bulk-invites:hover {
-	background: #6b340f;
+	background: var(--bb-primary-button-background-hover);
 	transform: translateY(-1px);
 	box-shadow: 0 4px 8px rgba(139, 69, 19, 0.3);
 }

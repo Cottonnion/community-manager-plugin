@@ -22,7 +22,7 @@ $group = groups_get_current_group();
     
     <div class="members-map-legend">
         <ul>
-            <li><span class="legend-admin"></span> <?php _e('Group Admin', 'buddyboss'); ?></li>
+            <li><span class="legend-admin"></span> <?php _e('Group Leader', 'buddyboss'); ?></li>
             <li><span class="legend-mod"></span> <?php _e('Group Moderator', 'buddyboss'); ?></li>
             <li><span class="legend-member"></span> <?php _e('Group Member', 'buddyboss'); ?></li>
         </ul>

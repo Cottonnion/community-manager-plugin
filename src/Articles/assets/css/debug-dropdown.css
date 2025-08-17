@@ -1,0 +1,7 @@
+/* Dropdown styling for troubleshooting - initial state should be hidden */
+.mlmmc-filter-dropdown #mlmmc-category-dropdown {
+    display: none; /* Initially hidden */
+    visibility: visible;
+    opacity: 1;
+    z-index: 9999;
+}
