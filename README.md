@@ -48,14 +48,16 @@ A modern WordPress plugin for advanced community management, group invitations, 
 
 ## Requirements
 
-- WordPress 5.6+
+- WordPress 5.6
+- Learndash
 - BuddyBoss or BuddyPress (for group features)
 - PHP 7.4+
 
 ## Credits
 
 - Developed by Labgenz
-- [BuddyBoss](https://www.buddyboss.com/) and [BuddyPress](https://buddypress.org/) for integration
+- **Main Developer** Yahya Eddaqqaq
+- BuddyBoss, LearnDash, and wooCommerce for integration
 
 ## License
 

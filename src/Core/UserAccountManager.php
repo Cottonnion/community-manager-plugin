@@ -148,25 +148,25 @@ class UserAccountManager {
 		// Additional WooCommerce customer meta fields
 		$additional_wc_fields = [
 			// Customer preferences
-			'_woocommerce_persistent_cart'    => '',
-			'wc_last_active'                  => time(),
-			'paying_customer'                 => 0,
-			'_money_spent_excluding_taxes'    => 0,
-			
+			'_woocommerce_persistent_cart'             => '',
+			'wc_last_active'                           => time(),
+			'paying_customer'                          => 0,
+			'_money_spent_excluding_taxes'             => 0,
+
 			// Customer session data
 			'_woocommerce_load_saved_cart_after_login' => 0,
-			
+
 			// Marketing preferences (if you use these)
-			'marketing_emails_consent'        => '',
-			'newsletter_subscribe'            => '',
-			
+			'marketing_emails_consent'                 => '',
+			'newsletter_subscribe'                     => '',
+
 			// Customer notes/preferences
-			'customer_notes'                  => '',
-			'preferred_payment_method'        => '',
-			
+			'customer_notes'                           => '',
+			'preferred_payment_method'                 => '',
+
 			// Account creation source tracking
-			'account_created_via'             => 'labgenz_system',
-			'account_created_date'            => current_time( 'mysql' ),
+			'account_created_via'                      => 'labgenz_system',
+			'account_created_date'                     => current_time( 'mysql' ),
 		];
 
 		// Update all billing fields (including empty ones for consistency)
@@ -192,9 +192,9 @@ class UserAccountManager {
 		if ( empty( $billing_fields['billing_country'] ) ) {
 			$default_country = get_option( 'woocommerce_default_country', 'US' );
 			// Extract country code if it includes state (e.g., "US:CA" -> "US")
-			$country_code = strpos( $default_country, ':' ) !== false ? 
+			$country_code = strpos( $default_country, ':' ) !== false ?
 				explode( ':', $default_country )[0] : $default_country;
-			
+
 			update_user_meta( $user_id, 'billing_country', $country_code );
 			update_user_meta( $user_id, 'shipping_country', $country_code );
 		}
@@ -203,7 +203,7 @@ class UserAccountManager {
 		if ( function_exists( 'WC' ) && WC()->customer ) {
 			// Clear any existing customer data cache
 			wp_cache_delete( $user_id, 'user_meta' );
-			
+
 			// If this is the current user, update WC customer object
 			if ( get_current_user_id() === $user_id ) {
 				WC()->customer->read( $user_id );

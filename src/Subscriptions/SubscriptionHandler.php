@@ -55,35 +55,35 @@ class SubscriptionHandler {
 	 * Subscription types mapping with optional durations
 	 */
 	const SUBSCRIPTION_TYPES = [
-		'basic-subscription'        => [
+		'basic-subscription'          => [
 			'type'     => 'basic',
 			'duration' => '+1 year',
 		],
-		'monthly-basic-subscription' => [
+		'monthly-basic-subscription'  => [
 			'type'     => 'monthly-basic-subscription',
 			'duration' => '+1 month',
 		],
-		'mlm-apprentice-yearly' => [
+		'mlm-apprentice-yearly'       => [
 			'type'     => 'apprentice-yearly',
 			'duration' => '+1 year',
 			'group_id' => 134,
 		],
-		'mlm-apprentice-monthly' => [
+		'mlm-apprentice-monthly'      => [
 			'type'     => 'apprentice-monthly',
 			'duration' => '+1 month',
 			'group_id' => 134,
 		],
-		'mlm-team-leader-yearly' => [
+		'mlm-team-leader-yearly'      => [
 			'type'     => 'team-leader-yearly',
 			'duration' => '+1 year',
 			'group_id' => 135,
 		],
-		'mlm-team-leader-monthly' => [
+		'mlm-team-leader-monthly'     => [
 			'type'     => 'team-leader-monthly',
 			'duration' => '+1 month',
 			'group_id' => 135,
 		],
-		'mlm-freedom-builder-yearly' => [
+		'mlm-freedom-builder-yearly'  => [
 			'type'     => 'freedom-builder-yearly',
 			'duration' => '+1 year',
 			'group_id' => 136,
@@ -115,15 +115,15 @@ class SubscriptionHandler {
 	 * @param string $message The message to log
 	 * @return void
 	 */
-	public function log_debug(string $message): void {
+	public function log_debug( string $message ): void {
 		// return; // Disable logging for nows
 		error_log( 'started' );
 		// Prepare log message with timestamp
-		$timestamp = date('[Y-m-d H:i:s]');
+		$timestamp   = date( '[Y-m-d H:i:s]' );
 		$log_message = $timestamp . ' ' . $message;
 
 		// Log to WordPress debug.log
-		error_log($log_message);
+		error_log( $log_message );
 	}
 
 	/**
@@ -170,7 +170,7 @@ class SubscriptionHandler {
 		$this->init_hooks();
 	}
 
-	
+
 	/**
 	 * Initialize WordPress hooks
 	 *
@@ -182,7 +182,7 @@ class SubscriptionHandler {
 
 		// Auto-complete subscription orders (runs first)
 		add_action( 'woocommerce_payment_complete', [ $this->wc_helper, 'auto_complete_subscription_order' ], 1 );
-		
+
 		// Process subscription after payment
 		add_action( 'woocommerce_payment_complete', [ $this, 'process_subscription' ], 5 );
 		add_action( 'woocommerce_order_status_completed', [ $this, 'activate_subscription' ] );
@@ -190,13 +190,13 @@ class SubscriptionHandler {
 
 		// Auto-create user from order if needed
 		add_action( 'woocommerce_thankyou', [ $this->wc_helper, 'auto_create_user_from_order' ], 5 );
-		
+
 		// Store subscription in WC session
 		add_action( 'woocommerce_thankyou', [ $this->wc_helper, 'store_subscription_in_wc_session' ], 10 );
 
 		// Apply subscription to user after creation
 		add_action( 'woocommerce_created_customer', [ $this, 'apply_subscription_to_user' ] );
-		
+
 		// Handle guest checkout completion
 		add_action( 'woocommerce_checkout_order_processed', [ $this->wc_helper, 'handle_guest_checkout' ], 10, 3 );
 
@@ -205,10 +205,10 @@ class SubscriptionHandler {
 
 		// Cron job for subscription expiry checks
 		add_action( 'labgenz_check_subscription_expiry', [ __CLASS__, 'check_subscription_expiry' ] );
-		
+
 		// Cron job for updating accessible articles
 		add_action( 'labgenz_update_accessible_articles', [ __CLASS__, 'update_accessible_articles' ] );
-		
+
 		register_activation_hook( __FILE__, [ __CLASS__, 'schedule_cron_jobs' ] );
 		register_deactivation_hook( __FILE__, [ __CLASS__, 'unschedule_cron_jobs' ] );
 	}
@@ -220,12 +220,12 @@ class SubscriptionHandler {
 	 * @param  int  $product_id Product ID being added
 	 * @param  int  $quantity   Quantity being added
 	 * @return bool
-	*/
+	 */
 	public function validate_subscription_cart( $passed, $product_id, $quantity ): bool {
-		$this->log_debug("Starting validate_subscription_cart with priority 25 (after cart clearing)");
-		
+		$this->log_debug( 'Starting validate_subscription_cart with priority 25 (after cart clearing)' );
+
 		if ( ! $passed ) {
-			$this->log_debug("Validation already failed, returning false");
+			$this->log_debug( 'Validation already failed, returning false' );
 			return $passed;
 		}
 
@@ -249,34 +249,34 @@ class SubscriptionHandler {
 		$new_subscription_type = $subscription_data['type'];
 
 		// Log the subscription type being added
-		$this->log_debug("P00000 - roduct SKU: $sku");
-		$this->log_debug("Attempting to add subscription of type: $new_subscription_type");
+		$this->log_debug( "P00000 - roduct SKU: $sku" );
+		$this->log_debug( "Attempting to add subscription of type: $new_subscription_type" );
 
 		// Check if user already has a subscription
 		$user_id = get_current_user_id();
 		if ( $user_id ) {
-			$user_subscriptions = SubscriptionStorage::get_active_user_subscriptions($user_id);
-			
+			$user_subscriptions = SubscriptionStorage::get_active_user_subscriptions( $user_id );
+
 			// Log the user's active subscriptions
-			$this->log_debug("Active subscriptions for user $user_id: " . print_r($user_subscriptions, true));
-			
-			if (!empty($user_subscriptions)) {
-				$allow_purchase = true; // Default to allowing purchase unless a blocking condition is met
+			$this->log_debug( "Active subscriptions for user $user_id: " . print_r( $user_subscriptions, true ) );
+
+			if ( ! empty( $user_subscriptions ) ) {
+				$allow_purchase        = true; // Default to allowing purchase unless a blocking condition is met
 				$upgrade_message_shown = false;
-				
-				foreach ($user_subscriptions as $subscription) {
+
+				foreach ( $user_subscriptions as $subscription ) {
 					$existing_subscription_type = $subscription['type'];
 
 					// Log the existing subscription type
-					$this->log_debug("Existing subscription type: $existing_subscription_type");
+					$this->log_debug( "Existing subscription type: $existing_subscription_type" );
 
 					// Check if it's the same subscription (exact match)
-					if ($existing_subscription_type === $new_subscription_type) {
-						$this->log_debug("Duplicate subscription detected: Existing: '$existing_subscription_type' vs New: '$new_subscription_type'");
+					if ( $existing_subscription_type === $new_subscription_type ) {
+						$this->log_debug( "Duplicate subscription detected: Existing: '$existing_subscription_type' vs New: '$new_subscription_type'" );
 						wc_add_notice(
 							sprintf(
-								__('You already have a %s subscription active.', 'labgenz-community-management'),
-								ucfirst(str_replace('-', ' ', $existing_subscription_type))
+								__( 'You already have a %s subscription active.', 'labgenz-community-management' ),
+								ucfirst( str_replace( '-', ' ', $existing_subscription_type ) )
 							),
 							'error'
 						);
@@ -284,48 +284,48 @@ class SubscriptionHandler {
 					}
 
 					// Check if subscriptions are related (same family)
-					if (SubscriptionValidator::are_subscriptions_related($existing_subscription_type, $new_subscription_type)) {
-						$this->log_debug("Subscriptions are related: $existing_subscription_type and $new_subscription_type");
+					if ( SubscriptionValidator::are_subscriptions_related( $existing_subscription_type, $new_subscription_type ) ) {
+						$this->log_debug( "Subscriptions are related: $existing_subscription_type and $new_subscription_type" );
 
 						// Check if it's a downgrade within the same family
-						if (SubscriptionValidator::is_subscription_downgrade($existing_subscription_type, $new_subscription_type)) {
-							$this->log_debug("Downgrade detected from $existing_subscription_type to $new_subscription_type");
+						if ( SubscriptionValidator::is_subscription_downgrade( $existing_subscription_type, $new_subscription_type ) ) {
+							$this->log_debug( "Downgrade detected from $existing_subscription_type to $new_subscription_type" );
 							wc_add_notice(
 								sprintf(
-									__('You cannot downgrade from %1$s to %2$s. Downgrades within the same subscription family are not supported.', 'labgenz-community-management'),
-									ucfirst(str_replace('-', ' ', $existing_subscription_type)),
-									ucfirst(str_replace('-', ' ', $new_subscription_type))
-							),
-							'error'
-						);
-						return false;
+									__( 'You cannot downgrade from %1$s to %2$s. Downgrades within the same subscription family are not supported.', 'labgenz-community-management' ),
+									ucfirst( str_replace( '-', ' ', $existing_subscription_type ) ),
+									ucfirst( str_replace( '-', ' ', $new_subscription_type ) )
+								),
+								'error'
+							);
+							return false;
 						}
 
 						// Check if it's a monthly to yearly upgrade
-						if (SubscriptionValidator::is_monthly_to_yearly_upgrade($existing_subscription_type, $new_subscription_type)) {
-							$this->log_debug("Monthly to yearly upgrade detected: $existing_subscription_type to $new_subscription_type");
-							$remaining_days = SubscriptionStorage::calculate_remaining_days($subscription);
-							if ($remaining_days > 0) {
+						if ( SubscriptionValidator::is_monthly_to_yearly_upgrade( $existing_subscription_type, $new_subscription_type ) ) {
+							$this->log_debug( "Monthly to yearly upgrade detected: $existing_subscription_type to $new_subscription_type" );
+							$remaining_days = SubscriptionStorage::calculate_remaining_days( $subscription );
+							if ( $remaining_days > 0 ) {
 								wc_add_notice(
 									sprintf(
-										__('You currently have %d days remaining on your monthly subscription. After purchase, these days will be added to your new yearly subscription.', 'labgenz-community-management'),
+										__( 'You currently have %d days remaining on your monthly subscription. After purchase, these days will be added to your new yearly subscription.', 'labgenz-community-management' ),
 										$remaining_days
 									),
 									'notice'
 								);
 							}
 							// Immediately allow the upgrade and stop further checks
-							$this->log_debug("Monthly to yearly upgrade approved - returning true to allow purchase");
+							$this->log_debug( 'Monthly to yearly upgrade approved - returning true to allow purchase' );
 							return true;
 						}
 
 						// If we get here, subscriptions are related but not compatible
-						$this->log_debug("Incompatible related subscriptions: $existing_subscription_type and $new_subscription_type");
+						$this->log_debug( "Incompatible related subscriptions: $existing_subscription_type and $new_subscription_type" );
 						wc_add_notice(
 							sprintf(
-								__('You cannot have both %1$s and %2$s subscriptions. Please contact support if you need assistance.', 'labgenz-community-management'),
-								ucfirst(str_replace('-', ' ', $existing_subscription_type)),
-								ucfirst(str_replace('-', ' ', $new_subscription_type))
+								__( 'You cannot have both %1$s and %2$s subscriptions. Please contact support if you need assistance.', 'labgenz-community-management' ),
+								ucfirst( str_replace( '-', ' ', $existing_subscription_type ) ),
+								ucfirst( str_replace( '-', ' ', $new_subscription_type ) )
 							),
 							'error'
 						);
@@ -350,14 +350,14 @@ class SubscriptionHandler {
 						);
 						return false;
 					}
-					
+
 					// Check if cart already has a related subscription (from same family)
 					if ( in_array( $cart_sku, self::SUBSCRIPTION_SKUS, true ) ) {
 						$cart_subscription_data = self::SUBSCRIPTION_TYPES[ $cart_sku ] ?? null;
 						if ( $cart_subscription_data ) {
 							$cart_subscription_type = $cart_subscription_data['type'];
-							
-							if (SubscriptionValidator::are_subscriptions_related($cart_subscription_type, $new_subscription_type)) {
+
+							if ( SubscriptionValidator::are_subscriptions_related( $cart_subscription_type, $new_subscription_type ) ) {
 								wc_add_notice(
 									__( 'You cannot purchase related subscription types in the same order. Please complete your current order first.', 'labgenz-community-management' ),
 									'error'
@@ -484,9 +484,9 @@ class SubscriptionHandler {
 	/**
 	 * Apply subscription to user by ID
 	 *
-	 * @param  int           $user_id           User ID
+	 * @param  int            $user_id           User ID
 	 * @param  \WC_Order|null $order             Order object (optional)
-	 * @param  array|null    $subscription_data Subscription data from session (optional)
+	 * @param  array|null     $subscription_data Subscription data from session (optional)
 	 * @return void
 	 */
 	public function apply_subscription_to_user_by_id( $user_id, $order = null, $subscription_data = null ): void {
@@ -504,7 +504,7 @@ class SubscriptionHandler {
 			$order->update_meta_data( self::SUBSCRIPTION_RESOURCES_META, $resources );
 			$order->save();
 
-			$amount = $order->get_total();
+			$amount         = $order->get_total();
 			$payment_method = $order->get_payment_method_title();
 		} elseif ( $subscription_data ) {
 			$subscription_type = $subscription_data['type'];
@@ -521,82 +521,82 @@ class SubscriptionHandler {
 		if ( ! $subscription_type ) {
 			return;
 		}
-		
+
 		// Check if user already has this type of subscription (prevent duplicates)
-		$existing_subscription = SubscriptionStorage::get_subscription_by_type($user_id, $subscription_type, true);
-		if ($existing_subscription) {
+		$existing_subscription = SubscriptionStorage::get_subscription_by_type( $user_id, $subscription_type, true );
+		if ( $existing_subscription ) {
 			// User already has this subscription active - don't create another one
 			return;
 		}
 
 		// Generate a unique subscription ID
 		$subscription_id = 'sub_' . uniqid();
-		
+
 		// Check for monthly to yearly upgrade
-		$active_subscriptions = SubscriptionStorage::get_active_user_subscriptions($user_id);
-		$upgraded_from_monthly = false;
+		$active_subscriptions    = SubscriptionStorage::get_active_user_subscriptions( $user_id );
+		$upgraded_from_monthly   = false;
 		$monthly_subscription_id = null;
-		
+
 		// Debug log to see active subscriptions
-		$this->log_debug("Active subscriptions for user $user_id before upgrade check: " . print_r($active_subscriptions, true));
-		
-		foreach ($active_subscriptions as $active_sub) {
+		$this->log_debug( "Active subscriptions for user $user_id before upgrade check: " . print_r( $active_subscriptions, true ) );
+
+		foreach ( $active_subscriptions as $active_sub ) {
 			// Debug log to examine each subscription
-			$this->log_debug("Checking subscription: " . print_r($active_sub, true));
-			$this->log_debug("Comparing '{$active_sub['type']}' with '$subscription_type'");
-			
-			if (isset($active_sub['type']) && SubscriptionValidator::is_monthly_to_yearly_upgrade($active_sub['type'], $subscription_type)) {
-				$upgraded_from_monthly = true;
+			$this->log_debug( 'Checking subscription: ' . print_r( $active_sub, true ) );
+			$this->log_debug( "Comparing '{$active_sub['type']}' with '$subscription_type'" );
+
+			if ( isset( $active_sub['type'] ) && SubscriptionValidator::is_monthly_to_yearly_upgrade( $active_sub['type'], $subscription_type ) ) {
+				$upgraded_from_monthly   = true;
 				$monthly_subscription_id = $active_sub['id'] ?? null;
-				$this->log_debug("Found monthly to yearly upgrade: Monthly ID = $monthly_subscription_id");
+				$this->log_debug( "Found monthly to yearly upgrade: Monthly ID = $monthly_subscription_id" );
 				break;
 			}
 		}
-		
+
 		// Create the new subscription
 		$new_subscription = [
-			'id'            => $subscription_id,
-			'type'          => $subscription_type,
-			'status'        => $status,
-			'expires'       => $expires,
-			'resources'     => $resources,
-			'created'       => current_time('mysql'),
-			'updated'       => current_time('mysql'),
-			'amount'        => $amount,
+			'id'             => $subscription_id,
+			'type'           => $subscription_type,
+			'status'         => $status,
+			'expires'        => $expires,
+			'resources'      => $resources,
+			'created'        => current_time( 'mysql' ),
+			'updated'        => current_time( 'mysql' ),
+			'amount'         => $amount,
 			'payment_method' => $payment_method,
 		];
-		
+
 		// Save the subscription start date for basic subscriptions for article access
-		$subscription_start_date = current_time('mysql');
-		update_user_meta($user_id, '_subscription_start_date', $subscription_start_date);
-		
+		$subscription_start_date = current_time( 'mysql' );
+		update_user_meta( $user_id, '_subscription_start_date', $subscription_start_date );
+
 		// Save accessible article IDs since subscription start for basic subscription
-		if (strpos($subscription_type, 'basic') !== false) {
-			$this->store_accessible_articles($user_id, $subscription_start_date);
+		if ( strpos( $subscription_type, 'basic' ) !== false ) {
+			$this->store_accessible_articles( $user_id, $subscription_start_date );
 		}
-		
+
 		// Save the new subscription
-		SubscriptionStorage::save_subscription($user_id, $new_subscription);
-		
+		SubscriptionStorage::save_subscription( $user_id, $new_subscription );
+
 		// Add user to BuddyBoss group if applicable
 		$group_id = null;
-		foreach (self::SUBSCRIPTION_TYPES as $sku => $data) {
-			if ($data['type'] === $subscription_type && isset($data['group_id'])) {
+		foreach ( self::SUBSCRIPTION_TYPES as $sku => $data ) {
+			if ( $data['type'] === $subscription_type && isset( $data['group_id'] ) ) {
 				$group_id = $data['group_id'];
 				break;
 			}
 		}
-		
-		if ($group_id && function_exists('groups_join_group')) {
-			$result = groups_join_group($group_id, $user_id);
-			$this->log_debug("Adding user $user_id to group $group_id for subscription $subscription_type. Result: " . ($result ? 'success' : 'failed'));
+
+		if ( $group_id && function_exists( 'groups_join_group' ) ) {
+			$result = groups_join_group( $group_id, $user_id );
+			$this->log_debug( "Adding user $user_id to group $group_id for subscription $subscription_type. Result: " . ( $result ? 'success' : 'failed' ) );
 		}
-		
+
 		// If upgrading from monthly to yearly, add remaining days and deactivate monthly subscription
-		if ($upgraded_from_monthly && $monthly_subscription_id) {
-			$this->log_debug("Processing monthly to yearly upgrade: Adding days from monthly subscription $monthly_subscription_id to yearly subscription $subscription_id");
-			$success = SubscriptionStorage::add_remaining_days($user_id, $monthly_subscription_id, $subscription_id);
-			$this->log_debug("Upgrade processing result: " . ($success ? "Success" : "Failed"));
+		if ( $upgraded_from_monthly && $monthly_subscription_id ) {
+			$this->log_debug( "Processing monthly to yearly upgrade: Adding days from monthly subscription $monthly_subscription_id to yearly subscription $subscription_id" );
+			$success = SubscriptionStorage::add_remaining_days( $user_id, $monthly_subscription_id, $subscription_id );
+			$this->log_debug( 'Upgrade processing result: ' . ( $success ? 'Success' : 'Failed' ) );
 		}
 	}
 
@@ -609,14 +609,14 @@ class SubscriptionHandler {
 	private function calculate_expiry_date( string $subscription_type ): string {
 		// Find the SKU that maps to this subscription type
 		$duration = self::DEFAULT_EXPIRY_DURATION;
-		
-		foreach (self::SUBSCRIPTION_TYPES as $sku => $data) {
-			if ($data['type'] === $subscription_type) {
+
+		foreach ( self::SUBSCRIPTION_TYPES as $sku => $data ) {
+			if ( $data['type'] === $subscription_type ) {
 				$duration = $data['duration'];
 				break;
 			}
 		}
-		
+
 		return date( 'Y-m-d H:i:s', strtotime( $duration ) );
 	}
 
@@ -627,7 +627,7 @@ class SubscriptionHandler {
 	 * @return bool
 	 */
 	public static function user_has_active_subscription( $user_id ): bool {
-		return SubscriptionStorage::user_has_active_subscription($user_id);
+		return SubscriptionStorage::user_has_active_subscription( $user_id );
 	}
 
 	/**
@@ -637,17 +637,17 @@ class SubscriptionHandler {
 	 * @return string|null
 	 */
 	public static function get_user_subscription_type( $user_id ): ?string {
-		if (!self::user_has_active_subscription($user_id)) {
+		if ( ! self::user_has_active_subscription( $user_id ) ) {
 			return null;
 		}
 
-		$active_subscriptions = SubscriptionStorage::get_active_user_subscriptions($user_id);
-		if (empty($active_subscriptions)) {
+		$active_subscriptions = SubscriptionStorage::get_active_user_subscriptions( $user_id );
+		if ( empty( $active_subscriptions ) ) {
 			return null;
 		}
-		
+
 		// Get the primary subscription based on hierarchy
-		$primary = SubscriptionValidator::get_primary_subscription($active_subscriptions);
+		$primary = SubscriptionValidator::get_primary_subscription( $active_subscriptions );
 		return $primary ? $primary['type'] : null;
 	}
 
@@ -658,7 +658,7 @@ class SubscriptionHandler {
 	 * @return array
 	 */
 	public static function get_user_subscription_types( $user_id ): array {
-		return SubscriptionStorage::get_user_subscription_types($user_id);
+		return SubscriptionStorage::get_user_subscription_types( $user_id );
 	}
 
 	/**
@@ -668,7 +668,7 @@ class SubscriptionHandler {
 	 * @return array
 	 */
 	public static function get_user_subscription_resources( $user_id ): array {
-		return SubscriptionResources::get_user_subscription_resources($user_id);
+		return SubscriptionResources::get_user_subscription_resources( $user_id );
 	}
 
 	/**
@@ -678,7 +678,7 @@ class SubscriptionHandler {
 	 * @return bool
 	 */
 	public static function user_has_organization_subscription( $user_id ): bool {
-		return SubscriptionResources::user_has_organization_subscription($user_id);
+		return SubscriptionResources::user_has_organization_subscription( $user_id );
 	}
 
 	/**
@@ -688,7 +688,7 @@ class SubscriptionHandler {
 	 * @return bool
 	 */
 	public static function user_can_create_groups( $user_id ): bool {
-		return SubscriptionResources::user_can_create_groups($user_id);
+		return SubscriptionResources::user_can_create_groups( $user_id );
 	}
 
 	/**
@@ -698,7 +698,7 @@ class SubscriptionHandler {
 	 * @return array
 	 */
 	public static function get_user_allowed_course_categories( $user_id ): array {
-		return SubscriptionResources::get_user_allowed_course_categories($user_id);
+		return SubscriptionResources::get_user_allowed_course_categories( $user_id );
 	}
 
 	/**
@@ -709,7 +709,7 @@ class SubscriptionHandler {
 	 * @return bool
 	 */
 	public static function user_has_resource_access( $user_id, string $resource_key ): bool {
-		return SubscriptionResources::user_has_resource_access($user_id, $resource_key);
+		return SubscriptionResources::user_has_resource_access( $user_id, $resource_key );
 	}
 
 	/**
@@ -728,7 +728,7 @@ class SubscriptionHandler {
 		if ( ! wp_next_scheduled( 'labgenz_check_subscription_expiry' ) ) {
 			wp_schedule_event( time(), 'daily', 'labgenz_check_subscription_expiry' );
 		}
-		
+
 		if ( ! wp_next_scheduled( 'labgenz_update_accessible_articles' ) ) {
 			wp_schedule_event( time(), 'daily', 'labgenz_update_accessible_articles' );
 		}
@@ -742,7 +742,7 @@ class SubscriptionHandler {
 		if ( $timestamp ) {
 			wp_unschedule_event( $timestamp, 'labgenz_check_subscription_expiry' );
 		}
-		
+
 		$timestamp = wp_next_scheduled( 'labgenz_update_accessible_articles' );
 		if ( $timestamp ) {
 			wp_unschedule_event( $timestamp, 'labgenz_update_accessible_articles' );
@@ -756,37 +756,37 @@ class SubscriptionHandler {
 		$users = get_users();
 
 		foreach ( $users as $user ) {
-			$user_id = $user->ID;
-			$subscriptions = SubscriptionStorage::get_user_subscriptions($user_id);
+			$user_id               = $user->ID;
+			$subscriptions         = SubscriptionStorage::get_user_subscriptions( $user_id );
 			$subscriptions_updated = false;
-			
-			if (!empty($subscriptions)) {
-				foreach ($subscriptions as &$subscription) {
-					if (isset($subscription['expires']) && 
-						strtotime($subscription['expires']) <= time() && 
-						isset($subscription['status']) && 
-						$subscription['status'] === 'active') {
-						
+
+			if ( ! empty( $subscriptions ) ) {
+				foreach ( $subscriptions as &$subscription ) {
+					if ( isset( $subscription['expires'] ) &&
+						strtotime( $subscription['expires'] ) <= time() &&
+						isset( $subscription['status'] ) &&
+						$subscription['status'] === 'active' ) {
+
 						$subscription['status'] = 'inactive';
-						$subscriptions_updated = true;
+						$subscriptions_updated  = true;
 					}
 				}
-				
-				if ($subscriptions_updated) {
-					update_user_meta($user_id, SubscriptionStorage::SUBSCRIPTIONS_META, $subscriptions);
+
+				if ( $subscriptions_updated ) {
+					update_user_meta( $user_id, SubscriptionStorage::SUBSCRIPTIONS_META, $subscriptions );
 				}
 			}
 		}
 	}
-	
+
 	/**
 	 * Store accessible article IDs for a user since their subscription start date
 	 *
-	 * @param int $user_id User ID
+	 * @param int    $user_id User ID
 	 * @param string $start_date Subscription start date
 	 * @return void
 	 */
-	private function store_accessible_articles(int $user_id, string $start_date): void {
+	private function store_accessible_articles( int $user_id, string $start_date ): void {
 		// Get all articles published since the subscription start date
 		$args = [
 			'post_type'      => 'mlmmc_artiicle',
@@ -800,16 +800,16 @@ class SubscriptionHandler {
 			],
 			'fields'         => 'ids', // Only get post IDs
 		];
-		
-		$query = new \WP_Query($args);
-		
-		if ($query->have_posts()) {
+
+		$query = new \WP_Query( $args );
+
+		if ( $query->have_posts() ) {
 			$article_ids = $query->posts;
-			update_user_meta($user_id, '_accessible_article_ids', $article_ids);
-			$this->log_debug("Stored " . count($article_ids) . " accessible article IDs for user $user_id");
+			update_user_meta( $user_id, '_accessible_article_ids', $article_ids );
+			$this->log_debug( 'Stored ' . count( $article_ids ) . " accessible article IDs for user $user_id" );
 		}
 	}
-	
+
 	/**
 	 * Update accessible articles for all users with basic subscriptions
 	 * Should be called via cron daily to add new articles
@@ -818,26 +818,26 @@ class SubscriptionHandler {
 	 */
 	public static function update_accessible_articles(): void {
 		$instance = self::get_instance();
-		$users = get_users();
-		
-		foreach ($users as $user) {
-			$user_id = $user->ID;
-			$subscription_types = self::get_user_subscription_types($user_id);
-			
+		$users    = get_users();
+
+		foreach ( $users as $user ) {
+			$user_id            = $user->ID;
+			$subscription_types = self::get_user_subscription_types( $user_id );
+
 			// Check if user has a basic subscription
 			$has_basic = false;
-			foreach ($subscription_types as $type) {
-				if (strpos($type, 'basic') !== false) {
+			foreach ( $subscription_types as $type ) {
+				if ( strpos( $type, 'basic' ) !== false ) {
 					$has_basic = true;
 					break;
 				}
 			}
-			
-			if ($has_basic) {
+
+			if ( $has_basic ) {
 				// Get subscription start date
-				$start_date = get_user_meta($user_id, '_subscription_start_date', true);
-				if ($start_date) {
-					$instance->store_accessible_articles($user_id, $start_date);
+				$start_date = get_user_meta( $user_id, '_subscription_start_date', true );
+				if ( $start_date ) {
+					$instance->store_accessible_articles( $user_id, $start_date );
 				}
 			}
 		}

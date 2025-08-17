@@ -2,7 +2,7 @@
  * Members Map JavaScript
  *
  * Handles the initialization and display of the members map using Leaflet.js
- * 
+ *
  * @deprecated This file is deprecated and will be removed in future versions.
  * It is replaced by the new modular structure in `members-map-new.js`
  * and it's modules.

@@ -96,15 +96,15 @@ class GamiPressDataProvider {
 	 * Constructor
 	 */
 	public function __construct() {
-		$this->rank_type           = get_option( 'ghi_rank_type' );
-		$this->points_type         = get_option( 'ghi_points_type' );
-		$this->coins_type          = get_option( 'ghi_coins_type' );
-		$this->reward_points_type  = 'reward_points';
-		$this->redeem_page         = get_option( 'ghi_redeem_page' );
+		$this->rank_type             = get_option( 'ghi_rank_type' );
+		$this->points_type           = get_option( 'ghi_points_type' );
+		$this->coins_type            = get_option( 'ghi_coins_type' );
+		$this->reward_points_type    = 'reward_points';
+		$this->redeem_page           = get_option( 'ghi_redeem_page' );
 		$this->user_rank_meta_prefix = '_gamipress_';
-		$this->base_points         = 50;
-		$this->default_coins_image = 'https://v2mlmmasteryclub.labgenz.com/wp-content/uploads/2025/07/box-heart-1.png';
-		$this->default_accent_color = '#007cba';
+		$this->base_points           = 50;
+		$this->default_coins_image   = 'https://v2mlmmasteryclub.labgenz.com/wp-content/uploads/2025/07/box-heart-1.png';
+		$this->default_accent_color  = '#007cba';
 
 		$this->requirement_meta_keys = [
 			'_gamipress_points_required',
@@ -128,12 +128,12 @@ class GamiPressDataProvider {
 	 * @return array Gamification data including ranks, points, coins, and reward points
 	 */
 	public function get_gamification_data( $user_id ) {
-		$current_rank_id        = gamipress_get_user_rank_id( $user_id, $this->rank_type );
-		$next_level_id          = gamipress_get_next_user_rank_id( $user_id, $this->rank_type );
-		$current_rank           = get_the_title( $current_rank_id );
-		$current_points         = gamipress_get_user_points( $user_id, $this->points_type );
-		$current_coins          = gamipress_get_user_points( $user_id, $this->coins_type );
-		$current_reward_points  = gamipress_get_user_points( $user_id, $this->reward_points_type );
+		$current_rank_id       = gamipress_get_user_rank_id( $user_id, $this->rank_type );
+		$next_level_id         = gamipress_get_next_user_rank_id( $user_id, $this->rank_type );
+		$current_rank          = get_the_title( $current_rank_id );
+		$current_points        = gamipress_get_user_points( $user_id, $this->points_type );
+		$current_coins         = gamipress_get_user_points( $user_id, $this->coins_type );
+		$current_reward_points = gamipress_get_user_points( $user_id, $this->reward_points_type );
 
 		$points_needed = 0;
 		$completion    = 0;
@@ -238,17 +238,17 @@ class GamiPressDataProvider {
 		$redeem_url = $this->redeem_page ? get_permalink( $this->redeem_page ) : 'javascript:void(0)';
 
 		$data = [
-			'rank_img'             => get_the_post_thumbnail_url( $current_rank_id ),
-			'current_rank'         => $current_rank,
-			'current_points'       => $current_points,
-			'points_needed'        => $points_needed,
-			'completion'           => $completion,
-			'redeem_screen'        => $redeem_url,
-			'coins_img'            => $this->get_coins_image( $this->coins_type ),
-			'current_coins'        => $current_coins,
+			'rank_img'              => get_the_post_thumbnail_url( $current_rank_id ),
+			'current_rank'          => $current_rank,
+			'current_points'        => $current_points,
+			'points_needed'         => $points_needed,
+			'completion'            => $completion,
+			'redeem_screen'         => $redeem_url,
+			'coins_img'             => $this->get_coins_image( $this->coins_type ),
+			'current_coins'         => $current_coins,
 			'current_reward_points' => $current_reward_points,
-			'reward_points_img'    => $this->get_coins_image( $this->reward_points_type ),
-			'accent_color'         => $this->default_accent_color,
+			'reward_points_img'     => $this->get_coins_image( $this->reward_points_type ),
+			'accent_color'          => $this->default_accent_color,
 		];
 
 		return $data;

@@ -40,9 +40,9 @@ class OrganizationAccess {
 	/**
 	 * Request status constants
 	 */
-	const STATUS_PENDING  = 'pending';
-	const STATUS_APPROVED = 'approved';
-	const STATUS_REJECTED = 'rejected';
+	const STATUS_PENDING   = 'pending';
+	const STATUS_APPROVED  = 'approved';
+	const STATUS_REJECTED  = 'rejected';
 	const STATUS_COMPLETED = 'completed';
 
 	/**
@@ -57,18 +57,18 @@ class OrganizationAccess {
 	 */
 	public function init(): void {
 		add_action( 'init', [ $this, 'handle_create_group_access' ] );
-		
+
 		// ADD THESE TWO LINES:
 		add_filter( 'bp_notifications_get_notifications_for_user', [ $this, 'format_organization_approval_notification' ], 10, 7 );
 		add_filter( 'bp_notifications_get_registered_components', [ $this, 'register_notification_component' ] );
-		
+
 		add_action( 'wp_ajax_labgenz_submit_org_access_request', [ $this, 'handle_form_submission' ] );
 	}
 
 	// 2. ADD THIS NEW METHOD - Register the custom component
 	public function register_notification_component( $components ) {
 		if ( ! is_array( $components ) ) {
-			$components = array();
+			$components = [];
 		}
 		$components['labgenz_community'] = 'labgenz_community';
 		return $components;
@@ -77,29 +77,29 @@ class OrganizationAccess {
 	// 3. REPLACE YOUR send_buddyboss_notification METHOD with this working version:
 	private function send_buddyboss_notification( int $user_id, array $request_data, string $create_group_url, string $admin_note ): void {
 		global $wpdb;
-		
+
 		$component = 'labgenz_community';
-		$action = 'organization_access_approved';
-		
+		$action    = 'organization_access_approved';
+
 		// Insert notification directly into database (this method works)
 		$table_name = $wpdb->prefix . 'bp_notifications';
-		
+
 		$result = $wpdb->insert(
 			$table_name,
 			[
-				'user_id' => $user_id,
-				'item_id' => 0,
+				'user_id'           => $user_id,
+				'item_id'           => 0,
 				'secondary_item_id' => 0,
-				'component_name' => $component,
-				'component_action' => $action,
-				'date_notified' => current_time('mysql'),
-				'is_new' => 1,
+				'component_name'    => $component,
+				'component_action'  => $action,
+				'date_notified'     => current_time( 'mysql' ),
+				'is_new'            => 1,
 			]
 		);
-		
+
 		if ( $result && function_exists( 'bp_notifications_update_meta' ) ) {
 			$notification_id = $wpdb->insert_id;
-			
+
 			// Add custom meta data
 			bp_notifications_update_meta( $notification_id, 'organization_name', $request_data['organization_name'] );
 			bp_notifications_update_meta( $notification_id, 'create_group_url', $create_group_url );
@@ -117,13 +117,13 @@ class OrganizationAccess {
 		}
 
 		$organization_name = '';
-		$create_group_url = '';
-		
+		$create_group_url  = '';
+
 		if ( function_exists( 'bp_notifications_get_meta' ) ) {
 			$organization_name = bp_notifications_get_meta( $notification_id, 'organization_name', true );
-			$create_group_url = bp_notifications_get_meta( $notification_id, 'create_group_url', true );
+			$create_group_url  = bp_notifications_get_meta( $notification_id, 'create_group_url', true );
 		}
-		
+
 		if ( $action_item_count > 1 ) {
 			$text = sprintf(
 				__( 'You have %d approved organization access requests', 'labgenz-community-management' ),
@@ -148,7 +148,7 @@ class OrganizationAccess {
 		}
 
 		return $content;
-}
+	}
 
 	/**
 	 * Handle organization access form submission
@@ -174,7 +174,7 @@ class OrganizationAccess {
 			// Check if user already has a pending request
 			$current_status = get_user_meta( $user_id, self::STATUS_META_KEY, true );
 			if ( $current_status === self::STATUS_PENDING ) {
-				wp_send_json_error( array( 'message' => __( 'You already have a pending organization access request', 'labgenz-community-management' ) ), 400 );
+				wp_send_json_error( [ 'message' => __( 'You already have a pending organization access request', 'labgenz-community-management' ) ], 400 );
 				return;
 			}
 
@@ -448,7 +448,7 @@ class OrganizationAccess {
 		// Send BuddyBoss notification
 		$this->send_buddyboss_notification( $user_id, $request_data, $create_group_url, $admin_note );
 	}
-	
+
 
 	/**
 	 * Send rejection email

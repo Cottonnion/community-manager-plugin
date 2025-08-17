@@ -5,21 +5,21 @@
 	--lab-primary-dark: #1a237e;
 	--lab-accent: #51cbee;
 	--lab-accent-light: #e3f2fd;
-	
+
 	/* Background colors */
 	--lab-bg-light: #ffffff;
 	--lab-bg-light-alt: #f8fafc;
 	--lab-bg-card: #ffffff;
-	
+
 	/* Text colors */
 	--lab-text-dark: #333333;
 	--lab-text-medium: #666666;
 	--lab-text-light: #888888;
-	
+
 	/* Border colors */
 	--lab-border-light: #f1f1f4;
 	--lab-border-medium: #e0e0e0;
-	
+
 	/* Shadow */
 	--lab-shadow-sm: 0 1px 2px rgba(0,0,0,0.03);
 	--lab-shadow-md: 0 4px 24px rgba(0,0,0,0.07), 0 1.5px 4px rgba(0,0,0,0.03);

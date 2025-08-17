@@ -41,26 +41,26 @@ class BP_XProfile_Field_Type_Location extends \BP_XProfile_Field_Type {
 		// Add custom actions
 		add_action( 'wp_ajax_geocode_location', [ __CLASS__, 'ajax_geocode_location' ] );
 		add_action( 'wp_ajax_nopriv_geocode_location', [ __CLASS__, 'ajax_geocode_location' ] );
-		
+
 		// Add location-specific visibility levels using the proper filter
 		add_filter( 'bp_xprofile_get_visibility_levels', [ __CLASS__, 'add_location_visibility_levels' ] );
-		
+
 		// Filter to control which visibility options show for which field types
 		add_filter( 'bp_xprofile_field_get_visibility_level_options', [ __CLASS__, 'filter_field_visibility_options' ], 10, 2 );
-		
+
 		// Handle hiding fields based on custom visibility levels
 		add_filter( 'bp_xprofile_get_hidden_field_types_for_user', [ __CLASS__, 'handle_location_visibility' ], 10, 3 );
-		
+
 		// Clear offset when location is updated
 		add_action( 'xprofile_updated_profile', [ __CLASS__, 'handle_profile_update' ], 10, 5 );
-		
+
 		// Set the default visibility level based on user's saved preference
 		add_filter( 'bp_get_the_profile_field_visibility_level', [ __CLASS__, 'set_default_visibility_level' ], 10, 5 );
 	}
-	
+
 	/**
 	 * Filter to set the default visibility level based on user's saved preference
-	 * 
+	 *
 	 * @param string $level    The visibility level to apply.
 	 * @param int    $field_id ID of the field being rendered (optional).
 	 * @param int    $user_id  ID of the user field is being rendered for (optional).
@@ -71,78 +71,78 @@ class BP_XProfile_Field_Type_Location extends \BP_XProfile_Field_Type {
 	public static function set_default_visibility_level( $level ) {
 		// Get all arguments
 		$args = func_get_args();
-		
+
 		// Check if we have all the expected parameters
-		if (count($args) < 3) {
-			error_log("set_default_visibility_level called with insufficient parameters: " . count($args));
-			
+		if ( count( $args ) < 3 ) {
+			error_log( 'set_default_visibility_level called with insufficient parameters: ' . count( $args ) );
+
 			// Try to get the field ID and user ID from the context
 			$field_id = 0;
-			$user_id = 0;
-			
+			$user_id  = 0;
+
 			// Try to get field ID from the current context
-			if (function_exists('bp_get_the_profile_field_id')) {
+			if ( function_exists( 'bp_get_the_profile_field_id' ) ) {
 				$field_id = bp_get_the_profile_field_id();
 			}
-			
+
 			// Try to get user ID from the current context
-			if (function_exists('bp_displayed_user_id')) {
+			if ( function_exists( 'bp_displayed_user_id' ) ) {
 				$user_id = bp_displayed_user_id();
 			}
-			
-			if (empty($user_id)) {
+
+			if ( empty( $user_id ) ) {
 				$user_id = get_current_user_id();
 			}
-			
+
 			// If we couldn't determine field_id or user_id, return the original level
-			if (empty($field_id) || empty($user_id)) {
+			if ( empty( $field_id ) || empty( $user_id ) ) {
 				return $level;
 			}
-			
+
 			// Get the field object
 			$field = null;
-			if (function_exists('xprofile_get_field')) {
-				$field = xprofile_get_field($field_id);
+			if ( function_exists( 'xprofile_get_field' ) ) {
+				$field = xprofile_get_field( $field_id );
 			}
-			
+
 			// If we couldn't get the field object, return the original level
-			if (!$field) {
+			if ( ! $field ) {
 				return $level;
 			}
 		} else {
 			// We have all parameters
-			$field_id = isset($args[1]) ? $args[1] : 0;
-			$user_id = isset($args[2]) ? $args[2] : 0;
-			$field = isset($args[3]) ? $args[3] : null;
+			$field_id = isset( $args[1] ) ? $args[1] : 0;
+			$user_id  = isset( $args[2] ) ? $args[2] : 0;
+			$field    = isset( $args[3] ) ? $args[3] : null;
 		}
-		
+
 		// If we have a field object, check its type
-		if ($field && isset($field->type) && $field->type !== 'location') {
+		if ( $field && isset( $field->type ) && $field->type !== 'location' ) {
 			return $level;
 		}
-		
+
 		// Only apply to field_id = 4 for now
-		if ($field_id != 4) {
+		if ( $field_id != 4 ) {
 			return $level;
 		}
-		
+
 		// Try to get the saved visibility from database
 		$db = \LABGENZ_CM\Database\Database::get_instance();
-		if (!is_object($db)) {
-			error_log('Database class not found');
+		if ( ! is_object( $db ) ) {
+			error_log( 'Database class not found' );
 			return $level;
 		}
-		
-		$saved_visibility = $db->get_user_field_visibility($field_id, $user_id);
-		
+
+		$saved_visibility = $db->get_user_field_visibility( $field_id, $user_id );
+
 		// Debug
-		error_log("set_default_visibility_level called for field {$field_id}, user {$user_id}: saved={$saved_visibility}, original={$level}");
-		
+		error_log( "set_default_visibility_level called for field {$field_id}, user {$user_id}: saved={$saved_visibility}, original={$level}" );
+
 		// If found, use it as the default
-		if (!empty($saved_visibility)) {
+		if ( ! empty( $saved_visibility ) ) {
 			return $saved_visibility;
 		}
-		
+
 		return $level;
 	}
 
@@ -152,53 +152,53 @@ class BP_XProfile_Field_Type_Location extends \BP_XProfile_Field_Type {
 	public static function add_location_visibility_levels( $levels ) {
 		// Check if we're in a context where we can determine the current field
 		// This could be called from various places, so we need to be flexible
-		
+
 		// Try to get field ID from global BP context
 		$field_id = 0;
-		
+
 		// Check if we're in the loop and can get the current field
 		if ( function_exists( 'bp_get_the_profile_field_id' ) ) {
 			$field_id = bp_get_the_profile_field_id();
 		}
-		
+
 		// Fallback: check admin context
 		if ( ! $field_id && isset( $_GET['field_id'] ) ) {
 			$field_id = (int) $_GET['field_id'];
 		}
-		
+
 		// Get the field object to check its type
 		$field = xprofile_get_field( $field_id );
-		
+
 		// Only add custom visibility levels for location field types
 		if ( $field && $field->type === 'location' ) {
 			// Clear existing visibility levels if we only want our custom ones
-			$custom_levels = array();
-			
+			$custom_levels = [];
+
 			// Add "Exact Location" visibility level
-			$custom_levels['exact_location'] = array(
-				'id'    => 'exact_location', 
-				'label' => __( 'Exact Location', 'buddypress' )
-			);
-			
-			// Add "Privacy Offset" visibility level  
-			$custom_levels['privacy_offset'] = array(
-				'id'    => 'privacy_offset', 
-				'label' => __( 'Privacy Offset', 'buddypress' )
-			);
-			
+			$custom_levels['exact_location'] = [
+				'id'    => 'exact_location',
+				'label' => __( 'Exact Location', 'buddypress' ),
+			];
+
+			// Add "Privacy Offset" visibility level
+			$custom_levels['privacy_offset'] = [
+				'id'    => 'privacy_offset',
+				'label' => __( 'Privacy Offset', 'buddypress' ),
+			];
+
 			// Add "Hidden" visibility level
-			$custom_levels['hidden'] = array(
+			$custom_levels['hidden'] = [
 				'id'    => 'hidden',
 				'label' => __( 'Hidden', 'buddypress' ),
-			);
+			];
 
 			// Replace all standard visibility levels with our custom ones
 			return $custom_levels;
 		}
-		
+
 		return $levels;
 	}
-	
+
 	/**
 	 * Filter which visibility options are shown for which field types
 	 */
@@ -206,34 +206,34 @@ class BP_XProfile_Field_Type_Location extends \BP_XProfile_Field_Type {
 		// If this is a location field, only show our custom visibility options
 		if ( $field && $field->type === 'location' ) {
 			// Only keep our custom options
-			$filtered_options = array();
-			
+			$filtered_options = [];
+
 			// Check if our custom options exist in the available options
 			foreach ( $options as $option ) {
 				if ( $option->id === 'exact_location' || $option->id === 'privacy_offset' || $option->id === 'hidden' ) {
 					// Add custom class to the option
-					$option->class = 'visibility-option-' . $option->id;
+					$option->class      = 'visibility-option-' . $option->id;
 					$filtered_options[] = $option;
 				}
 			}
-			
+
 			// If we have our custom options, return only them
 			if ( ! empty( $filtered_options ) ) {
 				return $filtered_options;
 			}
 		} elseif ( $field && $field->type !== 'location' ) {
 			// For non-location fields, filter out our custom visibility options
-			$filtered_options = array();
-			
+			$filtered_options = [];
+
 			foreach ( $options as $option ) {
 				if ( $option->id !== 'exact_location' && $option->id !== 'privacy_offset' && $option->id !== 'hidden' ) {
 					$filtered_options[] = $option;
 				}
 			}
-			
+
 			return $filtered_options;
 		}
-		
+
 		return $options;
 	}
 
@@ -257,7 +257,7 @@ class BP_XProfile_Field_Type_Location extends \BP_XProfile_Field_Type {
 			return $value;
 		}
 
-		$user_id = bp_displayed_user_id();
+		$user_id         = bp_displayed_user_id();
 		$current_user_id = get_current_user_id();
 
 		// If viewing own profile, show exact location
@@ -267,7 +267,7 @@ class BP_XProfile_Field_Type_Location extends \BP_XProfile_Field_Type {
 
 		// Get field visibility setting
 		// $field_visibility = bp_xprofile_get_meta( $field_id, 'field', 'default_visibility' );
-		
+
 		// Apply privacy modifications if needed
 		if ( $field_visibility === 'privacy_offset' ) {
 			// Generalize the address for privacy
@@ -296,7 +296,7 @@ class BP_XProfile_Field_Type_Location extends \BP_XProfile_Field_Type {
 
 		// Get field visibility setting
 		// $field_visibility = bp_xprofile_get_meta( $field_id, 'field', 'default_visibility' );
-		
+
 		// Apply privacy modifications if needed
 		if ( $field_visibility === 'privacy_offset' ) {
 			// The address is already filtered by filter_location_display
@@ -420,7 +420,7 @@ class BP_XProfile_Field_Type_Location extends \BP_XProfile_Field_Type {
 			<?php
 			// Get the current field visibility setting
 			$field_visibility = bp_xprofile_get_meta( $field_id, 'field', 'default_visibility' );
-			$show_map = true; // Set to false to hide map for all visibility options
+			$show_map         = true; // Set to false to hide map for all visibility options
 			?>
 			
 			<!-- Map preview - Only show based on visibility setting -->
@@ -460,7 +460,7 @@ class BP_XProfile_Field_Type_Location extends \BP_XProfile_Field_Type {
 
 		// Fetch the default visibility value from the database for field_id = 4
 		$field_id = 4;
-		$user_id = get_current_user_id();
+		$user_id  = get_current_user_id();
 		if ( empty( $user_id ) ) {
 			$user_id = bp_loggedin_user_id();
 		}
@@ -468,12 +468,14 @@ class BP_XProfile_Field_Type_Location extends \BP_XProfile_Field_Type {
 		$default_visibility = null;
 		if ( $user_id ) {
 			global $wpdb;
-			$table_name = $wpdb->prefix . 'bb_xprofile_visibility';
-			$default_visibility = $wpdb->get_var( $wpdb->prepare(
-				"SELECT value FROM $table_name WHERE field_id = %d AND user_id = %d",
-				$field_id,
-				$user_id
-			) );
+			$table_name         = $wpdb->prefix . 'bb_xprofile_visibility';
+			$default_visibility = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT value FROM $table_name WHERE field_id = %d AND user_id = %d",
+					$field_id,
+					$user_id
+				)
+			);
 		}
 
 		// Use the fetched value as the default selected option
@@ -603,7 +605,7 @@ class BP_XProfile_Field_Type_Location extends \BP_XProfile_Field_Type {
 	 * CORRECTED: Get field value including coordinates with privacy handling
 	 */
 	public function get_field_value( $user_id, $field_id ) {
-		$value = xprofile_get_field_data( $field_id, $user_id );
+		$value           = xprofile_get_field_data( $field_id, $user_id );
 		$current_user_id = get_current_user_id();
 
 		// Get original coordinates
@@ -612,13 +614,13 @@ class BP_XProfile_Field_Type_Location extends \BP_XProfile_Field_Type {
 
 		// Check if privacy offset should be applied
 		$field_visibility = bp_xprofile_get_meta( $field_id, 'field', 'default_visibility' );
-		
+
 		// Apply privacy offset if not viewing own profile and privacy offset is set
 		if ( $current_user_id !== $user_id && $field_visibility === 'privacy_offset' && $latitude && $longitude ) {
 			$offset_coords = $this->apply_privacy_offset( $latitude, $longitude, $user_id, $field_id );
-			$latitude = $offset_coords['latitude'];
-			$longitude = $offset_coords['longitude'];
-			
+			$latitude      = $offset_coords['latitude'];
+			$longitude     = $offset_coords['longitude'];
+
 			// Also modify the address to be more general for privacy
 			$value = $this->generalize_address( $value );
 		}
@@ -641,7 +643,7 @@ class BP_XProfile_Field_Type_Location extends \BP_XProfile_Field_Type {
 		if ( empty( $offset_lat ) || empty( $offset_lon ) ) {
 			// Generate random offset (0.5-2km radius)
 			$offset_distance = ( rand( 500, 2000 ) / 1000 ); // 0.5 to 2 km
-			$offset_angle = rand( 0, 360 ) * ( M_PI / 180 ); // Random angle in radians
+			$offset_angle    = rand( 0, 360 ) * ( M_PI / 180 ); // Random angle in radians
 
 			// Convert to lat/lon offset (approximate)
 			$lat_offset = ( $offset_distance / 111.32 ) * cos( $offset_angle ); // 1 degree lat ≈ 111.32 km

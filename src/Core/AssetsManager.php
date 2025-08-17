@@ -28,7 +28,7 @@ class AssetsManager {
 	 * @var array<string, array<string, array>>
 	 */
 	private array $admin_assets = [];
-	
+
 	/**
 	 * Holds the array of frontend scripts and styles.
 	 *
@@ -355,20 +355,20 @@ class AssetsManager {
 				$appearance_hook = $screen->id;
 			}
 		}
-		
+
 		$this->add_admin_asset(
 			'labgenz-cm-reviews-admin-css',
-			['mlm-mastery-communities_page_article-reviews'],
+			[ 'mlm-mastery-communities_page_article-reviews' ],
 			'reviews-admin.css',
 			[],
 			[],
 			'1.0.3' // Bumped version
 		);
-		
+
 		// Add the new table sorting and search styles
 		$this->add_admin_asset(
 			'labgenz-cm-reviews-table-css',
-			['mlm-mastery-communities_page_article-reviews'],
+			[ 'mlm-mastery-communities_page_article-reviews' ],
 			'reviews-table.css',
 			[],
 			[],
@@ -376,32 +376,32 @@ class AssetsManager {
 		);
 		$this->add_admin_asset(
 			'labgenz-cm-reviews-admin-js',
-			['mlm-mastery-communities_page_article-reviews'],
+			[ 'mlm-mastery-communities_page_article-reviews' ],
 			'article-reviews.js',
-			['jquery', 'sweetalert2'],
+			[ 'jquery', 'sweetalert2' ],
 			[
-				'ajaxUrl' => admin_url('admin-ajax.php'),
-				'nonce' => wp_create_nonce('mlmmc_reviews_action'),
-				'confirmDelete' => __('Are you sure you want to delete this review?', 'labgenz-cm'),
-				'confirmDeleteText' => __('This action cannot be undone.', 'labgenz-cm'),
-				'confirmBulkDelete' => __('Are you sure you want to delete the selected reviews?', 'labgenz-cm'),
-				'messages' => [
-					'submitting' => __('Submitting...', 'labgenz-cm'),
-					'success' => __('Rating submitted successfully!', 'labgenz-cm'),
-					'error' => __('Error submitting rating. Please try again.', 'labgenz-cm')
-				]
+				'ajaxUrl'           => admin_url( 'admin-ajax.php' ),
+				'nonce'             => wp_create_nonce( 'mlmmc_reviews_action' ),
+				'confirmDelete'     => __( 'Are you sure you want to delete this review?', 'labgenz-cm' ),
+				'confirmDeleteText' => __( 'This action cannot be undone.', 'labgenz-cm' ),
+				'confirmBulkDelete' => __( 'Are you sure you want to delete the selected reviews?', 'labgenz-cm' ),
+				'messages'          => [
+					'submitting' => __( 'Submitting...', 'labgenz-cm' ),
+					'success'    => __( 'Rating submitted successfully!', 'labgenz-cm' ),
+					'error'      => __( 'Error submitting rating. Please try again.', 'labgenz-cm' ),
+				],
 			],
 			'1.0.4'
 		);
-		
+
 		// Add the new table sorting and search functionality
 		$this->add_admin_asset(
 			'labgenz-cm-reviews-table-js',
-			['mlm-mastery-communities_page_article-reviews'],
+			[ 'mlm-mastery-communities_page_article-reviews' ],
 			'reviews-table.js',
-			['jquery'],
+			[ 'jquery' ],
 			[
-				'noResults' => __('No reviews found matching your search criteria.', 'labgenz-cm')
+				'noResults' => __( 'No reviews found matching your search criteria.', 'labgenz-cm' ),
 			],
 			'1.0.0'
 		);
@@ -409,20 +409,20 @@ class AssetsManager {
 		// Add frontend assets for article reviews
 		$this->add_frontend_asset(
 			'mlmmc-article-reviews',
-			[''],  // Empty array means it will be loaded on all pages
+			[ '' ],  // Empty array means it will be loaded on all pages
 			'reviews.js',
-			['jquery'],
+			[ 'jquery' ],
 			'1.6.0', // Bumped version
 			true,
 			'js',
 			[
-				'ajaxUrl' => admin_url('admin-ajax.php'),
-				'nonce' => wp_create_nonce('mlmmc_article_review'),
+				'ajaxUrl'  => admin_url( 'admin-ajax.php' ),
+				'nonce'    => wp_create_nonce( 'mlmmc_article_review' ),
 				'messages' => [
-					'submitting' => __('Submitting...', 'labgenz-cm'),
-					'success' => __('Thank you for your rating!', 'labgenz-cm'),
-					'error' => __('Error submitting rating. Please try again.', 'labgenz-cm')
-				]
+					'submitting' => __( 'Submitting...', 'labgenz-cm' ),
+					'success'    => __( 'Thank you for your rating!', 'labgenz-cm' ),
+					'error'      => __( 'Error submitting rating. Please try again.', 'labgenz-cm' ),
+				],
 			]
 		);
 		$appearance_hooks = array_filter( array_merge( $hooks, [ $appearance_hook ] ) );
@@ -620,7 +620,7 @@ class AssetsManager {
 			'1.1.7',
 			true,
 			'js',
-			array()
+			[]
 		);
 
 		$this->add_frontend_asset(
@@ -663,16 +663,16 @@ class AssetsManager {
 			'css'
 		);
 
-        /// Register debug dropdown CSS
-        $this->add_frontend_asset(
-            'single-article-css',
-			[' '],
+		// Register debug dropdown CSS
+		$this->add_frontend_asset(
+			'single-article-css',
+			[ ' ' ],
 			'single-article.css',
 			[],
-            '1.0.0',
+			'1.0.0',
 			false,
 			'css'
-        );
+		);
 	}
 
 	/**
@@ -774,7 +774,7 @@ class AssetsManager {
 				'7.0.8',
 				true
 			);
-			
+
 			// Marker manager module
 			wp_enqueue_script(
 				'marker-manager-js',
@@ -783,7 +783,7 @@ class AssetsManager {
 				'7.0.9',
 				true
 			);
-			
+
 			// Data handler module
 			wp_enqueue_script(
 				'data-handler-js',
@@ -792,7 +792,7 @@ class AssetsManager {
 				'7.0.8',
 				true
 			);
-			
+
 			// Map utilities module
 			wp_enqueue_script(
 				'map-utils-js',
@@ -801,7 +801,7 @@ class AssetsManager {
 				'7.0.8',
 				true
 			);
-			
+
 			// Main map JS
 			wp_enqueue_script(
 				'members-map-js',
@@ -824,69 +824,72 @@ class AssetsManager {
 			);
 		}
 	}
-	
+
 	/**
-     * Adds a frontend script or style for specific post types.
-     *
-     * @param string $handle
-     * @param array  $post_types Array of post types where the asset should be loaded
-     * @param string $file
-     * @param array  $dependencies
-     * @param string $version
-     * @param bool   $enqueue_in_footer
-     * @param string $type 'css' or 'js'
-     * @param array  $localization Optional. Data to localize for JS assets.
-     * @return void
-     */
-    public function add_frontend_asset_for_post_types(
-        string $handle,
-        array $post_types,
-        string $file,
-        array $dependencies = [],
-        string $version = LABGENZ_CM_VERSION,
-        bool $enqueue_in_footer = true,
-        string $type = 'css',
-        array $localization = []
-    ): void {
-        add_action('wp_enqueue_scripts', function () use (
-            $handle,
-            $post_types,
-            $file,
-            $dependencies,
-            $version,
-            $enqueue_in_footer,
-            $type,
-            $localization
-        ) {
-            if (is_singular($post_types)) {
-                $file_url = LABGENZ_CM_URL . 'src/Public/assets/' . ( 'css' === $type ? 'css/' : 'js/' ) . $file;
-                if ('css' === $type) {
-                    wp_enqueue_style(
-                        $handle,
-                        $file_url,
-                        $dependencies,
-                        $version
-                    );
-                } else {
-                    wp_enqueue_script(
-                        $handle,
-                        $file_url,
-                        $dependencies,
-                        $version,
-                        $enqueue_in_footer
-                    );
-                    // Localize script if localization data is provided
-                    if (!empty($localization)) {
-                        wp_localize_script(
-                            $handle,
-                            str_replace('-', '_', $handle . '_data'),
-                            $localization
-                        );
-                    }
-                }
-            }
-        });
-    }
+	 * Adds a frontend script or style for specific post types.
+	 *
+	 * @param string $handle
+	 * @param array  $post_types Array of post types where the asset should be loaded
+	 * @param string $file
+	 * @param array  $dependencies
+	 * @param string $version
+	 * @param bool   $enqueue_in_footer
+	 * @param string $type 'css' or 'js'
+	 * @param array  $localization Optional. Data to localize for JS assets.
+	 * @return void
+	 */
+	public function add_frontend_asset_for_post_types(
+		string $handle,
+		array $post_types,
+		string $file,
+		array $dependencies = [],
+		string $version = LABGENZ_CM_VERSION,
+		bool $enqueue_in_footer = true,
+		string $type = 'css',
+		array $localization = []
+	): void {
+		add_action(
+			'wp_enqueue_scripts',
+			function () use (
+				$handle,
+				$post_types,
+				$file,
+				$dependencies,
+				$version,
+				$enqueue_in_footer,
+				$type,
+				$localization
+			) {
+				if ( is_singular( $post_types ) ) {
+					$file_url = LABGENZ_CM_URL . 'src/Public/assets/' . ( 'css' === $type ? 'css/' : 'js/' ) . $file;
+					if ( 'css' === $type ) {
+						wp_enqueue_style(
+							$handle,
+							$file_url,
+							$dependencies,
+							$version
+						);
+					} else {
+						wp_enqueue_script(
+							$handle,
+							$file_url,
+							$dependencies,
+							$version,
+							$enqueue_in_footer
+						);
+						// Localize script if localization data is provided
+						if ( ! empty( $localization ) ) {
+							wp_localize_script(
+								$handle,
+								str_replace( '-', '_', $handle . '_data' ),
+								$localization
+							);
+						}
+					}
+				}
+			}
+		);
+	}
 	/**
 	 * Enqueue scripts and styles for this field type
 	 */
@@ -896,7 +899,7 @@ class AssetsManager {
 			( ! bp_is_user_profile_edit() && ! bp_is_register_page() ) ) {
 			return;
 		}
-	
+
 		// Enqueue Leaflet for map display
 		wp_enqueue_style(
 			'leaflet-css',
@@ -904,7 +907,7 @@ class AssetsManager {
 			[],
 			'1.9.4'
 		);
-	
+
 		wp_enqueue_script(
 			'leaflet-js',
 			'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
@@ -912,7 +915,7 @@ class AssetsManager {
 			'1.9.4',
 			true
 		);
-	
+
 		// Enqueue our custom script
 		wp_enqueue_script(
 			'location-field-js',
@@ -921,7 +924,7 @@ class AssetsManager {
 			LABGENZ_CM_VERSION,
 			true
 		);
-		
+
 		// Enqueue visibility fix script
 		wp_enqueue_script(
 			'location-field-visibility-fix-js',
@@ -930,7 +933,7 @@ class AssetsManager {
 			'1.0.2',
 			true
 		);
-	
+
 		// Add script to apply custom classes to visibility options
 		wp_add_inline_script(
 			'location-field-visibility-fix-js',
@@ -979,7 +982,7 @@ class AssetsManager {
 			});
 			'
 		);
-	
+
 		// Localize script with AJAX data
 		wp_localize_script(
 			'location-field-js',
@@ -997,4 +1000,3 @@ class AssetsManager {
 		);
 	}
 }
-

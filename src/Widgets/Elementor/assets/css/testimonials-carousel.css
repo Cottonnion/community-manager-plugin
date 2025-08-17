@@ -1,188 +1,188 @@
 .mlmmc-testimonials-carousel {
-    position: relative;
-    margin: 0 auto;
-    overflow: hidden;
+	position: relative;
+	margin: 0 auto;
+	overflow: hidden;
 }
 
 /* Layout styles */
 .mlmmc-layout-carousel .mlmmc-testimonials-wrapper {
-    display: flex;
-    transition: transform 0.5s ease;
+	display: flex;
+	transition: transform 0.5s ease;
 }
 
 .mlmmc-layout-grid .mlmmc-testimonials-wrapper {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+	gap: 20px;
 }
 
 /* Slides per view */
 .mlmmc-layout-carousel.mlmmc-slides-1 .mlmmc-testimonial-item {
-    flex: 0 0 100%;
-    max-width: 100%;
+	flex: 0 0 100%;
+	max-width: 100%;
 }
 
 .mlmmc-layout-carousel.mlmmc-slides-2 .mlmmc-testimonial-item {
-    flex: 0 0 50%;
-    max-width: 50%;
+	flex: 0 0 50%;
+	max-width: 50%;
 }
 
 .mlmmc-layout-carousel.mlmmc-slides-3 .mlmmc-testimonial-item {
-    flex: 0 0 33.333%;
-    max-width: 33.333%;
+	flex: 0 0 33.333%;
+	max-width: 33.333%;
 }
 
 /* Testimonial Item */
 .mlmmc-testimonial-item {
-    padding: 20px;
-    box-sizing: border-box;
-    background-color: transparent !important
+	padding: 20px;
+	box-sizing: border-box;
+	background-color: transparent !important
 }
 
 .mlmmc-testimonial-inner {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    height: 100%;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-    padding: 30px;
-    transition: all 0.3s ease;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	height: 100%;
+	background-color: #fff;
+	border-radius: 10px;
+	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+	padding: 30px;
+	transition: all 0.3s ease;
 }
 
 .mlmmc-testimonial-inner:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+	transform: translateY(-5px);
+	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
 /* Image */
 .mlmmc-testimonial-image {
-    margin-bottom: 20px;
+	margin-bottom: 20px;
 }
 
 .mlmmc-testimonial-image img {
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-    border-radius: 50%;
-    border: 3px solid #f1f1f1;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+	width: 80px;
+	height: 80px;
+	object-fit: cover;
+	border-radius: 50%;
+	border: 3px solid #f1f1f1;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 /* Content */
 .mlmmc-testimonial-content {
-    margin-bottom: 20px;
-    line-height: 1.6;
-    color: #333;
+	margin-bottom: 20px;
+	line-height: 1.6;
+	color: #333;
 }
 
 /* Stars */
 .mlmmc-testimonial-stars {
-    margin-bottom: 15px;
-    color: #FFD700;
-    font-size: 18px;
+	margin-bottom: 15px;
+	color: #FFD700;
+	font-size: 18px;
 }
 
 .mlmmc-testimonial-stars .star-filled,
 .mlmmc-testimonial-stars .star-empty {
-    display: inline-block;
-    margin: 0 2px;
+	display: inline-block;
+	margin: 0 2px;
 }
 
 /* Info */
 .mlmmc-testimonial-info {
-    margin-top: auto;
+	margin-top: auto;
 }
 
 .mlmmc-testimonial-name {
-    margin: 0 0 5px;
-    font-weight: 600;
-    color: #222;
-    font-size: 18px;
+	margin: 0 0 5px;
+	font-weight: 600;
+	color: #222;
+	font-size: 18px;
 }
 
 .mlmmc-testimonial-position {
-    margin: 0;
-    opacity: 0.8;
-    font-size: 14px;
-    color: #666;
+	margin: 0;
+	opacity: 0.8;
+	font-size: 14px;
+	color: #666;
 }
 
 /* Navigation - Arrows */
 .mlmmc-testimonial-arrows {
-    position: absolute;
-    top: 50%;
-    width: 100%;
-    transform: translateY(-50%);
-    z-index: 10;
+	position: absolute;
+	top: 50%;
+	width: 100%;
+	transform: translateY(-50%);
+	z-index: 10;
 }
 
 .mlmmc-testimonial-arrow {
-    position: absolute;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.8);
-    border-radius: 50%;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+	position: absolute;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	background: rgba(255, 255, 255, 0.8);
+	border-radius: 50%;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .mlmmc-testimonial-arrow:hover {
-    background: rgba(255, 255, 255, 1);
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+	background: rgba(255, 255, 255, 1);
+	box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
 }
 
 .mlmmc-testimonial-arrow.prev {
-    left: 10px;
+	left: 10px;
 }
 
 .mlmmc-testimonial-arrow.next {
-    right: 10px;
+	right: 10px;
 }
 
 /* Navigation - Dots */
 .mlmmc-testimonial-dots {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
+	display: flex;
+	justify-content: center;
+	margin-top: 20px;
 }
 
 .mlmmc-testimonial-dots .dot {
-    width: 10px;
-    height: 10px;
-    margin: 0 5px;
-    border-radius: 50%;
-    background-color: #888;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+	width: 10px;
+	height: 10px;
+	margin: 0 5px;
+	border-radius: 50%;
+	background-color: #888;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
 }
 
 .mlmmc-testimonial-dots .dot.active {
-    background-color: #333;
-    transform: scale(1.2);
+	background-color: #333;
+	transform: scale(1.2);
 }
 
 /* Responsive styles */
 @media (max-width: 767px) {
-    .mlmmc-layout-carousel.mlmmc-slides-2 .mlmmc-testimonial-item,
-    .mlmmc-layout-carousel.mlmmc-slides-3 .mlmmc-testimonial-item {
-        flex: 0 0 100%;
-        max-width: 100%;
-    }
-    
-    .mlmmc-layout-grid .mlmmc-testimonials-wrapper {
-        grid-template-columns: 1fr;
-    }
-    
-    .mlmmc-testimonial-arrow {
-        width: 30px;
-        height: 30px;
-        font-size: 14px;
-    }
+	.mlmmc-layout-carousel.mlmmc-slides-2 .mlmmc-testimonial-item,
+	.mlmmc-layout-carousel.mlmmc-slides-3 .mlmmc-testimonial-item {
+		flex: 0 0 100%;
+		max-width: 100%;
+	}
+
+	.mlmmc-layout-grid .mlmmc-testimonials-wrapper {
+		grid-template-columns: 1fr;
+	}
+
+	.mlmmc-testimonial-arrow {
+		width: 30px;
+		height: 30px;
+		font-size: 14px;
+	}
 }

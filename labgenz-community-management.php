@@ -10,6 +10,8 @@
  * Text Domain:       labgenz-community-management
  * Domain Path:       /languages
  * requires plugin: BuddyPress 6.0.0
+ * 
+ * Developed by: Yahya Eddaqqaq
  */
 
 if ( ! defined( 'WPINC' ) ) {

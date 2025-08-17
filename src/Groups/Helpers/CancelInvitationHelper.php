@@ -9,8 +9,8 @@ class CancelInvitationHelper {
 	 * @param array $post_data The POST data containing group ID, user ID, and nonce.
 	 * @return void
 	 */
-    public function cancel_invitation($post_data) {
-        if ( ! wp_verify_nonce( $post_data['nonce'], 'lab_group_management_nonce' ) ) {
+	public function cancel_invitation( $post_data ) {
+		if ( ! wp_verify_nonce( $post_data['nonce'], 'lab_group_management_nonce' ) ) {
 			wp_send_json_error( 'Security check failed' );
 		}
 
@@ -35,5 +35,5 @@ class CancelInvitationHelper {
 		groups_update_groupmeta( $group_id, 'lab_invited', $invited_users );
 
 		wp_send_json_success( 'Invitation cancelled successfully' );
-    }
+	}
 }

@@ -238,7 +238,7 @@ jQuery( document ).ready(
 									1500
 								);
 							} else {
-								showMessage( data.data.message);
+								showMessage( data.data.message );
 							}
 						},
 						error: function (xhr, status, error) {

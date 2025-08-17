@@ -105,9 +105,9 @@ class OrganizationAccessDataHandler {
 	 */
 	public function get_status_constants(): array {
 		return [
-			'STATUS_PENDING'  => OrganizationAccess::STATUS_PENDING,
-			'STATUS_APPROVED' => OrganizationAccess::STATUS_APPROVED,
-			'STATUS_REJECTED' => OrganizationAccess::STATUS_REJECTED,
+			'STATUS_PENDING'   => OrganizationAccess::STATUS_PENDING,
+			'STATUS_APPROVED'  => OrganizationAccess::STATUS_APPROVED,
+			'STATUS_REJECTED'  => OrganizationAccess::STATUS_REJECTED,
 			'STATUS_COMPLETED' => OrganizationAccess::STATUS_COMPLETED,
 		];
 	}

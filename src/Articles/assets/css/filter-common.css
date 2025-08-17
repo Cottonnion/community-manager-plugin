@@ -1,305 +1,305 @@
 /* Author filter styles that match category filter */
 
 .mlmmc-selected-authors {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 10px;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-top: 10px;
 }
 
 .mlmmc-selected-author {
-    background-color: #e0e7ff;
-    color: #4f46e5;
-    border-radius: 4px;
-    padding: 5px 10px;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
+	background-color: #e0e7ff;
+	color: #4f46e5;
+	border-radius: 4px;
+	padding: 5px 10px;
+	font-size: 14px;
+	display: flex;
+	align-items: center;
+	gap: 5px;
 }
 
 /* Rating filter styles that match author and category filters */
 .mlmmc-selected-ratings {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 10px;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-top: 10px;
 }
 
 .mlmmc-selected-rating {
-    background-color: #e0e7ff;
-    color: #4f46e5;
-    border-radius: 4px;
-    padding: 5px 10px;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
+	background-color: #e0e7ff;
+	color: #4f46e5;
+	border-radius: 4px;
+	padding: 5px 10px;
+	font-size: 14px;
+	display: flex;
+	align-items: center;
+	gap: 5px;
 }
 
 .mlmmc-selected-author .remove-author {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #4f46e5;
-    font-size: 16px;
-    line-height: 1;
-    padding: 0;
-    margin: 0;
+	background: none;
+	border: none;
+	cursor: pointer;
+	color: #4f46e5;
+	font-size: 16px;
+	line-height: 1;
+	padding: 0;
+	margin: 0;
 }
 
 .mlmmc-selected-rating .remove-rating {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #4f46e5;
-    font-size: 16px;
-    line-height: 1;
-    padding: 0;
-    margin: 0;
+	background: none;
+	border: none;
+	cursor: pointer;
+	color: #4f46e5;
+	font-size: 16px;
+	line-height: 1;
+	padding: 0;
+	margin: 0;
 }
 
 .mlmmc-selected-author .remove-author:hover {
-    color: #4338ca;
+	color: #4338ca;
 }
 
 /* More indicator styling - for both author and category */
 .mlmmc-more-indicator {
-    background-color: #e0e7ff;
-    font-style: italic;
-    position: relative;
-    cursor: help;
+	background-color: #e0e7ff;
+	font-style: italic;
+	position: relative;
+	cursor: help;
 }
 
 /* Tooltip for more indicator */
 .mlmmc-more-indicator::after {
-    content: attr(data-hidden-authors);
-    position: absolute;
-    bottom: 125%;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #333;
-    color: white;
-    padding: 8px 12px;
-    border-radius: 4px;
-    font-size: 14px;
-    white-space: nowrap;
-    z-index: 10;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s, visibility 0.3s;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    max-width: 300px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-weight: bold;
-    font-style: normal;
+	content: attr(data-hidden-authors);
+	position: absolute;
+	bottom: 125%;
+	left: 50%;
+	transform: translateX(-50%);
+	background-color: #333;
+	color: white;
+	padding: 8px 12px;
+	border-radius: 4px;
+	font-size: 14px;
+	white-space: nowrap;
+	z-index: 10;
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity 0.3s, visibility 0.3s;
+	box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+	max-width: 300px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	font-weight: bold;
+	font-style: normal;
 }
 
 /* Arrow for tooltip */
 .mlmmc-more-indicator::before {
-    content: "";
-    position: absolute;
-    bottom: 125%;
-    left: 50%;
-    transform: translateX(-50%);
-    border-width: 5px;
-    border-style: solid;
-    border-color: #333 transparent transparent transparent;
-    z-index: 10;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s, visibility 0.3s;
+	content: "";
+	position: absolute;
+	bottom: 125%;
+	left: 50%;
+	transform: translateX(-50%);
+	border-width: 5px;
+	border-style: solid;
+	border-color: #333 transparent transparent transparent;
+	z-index: 10;
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity 0.3s, visibility 0.3s;
 }
 
 /* Show tooltip on hover */
 .mlmmc-more-indicator:hover::after,
 .mlmmc-more-indicator:hover::before {
-    opacity: 1;
-    visibility: visible;
-    bottom: 130%;
+	opacity: 1;
+	visibility: visible;
+	bottom: 130%;
 }
 
 /* Apply button focus and hover states */
 #mlmmc-apply-filter, #mlmmc-apply-categories {
-    background-color: #4f46e5;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 6px 12px;
-    cursor: pointer;
-    transition: background-color 0.2s;
+	background-color: #4f46e5;
+	color: white;
+	border: none;
+	border-radius: 4px;
+	padding: 6px 12px;
+	cursor: pointer;
+	transition: background-color 0.2s;
 }
 
 #mlmmc-apply-filter:hover, #mlmmc-apply-categories:hover {
-    background-color: #4338ca;
+	background-color: #4338ca;
 }
 
 #mlmmc-apply-filter:focus, #mlmmc-apply-categories:focus {
-    outline: 2px solid #818cf8;
-    outline-offset: 2px;
+	outline: 2px solid #818cf8;
+	outline-offset: 2px;
 }
 
 /* Ensure both dropdowns have the same width */
 .mlmmc-filter-dropdown {
-    position: relative;
-    margin-right: 15px;
-    min-width: 180px;
+	position: relative;
+	margin-right: 15px;
+	min-width: 180px;
 }
 
 .mlmmc-category-count, .mlmmc-rating-count, .author-count {
-    color: #777;
-    font-size: 0.9em;
-    margin-left: 3px;
+	color: #777;
+	font-size: 0.9em;
+	margin-left: 3px;
 }
 
 #mlmmc-rating-dropdown {
-    display: none;
-    position: absolute;
-    background: #fff;
-    border: 1px solid #ccc;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    padding: 10px;
-    border-radius: 4px;
-    width: 260px;
+	display: none;
+	position: absolute;
+	background: #fff;
+	border: 1px solid #ccc;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	z-index: 1000;
+	padding: 10px;
+	border-radius: 4px;
+	width: 260px;
 }
 
 #mlmmc-rating-filter-toggle.active + #mlmmc-rating-dropdown {
-    display: block;
+	display: block;
 }
 
 .mlmmc-rating-options {
-    max-height: 390px;
-    overflow-y: auto;
-    margin-bottom: 10px;
+	max-height: 390px;
+	overflow-y: auto;
+	margin-bottom: 10px;
 }
 
 .mlmmc-dropdown-footer button {
-    margin-right: 5px;
+	margin-right: 5px;
 }
 
 /* New improved video filter section styles */
 .mlmmc-video-filter-section {
-    margin-top: 15px;
-    padding: 20px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    border: 1px solid #e9ecef;
+	margin-top: 15px;
+	padding: 20px;
+	background: #f8f9fa;
+	border-radius: 8px;
+	border: 1px solid #e9ecef;
 }
 
 .mlmmc-video-filter-wrapper {
-    margin-bottom: 15px;
+	margin-bottom: 15px;
 }
 
 .mlmmc-video-checkbox-label {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    font-weight: 500;
-    color: #495057;
-    transition: color 0.2s ease;
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+	font-weight: 500;
+	color: #495057;
+	transition: color 0.2s ease;
 }
 
 .mlmmc-video-checkbox-label:hover {
-    color: #007bff;
+	color: #007bff;
 }
 
 .mlmmc-video-checkbox-label input[type="checkbox"] {
-    display: none;
+	display: none;
 }
 
 .mlmmc-checkbox-custom {
-    width: 18px;
-    height: 18px;
-    border: 2px solid #dee2e6;
-    border-radius: 4px;
-    margin-right: 10px;
-    position: relative;
-    background: #fff;
-    transition: all 0.2s ease;
+	width: 18px;
+	height: 18px;
+	border: 2px solid #dee2e6;
+	border-radius: 4px;
+	margin-right: 10px;
+	position: relative;
+	background: #fff;
+	transition: all 0.2s ease;
 }
 
 .mlmmc-video-checkbox-label input[type="checkbox"]:checked + .mlmmc-checkbox-custom {
-    background: #007bff;
-    border-color: #007bff;
+	background: #007bff;
+	border-color: #007bff;
 }
 
 .mlmmc-video-checkbox-label input[type="checkbox"]:checked + .mlmmc-checkbox-custom::after {
-    content: '✓';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-    font-size: 12px;
-    font-weight: bold;
+	content: '✓';
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	color: white;
+	font-size: 12px;
+	font-weight: bold;
 }
 
 .mlmmc-checkbox-text {
-    font-size: 14px;
-    line-height: 1.4;
+	font-size: 14px;
+	line-height: 1.4;
 }
 
 .mlmmc-filter-info-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 15px;
-    padding-top: 15px;
-    border-top: 1px solid #dee2e6;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 15px;
+	padding-top: 15px;
+	border-top: 1px solid #dee2e6;
 }
 
 .mlmmc-search-notice {
-    display: flex;
-    align-items: center;
-    color: #6c757d;
-    font-size: 13px;
-    line-height: 1.4;
-    flex: 1;
-    min-width: 250px;
+	display: flex;
+	align-items: center;
+	color: #6c757d;
+	font-size: 13px;
+	line-height: 1.4;
+	flex: 1;
+	min-width: 250px;
 }
 
 .mlmmc-info-icon {
-    margin-right: 8px;
-    color: #17a2b8;
-    flex-shrink: 0;
+	margin-right: 8px;
+	color: #17a2b8;
+	flex-shrink: 0;
 }
 
 .mlmmc-articles-counter {
-    flex-shrink: 0;
+	flex-shrink: 0;
 }
 
 .mlmmc-counter-badge {
-    background: #007bff;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 14px;
-    font-weight: 500;
-    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
+	background: #007bff;
+	color: white;
+	padding: 8px 16px;
+	border-radius: 20px;
+	font-size: 14px;
+	font-weight: 500;
+	box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .mlmmc-filter-info-section {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-    
-    .mlmmc-search-notice {
-        min-width: unset;
-        width: 100%;
-    }
-    
-    .mlmmc-articles-counter {
-        width: 100%;
-        text-align: center;
-    }
-    
-    .mlmmc-video-filter-section {
-        padding: 15px;
-    }
+	.mlmmc-filter-info-section {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 10px;
+	}
+
+	.mlmmc-search-notice {
+		min-width: unset;
+		width: 100%;
+	}
+
+	.mlmmc-articles-counter {
+		width: 100%;
+		text-align: center;
+	}
+
+	.mlmmc-video-filter-section {
+		padding: 15px;
+	}
 }

@@ -75,15 +75,14 @@ class LabgenzCmLoader {
 			'core.user_menu_handler'        => \LABGENZ_CM\Core\UserMenuHandler::class,
 
 			/**
-			 * @deprecated components 
+			 * @deprecated components
 			 * their functionality either been refactored or not needed anymore.
-			 * 
 			*/
 			// 'core.admin_hooks'           => \LABGENZ_CM\Admin\AdminHooks::class,
 			// 'core.invite_handler'        => \LABGENZ_CM\Core\InviteHandler::class,
-			// 'core.remove_handler'		=> \LABGENZ_CM\Core\RemoveHandler::class,
-			
-			'database.database'				=> \LABGENZ_CM\Database\Database::class,
+			// 'core.remove_handler'        => \LABGENZ_CM\Core\RemoveHandler::class,
+
+			'database.database'             => \LABGENZ_CM\Database\Database::class,
 
 			'admin.organization_access'     => \LABGENZ_CM\Admin\OrganizationAccessAdmin::class,
 			'admin.weekly_articles_admin'   => \LABGENZ_CM\Admin\DailyArticleAdmin::class,
@@ -100,7 +99,7 @@ class LabgenzCmLoader {
 			'groups.members_map_handler'    => \LABGENZ_CM\Groups\MembersMapHandler::class,
 			'groups.member_visibility'      => \LABGENZ_CM\Groups\GroupMemberVisibility::class,
 			'groups.filters_handler'        => \LABGENZ_CM\Groups\GroupFiltersHandler::class,
-			
+
 			'articles.articles_post_type'   => \LABGENZ_CM\Articles\ArticlesPostType::class,
 			'articles.core_handler'         => \LABGENZ_CM\Articles\ArticlesHandler::class,
 			'articles.weekly_handler'       => \LABGENZ_CM\Articles\DailyArticleHandler::class,
@@ -112,8 +111,8 @@ class LabgenzCmLoader {
 			'gamipress.currency_handler'    => \LABGENZ_CM\Gamipress\GamipressCurrencyHandler::class,
 
 			'subscription.handler'          => \LABGENZ_CM\Subscriptions\SubscriptionHandler::class,
-			'subscription.shortcode'	    => \LABGENZ_CM\Subscriptions\Shortcodes\SubscriptionDetailsShortcode::class,
-			'widgets.widgets.elementor'		=> \LABGENZ_CM\Widgets\Elementor\ElementorIntegration::class,
+			'subscription.shortcode'        => \LABGENZ_CM\Subscriptions\Shortcodes\SubscriptionDetailsShortcode::class,
+			'widgets.widgets.elementor'     => \LABGENZ_CM\Widgets\Elementor\ElementorIntegration::class,
 		];
 	}
 

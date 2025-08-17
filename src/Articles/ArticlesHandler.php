@@ -8,7 +8,7 @@ namespace LABGENZ_CM\Articles;
 class ArticlesHandler {
 	private const POSTS_PER_PAGE = 20;
 	private const NONCE_ACTION   = 'mlmmc_search_nonce';
-	public  const POST_TYPE      = 'mlmmc_artiicle';
+	public const POST_TYPE       = 'mlmmc_artiicle';
 	private const TEMPLATE_ID    = 42495;
 
 	/**
@@ -29,16 +29,16 @@ class ArticlesHandler {
 		// add_action('wp_ajax_nopriv_get_mlmmc_categories', '__return_false');
 		// add_action('wp_ajax_nopriv_get_mlmmc_authors', '__return_false');
 		// add_filter('single_template', function ($single_template) {
-		// 	global $post;
-	
-		// 	if ($post->post_type === self::POST_TYPE) {
-		// 		$template_path = LABGENZ_CM_TEMPLATES_DIR . '/single-mlmmc-article.php';
-		// 		if (file_exists($template_path)) {
-		// 			return $template_path;
-		// 		}
-		// 	}
-	
-		// 	return $single_template;
+		// global $post;
+
+		// if ($post->post_type === self::POST_TYPE) {
+		// $template_path = LABGENZ_CM_TEMPLATES_DIR . '/single-mlmmc-article.php';
+		// if (file_exists($template_path)) {
+		// return $template_path;
+		// }
+		// }
+
+		// return $single_template;
 		// });
 	}
 
@@ -52,7 +52,7 @@ class ArticlesHandler {
 			wp_die( 'Security check failed' );
 		}
 		$search_term = sanitize_text_field( $_POST['search_term'] ?? '' );
-		
+
 		// Handle categories - can be single string or array
 		$categories = [];
 		if ( isset( $_POST['categories'] ) ) {
@@ -65,7 +65,7 @@ class ArticlesHandler {
 			// Backward compatibility for single category
 			$categories = [ sanitize_text_field( $_POST['category'] ) ];
 		}
-		
+
 		// Accept both single and multiple authors (array from JS)
 		$authors = [];
 		if ( isset( $_POST['authors'] ) ) {
@@ -121,7 +121,7 @@ class ArticlesHandler {
 				];
 			} else {
 				// Multiple categories
-				$category_query = ['relation' => 'OR'];
+				$category_query = [ 'relation' => 'OR' ];
 				foreach ( $categories as $category ) {
 					$category_query[] = [
 						'key'     => 'mlmmc_article_category',
@@ -172,20 +172,20 @@ class ArticlesHandler {
 	 * @param int $post_id The post ID
 	 * @return string The author name or empty string if not found
 	 */
-	public function get_article_author(int $post_id): string {
-		if (function_exists('get_field')) {
-			$author = get_field('mlmmc_article_author', $post_id);
-			if (!empty($author)) {
+	public function get_article_author( int $post_id ): string {
+		if ( function_exists( 'get_field' ) ) {
+			$author = get_field( 'mlmmc_article_author', $post_id );
+			if ( ! empty( $author ) ) {
 				return $author;
 			}
 		}
-		
+
 		// Fallback to post meta if ACF function is not available
-		$author = get_post_meta($post_id, 'mlmmc_article_author', true);
-		
-		return !empty($author) ? $author : '';
+		$author = get_post_meta( $post_id, 'mlmmc_article_author', true );
+
+		return ! empty( $author ) ? $author : '';
 	}
-	
+
 	/**
 	 * Get all available authors from the ACF field.
 	 *
@@ -211,7 +211,8 @@ class ArticlesHandler {
 
 	/**
 	 * Get authors from ACF field choices or from existing articles.
-+	 *
++    *
+	 *
 	 * @param int $post_id
 	 * @return array
 	 */
@@ -404,21 +405,21 @@ class ArticlesHandler {
 
 	/**
 	 * Get category from ACF field for a specific article
-	 * 
+	 *
 	 * @param int $post_id The post ID
 	 * @return string The category name or empty string if not found
 	 */
-	public function get_article_category(int $post_id): string {
-		if (function_exists('get_field')) {
-			$category = get_field('mlmmc_article_category', $post_id);
-			if (!empty($category)) {
+	public function get_article_category( int $post_id ): string {
+		if ( function_exists( 'get_field' ) ) {
+			$category = get_field( 'mlmmc_article_category', $post_id );
+			if ( ! empty( $category ) ) {
 				return $category;
 			}
 		}
-		
+
 		// Fallback to post meta if ACF function is not available
-		$category = get_post_meta($post_id, 'mlmmc_article_category', true);
-		return !empty($category) ? $category : '';
+		$category = get_post_meta( $post_id, 'mlmmc_article_category', true );
+		return ! empty( $category ) ? $category : '';
 	}
 
 	/**

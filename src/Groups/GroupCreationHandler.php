@@ -137,7 +137,7 @@ class GroupCreationHandler {
 	 * @return void
 	 */
 	public function handle_ajax_create_organization_request() {
-		try{
+		try {
 			$organization_request_helper = new CreateOrganizationRequest();
 			$organization_request_helper->create_organization_request( $_POST );
 		} catch ( \Exception $e ) {
@@ -282,10 +282,12 @@ class GroupCreationHandler {
 	 */
 	private function promote_site_admins_to_organizers( int $group_id ): void {
 		// Get all users with manage_options capability (site admins)
-		$admin_users = get_users([
-			'capability' => 'manage_options',
-			'fields' => 'ID'
-		]);
+		$admin_users = get_users(
+			[
+				'capability' => 'manage_options',
+				'fields'     => 'ID',
+			]
+		);
 
 		if ( empty( $admin_users ) ) {
 			return;
@@ -296,7 +298,7 @@ class GroupCreationHandler {
 
 		foreach ( $admin_users as $admin_user_id ) {
 			$admin_user_id = (int) $admin_user_id;
-			
+
 			// Ensure admin is a member of the BuddyBoss group first
 			if ( ! groups_is_user_member( $admin_user_id, $group_id ) ) {
 				// Join the admin to the group first
@@ -333,16 +335,16 @@ class GroupCreationHandler {
 		$updated = $wpdb->update(
 			$bp->groups->table_name_members,
 			[
-				'is_admin' => 1,
-				'is_mod' => 0, // Clear mod status when promoting to admin
-				'date_modified' => bp_core_current_time()
+				'is_admin'      => 1,
+				'is_mod'        => 0, // Clear mod status when promoting to admin
+				'date_modified' => bp_core_current_time(),
 			],
 			[
-				'user_id' => $user_id,
-				'group_id' => $group_id
+				'user_id'  => $user_id,
+				'group_id' => $group_id,
 			],
-			['%d', '%d', '%s'],
-			['%d', '%d']
+			[ '%d', '%d', '%s' ],
+			[ '%d', '%d' ]
 		);
 
 		// Also update via meta key method for redundancy
@@ -368,10 +370,10 @@ class GroupCreationHandler {
 			$group_leaders = learndash_get_groups_group_leaders( $learndash_group_id );
 			if ( ! in_array( $user_id, $group_leaders ) ) {
 				$group_leaders[] = $user_id;
-				
+
 				// Update group leaders via LearnDash method
 				update_post_meta( $learndash_group_id, 'learndash_group_leaders', $group_leaders );
-				
+
 				// Also ensure user has group leader capabilities
 				ld_update_group_access( $user_id, $learndash_group_id, false );
 			}
@@ -415,10 +417,12 @@ class GroupCreationHandler {
 	 */
 	private function auto_join_site_admins( int $group_id ): void {
 		// Get all users with manage_options capability (site admins)
-		$admin_users = get_users([
-			'capability' => 'manage_options',
-			'fields' => 'ID'
-		]);
+		$admin_users = get_users(
+			[
+				'capability' => 'manage_options',
+				'fields'     => 'ID',
+			]
+		);
 
 		if ( empty( $admin_users ) ) {
 			return;
@@ -426,10 +430,10 @@ class GroupCreationHandler {
 
 		foreach ( $admin_users as $admin_user_id ) {
 			$admin_user_id = (int) $admin_user_id;
-			
+
 			// Check if admin is already a member
 			$is_member = groups_is_user_member( $admin_user_id, $group_id );
-			
+
 			if ( ! $is_member ) {
 				// Join the admin to the group
 				$join_result = groups_join_group( $group_id, $admin_user_id );
@@ -462,8 +466,8 @@ class GroupCreationHandler {
 
 		$results = [
 			'processed_groups' => 0,
-			'promoted_users' => 0,
-			'errors' => []
+			'promoted_users'   => 0,
+			'errors'           => [],
 		];
 
 		// Get all BuddyBoss groups that have LearnDash sync
@@ -485,17 +489,19 @@ class GroupCreationHandler {
 		foreach ( $synced_groups as $group_data ) {
 			try {
 				$this->promote_site_admins_to_organizers( (int) $group_data->group_id );
-				$results['processed_groups']++;
+				++$results['processed_groups'];
 			} catch ( Exception $e ) {
 				$results['errors'][] = "Error processing group {$group_data->group_id}: " . $e->getMessage();
 			}
 		}
 
 		// Count total promoted users
-		$admin_users = get_users([
-			'capability' => 'manage_options',
-			'fields' => 'ID'
-		]);
+		$admin_users               = get_users(
+			[
+				'capability' => 'manage_options',
+				'fields'     => 'ID',
+			]
+		);
 		$results['promoted_users'] = count( $admin_users ) * $results['processed_groups'];
 
 		return $results;
@@ -511,7 +517,7 @@ class GroupCreationHandler {
 	private function mark_member_as_hidden( int $user_id, int $group_id ): void {
 		// Store hidden status in group member meta
 		groups_update_groupmeta( $group_id, "hidden_member_{$user_id}", true );
-		
+
 		// Also store in user meta for easier querying
 		update_user_meta( $user_id, "hidden_in_group_{$group_id}", true );
 	}
@@ -542,16 +548,16 @@ class GroupCreationHandler {
 
 		// Create new LearnDash group
 		$learndash_group_data = [
-			'post_title' => $bp_group->name,
+			'post_title'   => $bp_group->name,
 			'post_content' => $bp_group->description,
-			'post_status' => 'publish',
-			'post_type' => 'groups', // LearnDash group post type
-			'post_author' => get_current_user_id(),
-			'meta_input' => [
-				'_bp_group_id' => $bp_group_id,
-				'_groups_group_enabled' => 'yes',
+			'post_status'  => 'publish',
+			'post_type'    => 'groups', // LearnDash group post type
+			'post_author'  => get_current_user_id(),
+			'meta_input'   => [
+				'_bp_group_id'             => $bp_group_id,
+				'_groups_group_enabled'    => 'yes',
 				'_groups_group_price_type' => 'closed',
-			]
+			],
 		];
 
 		$learndash_group_id = wp_insert_post( $learndash_group_data );

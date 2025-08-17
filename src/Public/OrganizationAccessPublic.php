@@ -81,12 +81,12 @@ class OrganizationAccessPublic {
 			'labgenz-org-access-public',
 			'labgenz_org_access',
 			[
-				'ajax_url'     => admin_url( 'admin-ajax.php' ),
-				'nonce'        => wp_create_nonce( 'labgenz_org_access_nonce' ),
-				'is_logged_in' => is_user_logged_in(),
-				'user_status'  => is_user_logged_in() ? $this->org_access->get_user_request_status( get_current_user_id() ) : null,
+				'ajax_url'          => admin_url( 'admin-ajax.php' ),
+				'nonce'             => wp_create_nonce( 'labgenz_org_access_nonce' ),
+				'is_logged_in'      => is_user_logged_in(),
+				'user_status'       => is_user_logged_in() ? $this->org_access->get_user_request_status( get_current_user_id() ) : null,
 				'user_request_info' => is_user_logged_in() ? $this->get_user_request_info() : null,
-				'strings'      => [
+				'strings'           => [
 					'login_required'   => __( 'You must be logged in to request organization access.', 'labgenz-community-management' ),
 					'already_pending'  => __( 'You already have a pending organization access request. Please wait for an admin to review it', 'labgenz-community-management' ),
 					'already_approved' => __( 'Your organization access request has been approved.', 'labgenz-community-management' ),
@@ -331,7 +331,7 @@ class OrganizationAccessPublic {
 					if ( $group_type === 'organization' ) {
 						// Check if user is organizer or member
 						if ( ( function_exists( 'groups_is_user_admin' ) && groups_is_user_admin( $user_id, $group_id ) ) ||
-							 ( function_exists( 'groups_is_user_member' ) && groups_is_user_member( $user_id, $group_id ) ) ) {
+							( function_exists( 'groups_is_user_member' ) && groups_is_user_member( $user_id, $group_id ) ) ) {
 							return false;
 						}
 					}

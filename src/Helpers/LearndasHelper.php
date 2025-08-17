@@ -5,7 +5,7 @@ namespace LABGENZ_CM\Helpers;
 
 class LearndasHelper {
 
-    /**
+	/**
 	 * Synchronize BuddyBoss organizer role with LearnDash group leader role
 	 *
 	 * @param int $user_id  The user ID to add as a LearnDash group leader

@@ -7,45 +7,50 @@ use LABGENZ_CM\Subscriptions\SubscriptionHandler;
 use LABGENZ_CM\Core\OrganizationAccess;
 use LABGENZ_CM\Groups\GroupCreationHandler;
 
-class CreateOrganizationRequest extends GroupCreationHandler
-{
+class CreateOrganizationRequest extends GroupCreationHandler {
 
 
-    private SubscriptionHandler $subscription_handler;
+
+	private SubscriptionHandler $subscription_handler;
 	private GroupCreationHandler $group_creation_handler;
 
-    public function __construct() {
-	    $this->subscription_handler = SubscriptionHandler::get_instance();
+	public function __construct() {
+		$this->subscription_handler   = SubscriptionHandler::get_instance();
 		$this->group_creation_handler = new GroupCreationHandler();
-    
 	}
 
-    public function create_organization_request($post_data){
+	public function create_organization_request( $post_data ) {
 
-        try {
+		try {
 			$user_id = get_current_user_id();
-			
+
 			// Validate user is logged in
 			if ( ! $user_id ) {
-				wp_send_json_error([
-					'message' => __('You must be logged in to create an organization.', 'labgenz-community-management')
-				]);
+				wp_send_json_error(
+					[
+						'message' => __( 'You must be logged in to create an organization.', 'labgenz-community-management' ),
+					]
+				);
 				return;
 			}
 
 			// Validate subscription access
 			if ( ! $this->subscription_handler->user_has_organization_subscription( $user_id ) ) {
-				wp_send_json_error([
-					'message' => __('You need an Organization subscription to create an organization.', 'labgenz-community-management')
-				]);
+				wp_send_json_error(
+					[
+						'message' => __( 'You need an Organization subscription to create an organization.', 'labgenz-community-management' ),
+					]
+				);
 				return;
 			}
 
 			// Validate organization access token
 			if ( ! $this->validate_organization_access_token( $user_id ) ) {
-				wp_send_json_error([
-					'message' => __('You need organization access approval to create an organization. Please request access first.', 'labgenz-community-management')
-				]);
+				wp_send_json_error(
+					[
+						'message' => __( 'You need organization access approval to create an organization. Please request access first.', 'labgenz-community-management' ),
+					]
+				);
 				return;
 			}
 
@@ -61,12 +66,11 @@ class CreateOrganizationRequest extends GroupCreationHandler
 			$this->validate_nonce( $post['organization_nonce'] );
 
 			$group_id = $this->create_group( $post );
-			
+
 			$this->update_group_meta( $group_id, $post );
 			$this->update_group_categories( $group_id, $post );
 
 			bp_groups_set_group_type( $group_id, 'organization' );
-
 
 			$logo_url        = $this->handle_avatar_upload( $group_id, $files, $post );
 			$bp_avatar_nonce = wp_create_nonce( 'bp_avatar_cropstore' );
@@ -146,7 +150,7 @@ class CreateOrganizationRequest extends GroupCreationHandler
 				]
 			);
 		}
-    }
+	}
 
 	/**
 	 * Validate organization access token for the current user
@@ -157,7 +161,7 @@ class CreateOrganizationRequest extends GroupCreationHandler
 	private function validate_organization_access_token( int $user_id ): bool {
 		// Check if user has approved organization access status
 		$user_status = get_user_meta( $user_id, OrganizationAccess::STATUS_META_KEY, true );
-		
+
 		if ( $user_status === OrganizationAccess::STATUS_APPROVED ) {
 			return true;
 		}
@@ -165,12 +169,12 @@ class CreateOrganizationRequest extends GroupCreationHandler
 		// Check if user has valid access token in session or request
 		if ( isset( $_POST['access_token'] ) && ! empty( $_POST['access_token'] ) ) {
 			$token = sanitize_text_field( $_POST['access_token'] );
-			$user = get_user_by( 'id', $user_id );
-			
+			$user  = get_user_by( 'id', $user_id );
+
 			if ( $user ) {
 				$organization_access = new OrganizationAccess();
 				$verification_result = $organization_access->verify_access_token( $token, $user->user_email );
-				
+
 				if ( ! is_wp_error( $verification_result ) ) {
 					return true;
 				}
@@ -261,7 +265,7 @@ class CreateOrganizationRequest extends GroupCreationHandler
 		// Set group categories using WordPress taxonomy functions
 		// Include the organization type (39933) along with the categories
 		if ( function_exists( 'wp_set_object_terms' ) ) {
-			$all_terms = array_merge( [39933], $categories ); // Add organization type ID
+			$all_terms = array_merge( [ 39933 ], $categories ); // Add organization type ID
 			wp_set_object_terms( $group_id, $all_terms, 'bp_group_type', false );
 		}
 
@@ -272,18 +276,18 @@ class CreateOrganizationRequest extends GroupCreationHandler
 		$learndash_group_id = groups_get_groupmeta( $group_id, '_sync_group_id' );
 
 		// Enroll the LearnDash group with courses from these categories
-		$enrollment_result = $this->enroll_learndash_group_with_courses( intval($learndash_group_id), $categories );
+		$enrollment_result = $this->enroll_learndash_group_with_courses( intval( $learndash_group_id ), $categories );
 
 		// Get all courses from the selected categories for reference
 		$courses = $this->get_courses_from_categories( $categories );
 
 		// Store debug information
 		$debug_info = [
-			'learndash_group_id' => $learndash_group_id,
-			'categories' => $categories,
-			'courses_found' => $courses,
-			'enrollment_result' => $enrollment_result,
-			'sync_group_id_exists' => !empty($learndash_group_id),
+			'learndash_group_id'   => $learndash_group_id,
+			'categories'           => $categories,
+			'courses_found'        => $courses,
+			'enrollment_result'    => $enrollment_result,
+			'sync_group_id_exists' => ! empty( $learndash_group_id ),
 		];
 
 		// Store debug info in group meta
@@ -386,9 +390,12 @@ class CreateOrganizationRequest extends GroupCreationHandler
 
 		// Ensure all category IDs are valid integers
 		$category_ids = array_map( 'intval', $category_ids );
-		$category_ids = array_filter( $category_ids, function( $id ) {
-			return $id > 0;
-		});
+		$category_ids = array_filter(
+			$category_ids,
+			function ( $id ) {
+				return $id > 0;
+			}
+		);
 
 		if ( empty( $category_ids ) ) {
 			return [];
@@ -399,17 +406,17 @@ class CreateOrganizationRequest extends GroupCreationHandler
 		foreach ( $category_ids as $category_id ) {
 			// Get term information from LearnDash course category taxonomy
 			$term = get_term( $category_id, 'ld_course_category' );
-			
+
 			if ( $term && ! is_wp_error( $term ) ) {
-			// Get courses for this category
-			$courses = $this->get_courses_info_for_category( $category_id );				
-            $categories_info[] = [
-					'id' => $category_id,
-					'name' => $term->name,
+				// Get courses for this category
+				$courses           = $this->get_courses_info_for_category( $category_id );
+				$categories_info[] = [
+					'id'          => $category_id,
+					'name'        => $term->name,
 					'description' => $term->description,
-					'slug' => $term->slug,
-					'count' => $term->count,
-					'courses' => $courses,
+					'slug'        => $term->slug,
+					'count'       => $term->count,
+					'courses'     => $courses,
 				];
 			}
 		}
@@ -421,7 +428,7 @@ class CreateOrganizationRequest extends GroupCreationHandler
 	/**
 	 * Enroll LearnDash group with courses from specified categories
 	 *
-	 * @param int $learndash_group_id LearnDash group ID
+	 * @param int   $learndash_group_id LearnDash group ID
 	 * @param array $category_ids Array of category term IDs
 	 * @return bool Success status
 	 */
@@ -439,21 +446,21 @@ class CreateOrganizationRequest extends GroupCreationHandler
 
 		// Check if LearnDash functions are available
 		$learndash_functions_available = false;
-		$update_function = null;
-		$get_function = null;
+		$update_function               = null;
+		$get_function                  = null;
 
 		if ( function_exists( 'learndash_get_group_enrolled_courses' ) && function_exists( 'ld_update_group_access_list' ) ) {
 			$learndash_functions_available = true;
-			$update_function = 'ld_update_group_access_list';
-			$get_function = 'learndash_get_group_enrolled_courses';
+			$update_function               = 'ld_update_group_access_list';
+			$get_function                  = 'learndash_get_group_enrolled_courses';
 		} elseif ( function_exists( 'learndash_set_group_enrolled_courses' ) && function_exists( 'learndash_get_group_courses_list' ) ) {
 			$learndash_functions_available = true;
-			$update_function = 'learndash_set_group_enrolled_courses';
-			$get_function = 'learndash_get_group_courses_list';
+			$update_function               = 'learndash_set_group_enrolled_courses';
+			$get_function                  = 'learndash_get_group_courses_list';
 		} elseif ( function_exists( 'learndash_update_group_courses' ) ) {
 			$learndash_functions_available = true;
-			$update_function = 'learndash_update_group_courses';
-			$get_function = 'learndash_get_group_courses_list';
+			$update_function               = 'learndash_update_group_courses';
+			$get_function                  = 'learndash_get_group_courses_list';
 		}
 
 		if ( ! $learndash_functions_available ) {
@@ -495,7 +502,7 @@ class CreateOrganizationRequest extends GroupCreationHandler
 	/**
 	 * Enroll LearnDash group with courses using direct database method (fallback)
 	 *
-	 * @param int $learndash_group_id LearnDash group ID
+	 * @param int   $learndash_group_id LearnDash group ID
 	 * @param array $course_ids Array of course post IDs
 	 * @return bool Success status
 	 */
@@ -540,35 +547,40 @@ class CreateOrganizationRequest extends GroupCreationHandler
 
 		// Ensure all category IDs are valid integers
 		$category_ids = array_map( 'intval', $category_ids );
-		$category_ids = array_filter( $category_ids, function( $id ) {
-			return $id > 0;
-		});
+		$category_ids = array_filter(
+			$category_ids,
+			function ( $id ) {
+				return $id > 0;
+			}
+		);
 
 		if ( empty( $category_ids ) ) {
 			return [];
 		}
 
 		// Query courses with the specified categories
-		$courses_query = new \WP_Query([
-			'post_type' => 'sfwd-courses', // LearnDash course post type
-			'post_status' => 'publish',
-			'posts_per_page' => -1, // Get all courses
-			'fields' => 'ids', // Only return post IDs for performance
-			'tax_query' => [
-				[
-					'taxonomy' => 'ld_course_category', // LearnDash course category taxonomy
-					'field' => 'term_id',
-					'terms' => $category_ids,
-					'operator' => 'IN'
-				]
-			],
-			'meta_query' => [
-				[
-					'key' => '_sfwd-courses',
-					'compare' => 'EXISTS'
-				]
+		$courses_query = new \WP_Query(
+			[
+				'post_type'      => 'sfwd-courses', // LearnDash course post type
+				'post_status'    => 'publish',
+				'posts_per_page' => -1, // Get all courses
+				'fields'         => 'ids', // Only return post IDs for performance
+				'tax_query'      => [
+					[
+						'taxonomy' => 'ld_course_category', // LearnDash course category taxonomy
+						'field'    => 'term_id',
+						'terms'    => $category_ids,
+						'operator' => 'IN',
+					],
+				],
+				'meta_query'     => [
+					[
+						'key'     => '_sfwd-courses',
+						'compare' => 'EXISTS',
+					],
+				],
 			]
-		]);
+		);
 
 		$course_ids = $courses_query->posts;
 
@@ -586,37 +598,39 @@ class CreateOrganizationRequest extends GroupCreationHandler
 		}
 
 		// Query courses with the specified category
-		$courses_query = new \WP_Query([
-			'post_type' => 'sfwd-courses', // LearnDash course post type
-			'post_status' => 'publish',
-			'posts_per_page' => -1, // Get all courses
-			'tax_query' => [
-				[
-					'taxonomy' => 'ld_course_category', // LearnDash course category taxonomy
-					'field' => 'term_id',
-					'terms' => [ $category_id ],
-					'operator' => 'IN'
-				]
-			],
-			'meta_query' => [
-				[
-					'key' => '_sfwd-courses',
-					'compare' => 'EXISTS'
-				]
+		$courses_query = new \WP_Query(
+			[
+				'post_type'      => 'sfwd-courses', // LearnDash course post type
+				'post_status'    => 'publish',
+				'posts_per_page' => -1, // Get all courses
+				'tax_query'      => [
+					[
+						'taxonomy' => 'ld_course_category', // LearnDash course category taxonomy
+						'field'    => 'term_id',
+						'terms'    => [ $category_id ],
+						'operator' => 'IN',
+					],
+				],
+				'meta_query'     => [
+					[
+						'key'     => '_sfwd-courses',
+						'compare' => 'EXISTS',
+					],
+				],
 			]
-		]);
+		);
 
 		$courses_info = [];
 
 		if ( $courses_query->have_posts() ) {
 			foreach ( $courses_query->posts as $course ) {
 				$courses_info[] = [
-					'id' => $course->ID,
-					'title' => $course->post_title,
-					'slug' => $course->post_name,
+					'id'      => $course->ID,
+					'title'   => $course->post_title,
+					'slug'    => $course->post_name,
 					'excerpt' => $course->post_excerpt,
-					'status' => $course->post_status,
-					'url' => get_permalink( $course->ID ),
+					'status'  => $course->post_status,
+					'url'     => get_permalink( $course->ID ),
 				];
 			}
 		}

@@ -7,10 +7,11 @@ class InviteUserHelper {
 
 	/**
 	 * Invites a user to a group.
+	 *
 	 * @param array $post_data The POST data containing group ID, email, and nonce.
 	 * @return void
 	 */
-    public function invite_user($post_data) {
+	public function invite_user( $post_data ) {
 		if ( ! wp_verify_nonce( $post_data['nonce'], 'lab_group_management_nonce' ) ) {
 			wp_send_json_error( 'Security check failed' );
 		}
@@ -25,7 +26,7 @@ class InviteUserHelper {
 		$user    = get_user_by( 'email', $email );
 		$user_id = $user ? $user->ID : null;
 
-        $members_handler = GroupMembersHandler::get_instance();
+		$members_handler = GroupMembersHandler::get_instance();
 		// Generate a unique token for this invitation
 		$token = wp_generate_password( 20, false );
 
@@ -87,5 +88,5 @@ class InviteUserHelper {
 				'message' => "Invitation sent successfully to {$user->display_name}",
 			]
 		);
-    }
+	}
 }

@@ -1,135 +1,159 @@
-(function($) {
-    'use strict';
+(function ($) {
+	'use strict';
 
-    let selectedRatings = [];
+	let selectedRatings = [];
 
-    // Make the update function available globally
-    window.updateRatingsFilter = function(filteredRatings) {
-        if (!filteredRatings || !Array.isArray(filteredRatings)) {
-            console.log('MLMMC Debug - No filtered ratings data available');
-            return;
-        }
+	// Make the update function available globally
+	window.updateRatingsFilter = function (filteredRatings) {
+		if ( ! filteredRatings || ! Array.isArray( filteredRatings )) {
+			console.log( 'MLMMC Debug - No filtered ratings data available' );
+			return;
+		}
 
-        console.log('MLMMC Debug - Updating ratings filter with data:', filteredRatings);
+		console.log( 'MLMMC Debug - Updating ratings filter with data:', filteredRatings );
 
-        // Update the rating options with counts from filtered data
-        $('.mlmmc-rating-options .mlmmc-checkbox-option').each(function() {
-            const $this = $(this);
-            const $input = $this.find('input');
-            const rating = $input.val();
-            
-            // Find the matching rating data
-            const ratingData = filteredRatings.find(r => r.rating == rating);
-            
-            // Update the count if found, never hide the option
-            if (ratingData) {
-                // Check if there's already a count span
-                let $countSpan = $this.find('.mlmmc-rating-count');
-                
-                // If not, create one
-                if ($countSpan.length === 0) {
-                    $this.find('label').append(' <span class="mlmmc-rating-count">(' + ratingData.count + ')</span>');
-                } else {
-                    // Otherwise update existing one
-                    $countSpan.text('(' + ratingData.count + ')');
-                }
-                
-                // Always show all rating options, even if count is 0
-                $this.show();
-            }
-        });
-    };
+		// Update the rating options with counts from filtered data
+		$( '.mlmmc-rating-options .mlmmc-checkbox-option' ).each(
+			function () {
+				const $this  = $( this );
+				const $input = $this.find( 'input' );
+				const rating = $input.val();
 
-    function initRatingFilter() {
-        $('#mlmmc-rating-filter-toggle').on('click', function() {
-            $('#mlmmc-rating-dropdown').toggle();
-            $(this).toggleClass('active');
-            $('.chevron-icon', this).toggleClass('flip');
-        });
+				// Find the matching rating data
+				const ratingData = filteredRatings.find( r => r.rating == rating );
 
-        $(document).on('click', function(event) {
-            if (!$(event.target).closest('#mlmmc-rating-dropdown, #mlmmc-rating-filter-toggle').length) {
-                $('#mlmmc-rating-dropdown').hide();
-                $('#mlmmc-rating-filter-toggle').removeClass('active');
-                $('.chevron-icon', '#mlmmc-rating-filter-toggle').removeClass('flip');
-            }
-        });
+				// Update the count if found, never hide the option
+				if (ratingData) {
+					// Check if there's already a count span
+					let $countSpan = $this.find( '.mlmmc-rating-count' );
 
-        function updateSelectedRatingsUI() {
-            // Make sure we're targeting the ratings container, not categories
-            const $container = $('.mlmmc-selected-ratings');
+					// If not, create one
+					if ($countSpan.length === 0) {
+						$this.find( 'label' ).append( ' <span class="mlmmc-rating-count">(' + ratingData.count + ')</span>' );
+					} else {
+						// Otherwise update existing one
+						$countSpan.text( '(' + ratingData.count + ')' );
+					}
 
-            if (selectedRatings.length === 0) {
-                $container.empty().hide();
-                return;
-            }
+					// Always show all rating options, even if count is 0
+					$this.show();
+				}
+			}
+		);
+	};
 
-            let html = '';
-            selectedRatings.forEach(function(rating) {
-                html += `
-                    <div class="mlmmc-selected-rating">
-                        ${rating} Stars
-                        <button type="button" class="remove-rating" data-rating="${rating}">×</button>
-                    </div>
-                `;
-            });
+	function initRatingFilter() {
+		$( '#mlmmc-rating-filter-toggle' ).on(
+			'click',
+			function () {
+				$( '#mlmmc-rating-dropdown' ).toggle();
+				$( this ).toggleClass( 'active' );
+				$( '.chevron-icon', this ).toggleClass( 'flip' );
+			}
+		);
 
-            $container.html(html).show();
+		$( document ).on(
+			'click',
+			function (event) {
+				if ( ! $( event.target ).closest( '#mlmmc-rating-dropdown, #mlmmc-rating-filter-toggle' ).length) {
+					$( '#mlmmc-rating-dropdown' ).hide();
+					$( '#mlmmc-rating-filter-toggle' ).removeClass( 'active' );
+					$( '.chevron-icon', '#mlmmc-rating-filter-toggle' ).removeClass( 'flip' );
+				}
+			}
+		);
 
-            // Debug log to confirm the contents of selectedRatings during updates
-            console.log('MLMMC Debug - Updating selected ratings:', selectedRatings);
-        }
+		function updateSelectedRatingsUI() {
+			// Make sure we're targeting the ratings container, not categories
+			const $container = $( '.mlmmc-selected-ratings' );
 
-        $(document).on('change', '.mlmmc-rating-options input', function() {
-            const rating = $(this).val();
+			if (selectedRatings.length === 0) {
+				$container.empty().hide();
+				return;
+			}
 
-            if ($(this).is(':checked')) {
-                if (!selectedRatings.includes(rating)) {
-                    selectedRatings.push(rating);
-                }
-            } else {
-                selectedRatings = selectedRatings.filter(r => r !== rating);
-            }
+			let html = '';
+			selectedRatings.forEach(
+				function (rating) {
+					html += `
+					< div class       = "mlmmc-selected-rating" >
+						${rating} Stars
+						< button type = "button" class = "remove-rating" data - rating = "${rating}" > × < / button >
+					< / div >
+					`;
+				}
+			);
 
-            // Update the global variable
-            window.selectedRatings = selectedRatings;
+			$container.html( html ).show();
 
-            updateSelectedRatingsUI();
-        });
+			// Debug log to confirm the contents of selectedRatings during updates
+			console.log( 'MLMMC Debug - Updating selected ratings:', selectedRatings );
+		}
 
-        $(document).on('click', '.remove-rating', function() {
-            const ratingToRemove = $(this).data('rating');
-            selectedRatings = selectedRatings.filter(r => r !== ratingToRemove);
-            
-            // Update the global variable
-            window.selectedRatings = selectedRatings;
+		$( document ).on(
+			'change',
+			'.mlmmc-rating-options input',
+			function () {
+				const rating = $( this ).val();
 
-            // Update checkbox in dropdown
-            $(`.mlmmc-rating-options input[value="${ratingToRemove}"]`).prop('checked', false);
+				if ($( this ).is( ':checked' )) {
+					if ( ! selectedRatings.includes( rating )) {
+						selectedRatings.push( rating );
+					}
+				} else {
+					selectedRatings = selectedRatings.filter( r => r !== rating );
+				}
 
-            updateSelectedRatingsUI();
-        });
+				// Update the global variable
+				window.selectedRatings = selectedRatings;
 
-        // Ensure AJAX request includes selected ratings
-        $('#mlmmc-apply-ratings').on('click', function() {
-            $('#mlmmc-rating-dropdown').hide();
-            $('#mlmmc-rating-filter-toggle').removeClass('active');
-            $('.chevron-icon', '#mlmmc-rating-filter-toggle').removeClass('flip');
+				updateSelectedRatingsUI();
+			}
+		);
 
-            window.selectedRatings = selectedRatings;
+		$( document ).on(
+			'click',
+			'.remove-rating',
+			function () {
+				const ratingToRemove = $( this ).data( 'rating' );
+				selectedRatings      = selectedRatings.filter( r => r !== ratingToRemove );
 
-            if (typeof window.performSearch === 'function') {
-                window.performSearch({ ratings: selectedRatings });
-            }
-        });
+				// Update the global variable
+				window.selectedRatings = selectedRatings;
 
-        $('#mlmmc-clear-ratings').on('click', function() {
-            selectedRatings = [];
-            window.selectedRatings = [];
-            $('.mlmmc-rating-options input').prop('checked', false);
-            updateSelectedRatingsUI();
-        });
-    }
+				// Update checkbox in dropdown
+				$( `.mlmmc - rating - options input[value = "${ratingToRemove}"]` ).prop( 'checked', false );
 
-    $(document).ready(initRatingFilter);
-})(jQuery);
+				updateSelectedRatingsUI();
+			}
+		);
+
+		// Ensure AJAX request includes selected ratings
+		$( '#mlmmc-apply-ratings' ).on(
+			'click',
+			function () {
+				$( '#mlmmc-rating-dropdown' ).hide();
+				$( '#mlmmc-rating-filter-toggle' ).removeClass( 'active' );
+				$( '.chevron-icon', '#mlmmc-rating-filter-toggle' ).removeClass( 'flip' );
+
+				window.selectedRatings = selectedRatings;
+
+				if (typeof window.performSearch === 'function') {
+					window.performSearch( { ratings: selectedRatings } );
+				}
+			}
+		);
+
+		$( '#mlmmc-clear-ratings' ).on(
+			'click',
+			function () {
+				selectedRatings        = [];
+				window.selectedRatings = [];
+				$( '.mlmmc-rating-options input' ).prop( 'checked', false );
+				updateSelectedRatingsUI();
+			}
+		);
+	}
+
+	$( document ).ready( initRatingFilter );
+})( jQuery );

@@ -201,10 +201,10 @@
 							).then(
 								function () {
 									// Update button status instead of full page reload
-									this.updateButtonStatus('pending');
-									
+									this.updateButtonStatus( 'pending' );
+
 									window.location.reload();
-								}.bind(this)
+								}.bind( this )
 							);
 						} else {
 							this.showMessage( 'error', response.data.message );
@@ -304,13 +304,13 @@
 		/**
 		 * Update button status after form submission
 		 */
-		updateButtonStatus: function(newStatus) {
+		updateButtonStatus: function (newStatus) {
 			var $button = $( '#labgenz-org-access-btn' );
 			if ($button.length === 0) {
 				return;
 			}
 
-			var $buttonText = $button.find( 'span' );
+			var $buttonText  = $button.find( 'span' );
 			var $statusSmall = $button.find( 'small' );
 
 			// Remove all status classes
@@ -324,7 +324,7 @@
 						$buttonText.text( labgenz_org_access.strings.button_texts.pending );
 					}
 					if ($statusSmall.length > 0) {
-						$statusSmall.text('(Pending)').css('color', '#f0ad4e');
+						$statusSmall.text( '(Pending)' ).css( 'color', '#f0ad4e' );
 					}
 					break;
 				case 'approved':
@@ -333,7 +333,7 @@
 						$buttonText.text( labgenz_org_access.strings.button_texts.approved );
 					}
 					if ($statusSmall.length > 0) {
-						$statusSmall.text('(Approved)').css('color', '#5cb85c');
+						$statusSmall.text( '(Approved)' ).css( 'color', '#5cb85c' );
 					}
 					break;
 				case 'rejected':
@@ -342,7 +342,7 @@
 						$buttonText.text( labgenz_org_access.strings.button_texts.rejected );
 					}
 					if ($statusSmall.length > 0) {
-						$statusSmall.text('(Rejected)').css('color', '#d9534f');
+						$statusSmall.text( '(Rejected)' ).css( 'color', '#d9534f' );
 					}
 					break;
 				default:
@@ -350,7 +350,7 @@
 						$buttonText.text( labgenz_org_access.strings.button_texts.default );
 					}
 					if ($statusSmall.length > 0) {
-						$statusSmall.text('').css('color', '');
+						$statusSmall.text( '' ).css( 'color', '' );
 					}
 					break;
 			}

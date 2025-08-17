@@ -28,7 +28,7 @@ class AdminHooks {
 	 */
 	public static function init() {
 		self::$assets_manager = new AssetsManager();
-		
+
 		// Initialize the Subscriptions Admin.
 		// new SubscriptionsAdmin(self::$assets_manager);
 	}
@@ -67,6 +67,6 @@ class AdminHooks {
 }
 
 // Initialize the admin hooks
-add_action('plugins_loaded', [AdminHooks::class, 'init']);
+add_action( 'plugins_loaded', [ AdminHooks::class, 'init' ] );
 
 add_action( 'init', [ AdminHooks::class, 'register_ajax' ] );
