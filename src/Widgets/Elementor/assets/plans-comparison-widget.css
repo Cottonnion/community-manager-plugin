@@ -1,0 +1,141 @@
+/* Plans Comparison Widget Styles */
+.plans-comparison-widget {
+    margin: 20px auto;
+    text-align: center;
+    font-family: Arial, sans-serif;
+}
+
+.plans-comparison-widget h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+    text-align: center;
+}
+
+.plans-comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 auto;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.plans-comparison-table th {
+    background-color: #1d7b9a;
+    color: #fff;
+    padding: 15px 10px;
+    font-size: 18px;
+    font-weight: 600;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.plans-comparison-table th:first-child {
+    text-align: left;
+    width: 40%;
+}
+
+.plans-comparison-table th .subtitle {
+    font-size: 14px;
+    font-weight: normal;
+    display: block;
+    margin-top: 5px;
+    opacity: 0.9;
+}
+
+.plans-comparison-table td {
+    padding: 12px 10px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    text-align: center;
+}
+
+.plans-comparison-table td:first-child {
+    text-align: left;
+    font-weight: 500;
+}
+
+.plans-comparison-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.plans-comparison-table tr:nth-child(odd) {
+    background-color: #fff;
+}
+
+.plans-comparison-table .dashicons-yes {
+    color: #28a745;
+    font-size: 24px;
+}
+
+.plans-comparison-table .dashicons-no-alt {
+    color: #dc3545;
+    font-size: 24px;
+}
+
+.plans-comparison-widget p {
+    font-size: 12px;
+    color: #666;
+    margin-top: 10px;
+    text-align: center;
+    font-style: italic;
+}
+
+/* Plan action row and buttons */
+.plans-comparison-table .plan-action-row td {
+    padding: 15px 10px;
+}
+
+.plans-comparison-table .current-plan {
+    background: #e0ffe0;
+    border: 2px solid #4caf50;
+}
+
+.plans-comparison-table .current-plan-label {
+    display: inline-block;
+    background: #4caf50;
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.plans-comparison-table .plan-buy-btn {
+    display: inline-block;
+    background: #0073aa;
+    color: #fff;
+    padding: 6px 16px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+
+.plans-comparison-table .plan-buy-btn:hover {
+    background: #005177;
+}
+
+.plans-comparison-table .plan-unavailable {
+    color: #aaa;
+}
+
+@media screen and (max-width: 768px) {
+    .plans-comparison-table th,
+    .plans-comparison-table td {
+        padding: 8px 5px;
+        font-size: 12px;
+    }
+    
+    .plans-comparison-table th .subtitle {
+        font-size: 10px;
+    }
+    
+    .plans-comparison-table .dashicons-yes,
+    .plans-comparison-table .dashicons-no-alt {
+        font-size: 18px;
+    }
+    
+    .plans-comparison-table .plan-buy-btn {
+        padding: 4px 8px;
+        font-size: 12px;
+    }
+}
