@@ -203,8 +203,7 @@
 									// Update button status instead of full page reload
 									this.updateButtonStatus('pending');
 									
-									// Optionally refresh the page to ensure all elements are updated
-									// location.reload();
+									window.location.reload();
 								}.bind(this)
 							);
 						} else {

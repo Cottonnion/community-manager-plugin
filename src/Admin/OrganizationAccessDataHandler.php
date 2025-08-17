@@ -46,6 +46,8 @@ class OrganizationAccessDataHandler {
 				return $this->org_access->get_all_requests( OrganizationAccess::STATUS_APPROVED );
 			case 'rejected':
 				return $this->org_access->get_all_requests( OrganizationAccess::STATUS_REJECTED );
+			case 'completed':
+				return $this->org_access->get_all_requests( OrganizationAccess::STATUS_COMPLETED );
 			case 'all':
 			default:
 				return $this->org_access->get_all_requests();
@@ -66,6 +68,8 @@ class OrganizationAccessDataHandler {
 				return __( 'Approved', 'labgenz-community-management' );
 			case 'rejected':
 				return __( 'Rejected', 'labgenz-community-management' );
+			case 'completed':
+				return __( 'Completed', 'labgenz-community-management' );
 			case 'all':
 				return __( 'All', 'labgenz-community-management' );
 			default:
@@ -87,6 +91,8 @@ class OrganizationAccessDataHandler {
 				return __( 'Approved', 'labgenz-community-management' );
 			case OrganizationAccess::STATUS_REJECTED:
 				return __( 'Rejected', 'labgenz-community-management' );
+			case OrganizationAccess::STATUS_COMPLETED:
+				return __( 'Completed', 'labgenz-community-management' );
 			default:
 				return __( 'Unknown', 'labgenz-community-management' );
 		}
@@ -102,6 +108,7 @@ class OrganizationAccessDataHandler {
 			'STATUS_PENDING'  => OrganizationAccess::STATUS_PENDING,
 			'STATUS_APPROVED' => OrganizationAccess::STATUS_APPROVED,
 			'STATUS_REJECTED' => OrganizationAccess::STATUS_REJECTED,
+			'STATUS_COMPLETED' => OrganizationAccess::STATUS_COMPLETED,
 		];
 	}
 

@@ -88,7 +88,7 @@ class OrganizationAccessPublic {
 				'user_request_info' => is_user_logged_in() ? $this->get_user_request_info() : null,
 				'strings'      => [
 					'login_required'   => __( 'You must be logged in to request organization access.', 'labgenz-community-management' ),
-					'already_pending'  => __( 'You already have a pending organization access request.', 'labgenz-community-management' ),
+					'already_pending'  => __( 'You already have a pending organization access request. Please wait for an admin to review it', 'labgenz-community-management' ),
 					'already_approved' => __( 'Your organization access request has been approved.', 'labgenz-community-management' ),
 					'already_rejected' => __( 'Your organization access request was rejected.', 'labgenz-community-management' ),
 					'form_title'       => __( 'Request Organization Access', 'labgenz-community-management' ),
@@ -320,6 +320,23 @@ class OrganizationAccessPublic {
 		// Don't show if user already has an approved request
 		if ( $user_status === OrganizationAccess::STATUS_APPROVED ) {
 			return false;
+		}
+
+		// Check if user is a member or organizer of a group with group type 'organization'
+		if ( function_exists( 'groups_get_user_groups' ) && function_exists( 'bp_groups_get_group_type' ) ) {
+			$user_groups = groups_get_user_groups( $user_id );
+			if ( ! empty( $user_groups['groups'] ) ) {
+				foreach ( $user_groups['groups'] as $group_id ) {
+					$group_type = bp_groups_get_group_type( $group_id );
+					if ( $group_type === 'organization' ) {
+						// Check if user is organizer or member
+						if ( ( function_exists( 'groups_is_user_admin' ) && groups_is_user_admin( $user_id, $group_id ) ) ||
+							 ( function_exists( 'groups_is_user_member' ) && groups_is_user_member( $user_id, $group_id ) ) ) {
+							return false;
+						}
+					}
+				}
+			}
 		}
 
 		// Show button for users with no request, pending, or rejected status
