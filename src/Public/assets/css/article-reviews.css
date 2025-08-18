@@ -2,178 +2,178 @@
  * Article Review Styles
  */
 .article-rating-container {
-	margin: 30px 0;
-	padding: 20px;
-	border-radius: 10px;
-	background-color: #f8f9fa;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-	border: 1px solid #eee;
+  margin: 30px 0;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #f8f9fa;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid #eee;
 }
 
 .article-rating-title {
-	margin: 0 0 15px 0;
-	font-size: 18px;
-	font-weight: 600;
-	color: #2c3e50;
+  margin: 0 0 15px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c3e50;
 }
 
 .article-rating-stars {
-	display: flex;
-	align-items: center;
-	margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
 }
 
 .article-rating-stars .star {
-	font-size: 26px;
-	color: #ddd;
-	cursor: pointer;
-	margin-right: 5px;
-	transition: color 0.2s ease;
+  font-size: 26px;
+  color: #ddd;
+  cursor: pointer;
+  margin-right: 5px;
+  transition: color 0.2s ease;
 }
 
 .article-rating-stars .star:hover,
 .article-rating-stars .star.active {
-	color: #f1c40f;
+  color: #f1c40f;
 }
 
 .article-rating-stars .star:before {
-	content: "★";
+  content: "★";
 }
 
 .article-rating-form {
-	display: flex;
-	flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .article-rating-form.hidden {
-	display: none;
+  display: none;
 }
 
 .article-rating-submit,
 .article-rating-cancel {
-	background-color: #3498db;
-	color: white;
-	border: none;
-	border-radius: 5px;
-	padding: 8px 15px;
-	margin-top: 10px;
-	cursor: pointer;
-	font-weight: 600;
-	transition: background-color 0.3s ease;
-	align-self: flex-start;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 15px;
+  margin-top: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+  align-self: flex-start;
 }
 
 .article-rating-submit:hover {
-	background-color: #2980b9;
+  background-color: #2980b9;
 }
 
 .article-rating-submit:disabled {
-	background-color: #bdc3c7;
-	cursor: not-allowed;
+  background-color: #bdc3c7;
+  cursor: not-allowed;
 }
 
 .article-rating-message {
-	margin-top: 10px;
-	padding: 8px;
-	border-radius: 5px;
-	font-size: 14px;
+  margin-top: 10px;
+  padding: 8px;
+  border-radius: 5px;
+  font-size: 14px;
 }
 
 .article-rating-message.success {
-	background-color: #d4edda;
-	color: #155724;
+  background-color: #d4edda;
+  color: #155724;
 }
 
 .article-rating-message.error {
-	background-color: #f8d7da;
-	color: #721c24;
+  background-color: #f8d7da;
+  color: #721c24;
 }
 
 .article-rating-average {
-	display: flex;
-	align-items: center;
-	margin-top: 15px;
+  display: flex;
+  align-items: center;
+  margin-top: 15px;
 }
 
 .article-rating-average-stars {
-	display: inline-flex;
-	margin-right: 10px;
+  display: inline-flex;
+  margin-right: 10px;
 }
 
 .article-rating-average-stars .star {
-	color: #ddd;
-	font-size: 20px;
-	margin-right: 2px;
-	position: relative;
+  color: #ddd;
+  font-size: 20px;
+  margin-right: 2px;
+  position: relative;
 }
 
 .article-rating-average-stars .star:before {
-	content: "★";
+  content: "★";
 }
 
 .article-rating-average-stars .star.active {
-	color: #f1c40f;
+  color: #f1c40f;
 }
 
 .article-rating-average-stars .star.half-active {
-	position: relative;
-	color: #ddd;
+  position: relative;
+  color: #ddd;
 }
 
 .article-rating-average-stars .star.half-active:after {
-	content: "★";
-	color: #f1c40f;
-	position: absolute;
-	left: 0;
-	top: 0;
-	width: 50%;
-	overflow: hidden;
+  content: "★";
+  color: #f1c40f;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 50%;
+  overflow: hidden;
 }
 
 .article-rating-average-count {
-	font-size: 14px;
-	color: #7f8c8d;
+  font-size: 14px;
+  color: #7f8c8d;
 }
 
 .article-rated-message {
-	margin-top: 10px;
-	font-size: 14px;
-	color: #7f8c8d;
-	font-style: italic;
+  margin-top: 10px;
+  font-size: 14px;
+  color: #7f8c8d;
+  font-style: italic;
 }
 
 /* Edit rating styles */
 .edit-rating-link {
-	color: #3498db;
-	text-decoration: underline;
-	cursor: pointer;
-	margin-left: 10px;
-	font-style: normal;
+  color: #3498db;
+  text-decoration: underline;
+  cursor: pointer;
+  margin-left: 10px;
+  font-style: normal;
 }
 
 .edit-rating-link:hover {
-	color: #2980b9;
+  color: #2980b9;
 }
 
 .article-rating-form.edit-form {
-	margin-top: 15px;
-	padding-top: 15px;
-	border-top: 1px dashed #ddd;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px dashed #ddd;
 }
 
 .article-rating-form .article-rating-cancel {
-	background-color: #e74c3c;
-	color: white;
-	border: none;
-	border-radius: 5px;
-	padding: 8px 15px;
-	margin-top: 10px;
-	margin-left: 10px;
-	cursor: pointer;
-	font-weight: 600;
-	transition: background-color 0.3s ease;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 15px;
+  margin-top: 10px;
+  margin-left: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
 }
 
 .article-rating-form .article-rating-cancel:hover {
-	background-color: #c0392b;
+  background-color: #c0392b;
 }
