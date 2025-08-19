@@ -143,16 +143,16 @@ class LabgenzCmLoader {
 			if ( ! isset( $this->container[ $key ] ) ) {
 				if ( method_exists( $class, 'get_instance' ) ) {
 					$this->container[ $key ] = $class::get_instance();
-					error_log( 'LabgenzCmLoader: Called init() on component: ' . $key );
+					// error_log( 'LabgenzCmLoader: Called init() on component: ' . $key );
 				} else {
 					$this->container[ $key ] = new $class();
-					error_log( 'LabgenzCmLoader: Called init() on component: ' . $key );
+					// error_log( 'LabgenzCmLoader: Called init() on component: ' . $key );
 				}
 
 				// Call init method if it exists
 				if ( method_exists( $this->container[ $key ], 'init' ) ) {
 					$this->container[ $key ]->init();
-					error_log( 'LabgenzCmLoader: Called init() on component: ' . $key );
+					// error_log( 'LabgenzCmLoader: Called init() on component: ' . $key );
 				}
 			}
 		}
