@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class UserAccountCreator {
 
-	/**
+/**
 	 * Auto-create user from order if needed
 	 *
 	 * @param int $order_id Order ID
@@ -47,22 +47,42 @@ class UserAccountCreator {
 		$first_name = $order->get_billing_first_name();
 		$last_name  = $order->get_billing_last_name();
 
+		// Prepare billing data from order
+		$billing_data = [
+			'billing_first_name' => $order->get_billing_first_name(),
+			'billing_last_name'  => $order->get_billing_last_name(),
+			'billing_company'    => $order->get_billing_company(),
+			'billing_address_1'  => $order->get_billing_address_1(),
+			'billing_address_2'  => $order->get_billing_address_2(),
+			'billing_city'       => $order->get_billing_city(),
+			'billing_state'      => $order->get_billing_state(),
+			'billing_postcode'   => $order->get_billing_postcode(),
+			'billing_country'    => $order->get_billing_country(),
+			'billing_email'      => $order->get_billing_email(),
+			'billing_phone'      => $order->get_billing_phone(),
+		];
+
 		// Check if user already exists
 		$existing_user = get_user_by( 'email', $email );
 		if ( $existing_user ) {
+			// Update billing data for existing user
+			UserAccountManager::update_billing_data( $existing_user->ID, $billing_data );
+			
 			// Update order with existing user
 			$order->set_customer_id( $existing_user->ID );
 			$order->save();
 
 			// Apply subscription to existing user
 			$subscription_handler = SubscriptionHandler::get_instance();
-			$subscription_handler->apply_subscription_to_user_by_id( $existing_user->ID, $order );          // Auto-login the existing user
+			$subscription_handler->apply_subscription_to_user_by_id( $existing_user->ID, $order );
+			
+			// Auto-login the existing user
 			UserAccountManager::auto_login_user( $existing_user->ID );
 			return;
 		}
 
-		// Create new user
-		$user_id = UserAccountManager::create_user( $email, $first_name, $last_name );
+		// Create new user with billing data
+		$user_id = UserAccountManager::create_user( $email, $first_name, $last_name, $billing_data );
 
 		if ( is_wp_error( $user_id ) ) {
 			return;

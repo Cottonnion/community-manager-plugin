@@ -93,7 +93,7 @@ class UserAccountManager {
 		if ( ! is_wp_error( $user_id ) ) {
 			// Store password in user meta for welcome email
 			update_user_meta( $user_id, '_labgenz_temp_password', $password );
-
+			error_log( 'User created - debug 665s: ' . $user_id . ' and ' . print_r( $billing_data, true ) );
 			// Set WooCommerce billing data
 			if ( ! empty( $billing_data ) ) {
 				self::update_billing_data( $user_id, $billing_data );
@@ -119,17 +119,17 @@ class UserAccountManager {
 
 		// Define all standard WooCommerce billing fields with defaults
 		$billing_fields = [
-			'billing_first_name' => $billing_data['first_name'] ?? '',
-			'billing_last_name'  => $billing_data['last_name'] ?? '',
-			'billing_company'    => $billing_data['company'] ?? '',
-			'billing_address_1'  => $billing_data['address_1'] ?? '',
-			'billing_address_2'  => $billing_data['address_2'] ?? '',
-			'billing_city'       => $billing_data['city'] ?? '',
-			'billing_postcode'   => $billing_data['postcode'] ?? '',
-			'billing_country'    => $billing_data['country'] ?? '',
-			'billing_state'      => $billing_data['state'] ?? '',
-			'billing_phone'      => $billing_data['phone'] ?? '',
-			'billing_email'      => $billing_data['email'] ?? $user_email,
+			'billing_first_name' => $billing_data['billing_first_name'] ?? '',
+			'billing_last_name'  => $billing_data['billing_last_name'] ?? '',
+			'billing_company'    => $billing_data['billing_company'] ?? '',
+			'billing_address_1'  => $billing_data['billing_address_1'] ?? '',
+			'billing_address_2'  => $billing_data['billing_address_2'] ?? '',
+			'billing_city'       => $billing_data['billing_city'] ?? '',
+			'billing_postcode'   => $billing_data['billing_postcode'] ?? '',
+			'billing_country'    => $billing_data['billing_country'] ?? '',
+			'billing_state'      => $billing_data['billing_state'] ?? '',
+			'billing_phone'      => $billing_data['billing_phone'] ?? '',
+			'billing_email'      => $billing_data['billing_email'] ?? $user_email,
 		];
 
 		// Define all standard WooCommerce shipping fields with defaults
