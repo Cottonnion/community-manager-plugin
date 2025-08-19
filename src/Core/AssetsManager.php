@@ -94,6 +94,16 @@ class AssetsManager {
 			1
 		);
 
+
+		add_action('wp_enqueue_scripts', function () {
+				wp_enqueue_script(
+					'lab-commons',
+					LABGENZ_CM_URL . 'src/Public/assets/js/commons.js',
+					[ 'jquery' ],
+					'1.0.1',
+					true
+				);
+		}, 20 );
 		// Enqueue map assets
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_map_assets' ], 30 );
 	}
@@ -581,7 +591,7 @@ class AssetsManager {
 			[ 'group_single' ],
 			'lab-group-members-map.css',
 			[],
-			'1.1.4',
+			'1.2.6',
 			false,
 			'css'
 		);
@@ -617,10 +627,31 @@ class AssetsManager {
 			[ '' ],
 			'gamipress-header.js',
 			[ 'jquery' ],
-			'1.1.7',
+			'1.2.0',
 			true,
 			'js',
 			[]
+		);
+
+		$this->add_frontend_asset(
+			'members-profile-widget',
+			[ '' ],
+			'members-widget.js',
+			[ 'jquery' ],
+			'1.0.8',
+			true,
+			'js',
+			[]
+		);
+
+		$this->add_frontend_asset(
+			'memebrs-profile-widget-css',
+			[ '' ],
+			'members-widget.css',
+			[],
+			'1.1.2',
+			false,
+			'css'
 		);
 
 		$this->add_frontend_asset(
@@ -758,12 +789,12 @@ class AssetsManager {
 			);
 
 			// Enqueue our custom map CSS
-			wp_enqueue_style(
-				'lab-group-members-map-css',
-				LABGENZ_CM_URL . 'src/Public/assets/css/lab-group-members-map.css',
-				[ 'leaflet-markercluster-default-css' ],
-				'7.0.6'
-			);
+			// wp_enqueue_style(
+			// 	'lab-group-members-map-css',
+			// 	LABGENZ_CM_URL . 'src/Public/assets/css/lab-group-members-map.css',
+			// 	[ 'leaflet-markercluster-default-css' ],
+			// 	'7.1.0'
+			// );
 
 			// Enqueue our modular JS files
 			// Core map module
@@ -780,7 +811,7 @@ class AssetsManager {
 				'marker-manager-js',
 				LABGENZ_CM_URL . 'src/Public/assets/js/map-modules/marker-manager.js',
 				[ 'jquery', 'leaflet-js', 'leaflet-markercluster-js', 'map-core-js' ],
-				'7.0.9',
+				'7.2.6',
 				true
 			);
 
