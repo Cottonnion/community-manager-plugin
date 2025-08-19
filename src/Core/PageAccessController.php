@@ -29,14 +29,30 @@ class PageAccessController {
 	];
 
 	/**
+	 * Pages that require specific access control
+	 *
+	 * @var array
+	 */
+
+	private array $restricted_bp_pages = [
+		'messages' => 'can_private_message',
+	];
+
+	/**
 	 * Initialize hooks
 	 *
 	 * @return void
 	 */
 	public function init(): void {
 		add_action( 'template_redirect', [ $this, 'check_page_access' ] );
+		add_action('template_redirect', [$this, 'check_buddypress_page_access']);
+
+
 		add_filter( 'the_content', [ $this, 'filter_restricted_content' ] );
 		add_action( 'wp_footer', [ $this, 'show_access_denied_alert' ] );
+
+		// BuddyBoss profile header notice
+		$this->add_buddypress_access_notice();
 	}
 
 	/**
@@ -89,6 +105,58 @@ class PageAccessController {
 		if ( ! $this->user_has_access( $user_id, $required_resource ) ) {
 			$this->redirect_to_upgrade_page();
 		}
+	}
+
+
+	/**
+	 * Restrict access to BuddyBoss pages based on user resources
+	 *
+	 * @return void
+	 */
+	public function check_buddypress_page_access(): void {
+		if ( is_admin() || current_user_can('manage_options') ) {
+			return;
+		}
+
+		if ( ! is_user_logged_in() || empty($this->restricted_bp_pages) ) {
+			return;
+		}
+
+		$user_id = get_current_user_id();
+		$current_component = bp_current_component(); // e.g., 'messages'
+
+		if ( isset($this->restricted_bp_pages[$current_component]) ) {
+			$required_resource = $this->restricted_bp_pages[$current_component];
+
+			if ( ! $this->user_has_access($user_id, $required_resource) ) {
+				// Redirect with notice param
+				wp_safe_redirect( add_query_arg('blocked_msg', '1', bp_loggedin_user_domain()) );
+				exit;
+			}
+		}
+	}
+
+	/**
+	 * Hook to display access denied notice in BuddyBoss profile header
+	 *
+	 * @return void
+	 */
+	public function add_buddypress_access_notice(): void {
+		add_action('bp_mlm_profile_header_notice', function($user_id) {
+			if ( isset($_GET['blocked_msg']) && $_GET['blocked_msg'] === '1' ) {
+
+				// Inline WooCommerce-style notice
+				echo '<div class="disabled-access-info" style="margin:15px 0; padding:12px 20px; border-left:4px solid #f39c12; background:#fff8e1; color:#555; font-size:14px;">';
+				echo 'Private messaging is disabled for your membership. View other plans <a href="' . esc_url(home_url('/memberships/')) . '">View Plans</a>';
+				echo '</div>';
+
+				// Clear the param so it doesn't show again
+				if (isset($_GET['blocked_msg'])) {
+					$url = remove_query_arg('blocked_msg');
+					echo "<script>window.history.replaceState({}, document.title, '" . esc_url($url) . "');</script>";
+				}
+			}
+		});
 	}
 
 	/**

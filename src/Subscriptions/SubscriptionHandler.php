@@ -66,32 +66,32 @@ class SubscriptionHandler {
 		'mlm-apprentice-yearly'       => [
 			'type'     => 'apprentice-yearly',
 			'duration' => '+1 year',
-			'group_id' => 134,
+			'group_id' => [134],
 		],
 		'mlm-apprentice-monthly'      => [
 			'type'     => 'apprentice-monthly',
 			'duration' => '+1 month',
-			'group_id' => 134,
+			'group_id' => [134],
 		],
 		'mlm-team-leader-yearly'      => [
 			'type'     => 'team-leader-yearly',
 			'duration' => '+1 year',
-			'group_id' => 135,
+			'group_id' => [134, 135],
 		],
 		'mlm-team-leader-monthly'     => [
 			'type'     => 'team-leader-monthly',
 			'duration' => '+1 month',
-			'group_id' => 135,
+			'group_id' => [134, 135],
 		],
 		'mlm-freedom-builder-yearly'  => [
 			'type'     => 'freedom-builder-yearly',
 			'duration' => '+1 year',
-			'group_id' => 136,
+			'group_id' => [134, 135, 136],
 		],
 		'mlm-freedom-builder-monthly' => [
 			'type'     => 'freedom-builder-monthly',
 			'duration' => '+1 month',
-			'group_id' => 136,
+			'group_id' => [134, 135, 136],
 		],
 	];
 
@@ -177,8 +177,21 @@ class SubscriptionHandler {
 	 * @return void
 	 */
 	private function init_hooks(): void {
-		// Cart validation - use priority 25 to run AFTER cart clearing hook (which is 20)
+		// Cart validation - use priority 35 to run AFTER cart clearing hook (which is 20)
 		add_filter( 'woocommerce_add_to_cart_validation', [ $this, 'validate_subscription_cart' ], 35, 3 );
+		add_action( 'wp', [ $this, 'validate_subscription_checkout' ], 10, 2 );
+		add_action( 'woocommerce_checkout_process', [ $this, 'validate_subscription_checkout' ], 10, 2 );
+		add_action( 'woocommerce_before_calculate_totals', [ $this, 'validate_subscription_checkout' ], 10, 2 );
+		// Additional hooks to ensure notices display properly
+		add_action( 'woocommerce_before_single_product_summary', [ $this, 'display_stored_validation_notices' ], 5 );
+		add_action( 'woocommerce_before_shop_loop', [ $this, 'display_stored_validation_notices' ], 5 );
+
+		// For AJAX add to cart validation (alternative approach)
+		add_action( 'wp_ajax_woocommerce_add_to_cart', [ $this, 'ajax_add_to_cart_validation' ], 5 );
+		add_action( 'wp_ajax_nopriv_woocommerce_add_to_cart', [ $this, 'ajax_add_to_cart_validation' ], 5 );
+
+		// Ensure notices are preserved during redirects
+		// add_action( 'woocommerce_add_to_cart_redirect', [ $this, 'preserve_notices_on_redirect' ] );
 
 		// Auto-complete subscription orders (runs first)
 		add_action( 'woocommerce_payment_complete', [ $this->wc_helper, 'auto_complete_subscription_order' ], 1 );
@@ -222,10 +235,7 @@ class SubscriptionHandler {
 	 * @return bool
 	 */
 	public function validate_subscription_cart( $passed, $product_id, $quantity ): bool {
-		$this->log_debug( 'Starting validate_subscription_cart with priority 25 (after cart clearing)' );
-
 		if ( ! $passed ) {
-			$this->log_debug( 'Validation already failed, returning false' );
 			return $passed;
 		}
 
@@ -248,31 +258,17 @@ class SubscriptionHandler {
 		}
 		$new_subscription_type = $subscription_data['type'];
 
-		// Log the subscription type being added
-		$this->log_debug( "P00000 - roduct SKU: $sku" );
-		$this->log_debug( "Attempting to add subscription of type: $new_subscription_type" );
-
 		// Check if user already has a subscription
 		$user_id = get_current_user_id();
 		if ( $user_id ) {
 			$user_subscriptions = SubscriptionStorage::get_active_user_subscriptions( $user_id );
 
-			// Log the user's active subscriptions
-			$this->log_debug( "Active subscriptions for user $user_id: " . print_r( $user_subscriptions, true ) );
-
 			if ( ! empty( $user_subscriptions ) ) {
-				$allow_purchase        = true; // Default to allowing purchase unless a blocking condition is met
-				$upgrade_message_shown = false;
-
 				foreach ( $user_subscriptions as $subscription ) {
 					$existing_subscription_type = $subscription['type'];
 
-					// Log the existing subscription type
-					$this->log_debug( "Existing subscription type: $existing_subscription_type" );
-
 					// Check if it's the same subscription (exact match)
 					if ( $existing_subscription_type === $new_subscription_type ) {
-						$this->log_debug( "Duplicate subscription detected: Existing: '$existing_subscription_type' vs New: '$new_subscription_type'" );
 						wc_add_notice(
 							sprintf(
 								__( 'You already have a %s subscription active.', 'labgenz-community-management' ),
@@ -280,16 +276,15 @@ class SubscriptionHandler {
 							),
 							'error'
 						);
+						WC()->cart->empty_cart();
+						WC()->session->set( 'cart', array() );
 						return false;
 					}
 
 					// Check if subscriptions are related (same family)
 					if ( SubscriptionValidator::are_subscriptions_related( $existing_subscription_type, $new_subscription_type ) ) {
-						$this->log_debug( "Subscriptions are related: $existing_subscription_type and $new_subscription_type" );
-
 						// Check if it's a downgrade within the same family
 						if ( SubscriptionValidator::is_subscription_downgrade( $existing_subscription_type, $new_subscription_type ) ) {
-							$this->log_debug( "Downgrade detected from $existing_subscription_type to $new_subscription_type" );
 							wc_add_notice(
 								sprintf(
 									__( 'You cannot downgrade from %1$s to %2$s. Downgrades within the same subscription family are not supported.', 'labgenz-community-management' ),
@@ -298,12 +293,13 @@ class SubscriptionHandler {
 								),
 								'error'
 							);
+							WC()->cart->empty_cart();
+							WC()->session->set( 'cart', array() );
 							return false;
 						}
 
 						// Check if it's a monthly to yearly upgrade
 						if ( SubscriptionValidator::is_monthly_to_yearly_upgrade( $existing_subscription_type, $new_subscription_type ) ) {
-							$this->log_debug( "Monthly to yearly upgrade detected: $existing_subscription_type to $new_subscription_type" );
 							$remaining_days = SubscriptionStorage::calculate_remaining_days( $subscription );
 							if ( $remaining_days > 0 ) {
 								wc_add_notice(
@@ -314,13 +310,11 @@ class SubscriptionHandler {
 									'notice'
 								);
 							}
-							// Immediately allow the upgrade and stop further checks
-							$this->log_debug( 'Monthly to yearly upgrade approved - returning true to allow purchase' );
+							// Allow the upgrade and return true
 							return true;
 						}
 
 						// If we get here, subscriptions are related but not compatible
-						$this->log_debug( "Incompatible related subscriptions: $existing_subscription_type and $new_subscription_type" );
 						wc_add_notice(
 							sprintf(
 								__( 'You cannot have both %1$s and %2$s subscriptions. Please contact support if you need assistance.', 'labgenz-community-management' ),
@@ -329,6 +323,8 @@ class SubscriptionHandler {
 							),
 							'error'
 						);
+						WC()->cart->empty_cart();
+						WC()->session->set( 'cart', array() );
 						return false;
 					}
 				}
@@ -362,6 +358,8 @@ class SubscriptionHandler {
 									__( 'You cannot purchase related subscription types in the same order. Please complete your current order first.', 'labgenz-community-management' ),
 									'error'
 								);
+								WC()->cart->empty_cart();
+								WC()->session->set( 'cart', array() );
 								return false;
 							}
 						}
@@ -372,6 +370,124 @@ class SubscriptionHandler {
 
 		return $passed;
 	}
+
+/**
+ * Validate subscription products during checkout initialization
+ *
+ * @param WC_Checkout $checkout Checkout object
+ * @return void
+ */
+public function validate_subscription_checkout( $checkout ): void {
+	if(is_checkout()) {
+		error_log( 'pppp -Checkout validation started' );
+	
+	// if ( ! WC()->cart || WC()->cart->is_empty() ) {
+	// 	error_log( 'Cart is empty, skipping validation' );
+	// 	return;
+	// }
+
+	$user_id = get_current_user_id();
+	if ( ! $user_id ) {
+		error_log( 'pppp Guest checkout detected, skipping validation' );
+		return; // Skip validation for guest checkout
+	}
+
+	error_log( "pppp Validating checkout for user ID: $user_id" );
+	$user_subscriptions = SubscriptionStorage::get_active_user_subscriptions( $user_id );
+	error_log( 'pppp User has ' . count( $user_subscriptions ) . ' active subscriptions' );
+
+	foreach ( WC()->cart->get_cart() as $cart_item ) {
+		$product = $cart_item['data'];
+		if ( ! $product || ! method_exists( $product, 'get_sku' ) ) {
+			continue;
+		}
+
+		$sku = $product->get_sku();
+		error_log( "pppp Checking product SKU: $sku" );
+
+		// Check if this is a subscription product
+		if ( ! in_array( $sku, self::SUBSCRIPTION_SKUS, true ) ) {
+			error_log( " pppp SKU $sku is not a subscription product, skipping" );
+			continue;
+		}
+
+		error_log( "Processing subscription product: $sku" );
+
+		// Get the subscription type being added
+		$subscription_data = self::SUBSCRIPTION_TYPES[ $sku ] ?? null;
+		if ( ! $subscription_data ) {
+			error_log( "No subscription data found for SKU: $sku" );
+			continue;
+		}
+		$new_subscription_type = $subscription_data['type'];
+		error_log( "New subscription type: $new_subscription_type" );
+
+		if ( ! empty( $user_subscriptions ) ) {
+			error_log( "Checking against existing subscriptions" );
+			foreach ( $user_subscriptions as $subscription ) {
+				$existing_subscription_type = $subscription['type'];
+				error_log( "Comparing new type '$new_subscription_type' with existing type '$existing_subscription_type'" );
+
+				// Check if it's the same subscription (exact match)
+				if ( $existing_subscription_type === $new_subscription_type ) {
+					error_log( "VALIDATION FAILED: Duplicate subscription detected" );
+					wc_add_notice( sprintf(
+						__( 'You already have a %s subscription active.', 'labgenz-community-management' ),
+						ucfirst( str_replace( '-', ' ', $existing_subscription_type ) )
+					), 'error' );
+					return;
+				}
+
+				// Check if subscriptions are related (same family)
+				if ( SubscriptionValidator::are_subscriptions_related( $existing_subscription_type, $new_subscription_type ) ) {
+					error_log( "Subscriptions are related, checking compatibility" );
+					// Check if it's a downgrade within the same family
+					if ( SubscriptionValidator::is_subscription_downgrade( $existing_subscription_type, $new_subscription_type ) ) {
+						error_log( "VALIDATION FAILED: Downgrade detected" );
+						wc_add_notice( sprintf(
+							__( 'You cannot downgrade from %1$s to %2$s. Downgrades within the same subscription family are not supported.', 'labgenz-community-management' ),
+							ucfirst( str_replace( '-', ' ', $existing_subscription_type ) ),
+							ucfirst( str_replace( '-', ' ', $new_subscription_type ) )
+						), 'error' );
+						return;
+					}
+
+					// Skip monthly to yearly upgrade validation - allow it to proceed
+					if ( SubscriptionValidator::is_monthly_to_yearly_upgrade( $existing_subscription_type, $new_subscription_type ) ) {
+						error_log( "Monthly to yearly upgrade detected, allowing" );
+							$remaining_days = SubscriptionStorage::calculate_remaining_days( $subscription );
+							if ( $remaining_days > 0 ) {
+								wc_add_notice(
+									sprintf(
+										__( 'You currently have %d days remaining on your monthly subscription. After purchase, these days will be added to your new yearly subscription.', 'labgenz-community-management' ),
+										$remaining_days
+									),
+									'success'
+								);
+							}
+							// Allow the upgrade and return true
+							// return true;
+						continue;
+					}
+
+					// If we get here, subscriptions are related but not compatible
+					error_log( "VALIDATION FAILED: Incompatible related subscriptions" );
+					wc_add_notice( sprintf(
+						__( 'You cannot have both %1$s and %2$s subscriptions. Please contact support if you need assistance.', 'labgenz-community-management' ),
+						ucfirst( str_replace( '-', ' ', $existing_subscription_type ) ),
+						ucfirst( str_replace( '-', ' ', $new_subscription_type ) )
+					), 'error' );
+					return;
+				} else {
+					error_log( "Subscriptions are not related, allowing" );
+				}
+			}
+		}
+	}
+	
+	error_log( 'Checkout validation completed successfully' );
+	}
+}
 
 	/**
 	 * Process subscription after payment completion
@@ -481,7 +597,7 @@ class SubscriptionHandler {
 		WC()->session->set( 'active_subscription', null );
 	}
 
-	/**
+/**
 	 * Apply subscription to user by ID
 	 *
 	 * @param  int            $user_id           User ID
@@ -537,18 +653,10 @@ class SubscriptionHandler {
 		$upgraded_from_monthly   = false;
 		$monthly_subscription_id = null;
 
-		// Debug log to see active subscriptions
-		$this->log_debug( "Active subscriptions for user $user_id before upgrade check: " . print_r( $active_subscriptions, true ) );
-
 		foreach ( $active_subscriptions as $active_sub ) {
-			// Debug log to examine each subscription
-			$this->log_debug( 'Checking subscription: ' . print_r( $active_sub, true ) );
-			$this->log_debug( "Comparing '{$active_sub['type']}' with '$subscription_type'" );
-
 			if ( isset( $active_sub['type'] ) && SubscriptionValidator::is_monthly_to_yearly_upgrade( $active_sub['type'], $subscription_type ) ) {
 				$upgraded_from_monthly   = true;
 				$monthly_subscription_id = $active_sub['id'] ?? null;
-				$this->log_debug( "Found monthly to yearly upgrade: Monthly ID = $monthly_subscription_id" );
 				break;
 			}
 		}
@@ -578,25 +686,29 @@ class SubscriptionHandler {
 		// Save the new subscription
 		SubscriptionStorage::save_subscription( $user_id, $new_subscription );
 
-		// Add user to BuddyBoss group if applicable
-		$group_id = null;
+		// Add user to BuddyBoss group(s) if applicable
+		$group_ids = [];
 		foreach ( self::SUBSCRIPTION_TYPES as $sku => $data ) {
 			if ( $data['type'] === $subscription_type && isset( $data['group_id'] ) ) {
-				$group_id = $data['group_id'];
+				// Handle both single group_id and array of group_ids
+				if ( is_array( $data['group_id'] ) ) {
+					$group_ids = array_merge( $group_ids, $data['group_id'] );
+				} else {
+					$group_ids[] = $data['group_id'];
+				}
 				break;
 			}
 		}
 
-		if ( $group_id && function_exists( 'groups_join_group' ) ) {
-			$result = groups_join_group( $group_id, $user_id );
-			$this->log_debug( "Adding user $user_id to group $group_id for subscription $subscription_type. Result: " . ( $result ? 'success' : 'failed' ) );
+		if ( ! empty( $group_ids ) && function_exists( 'groups_join_group' ) ) {
+			foreach ( $group_ids as $group_id ) {
+				groups_join_group( $group_id, $user_id );
+			}
 		}
 
 		// If upgrading from monthly to yearly, add remaining days and deactivate monthly subscription
 		if ( $upgraded_from_monthly && $monthly_subscription_id ) {
-			$this->log_debug( "Processing monthly to yearly upgrade: Adding days from monthly subscription $monthly_subscription_id to yearly subscription $subscription_id" );
-			$success = SubscriptionStorage::add_remaining_days( $user_id, $monthly_subscription_id, $subscription_id );
-			$this->log_debug( 'Upgrade processing result: ' . ( $success ? 'Success' : 'Failed' ) );
+			SubscriptionStorage::add_remaining_days( $user_id, $monthly_subscription_id, $subscription_id );
 		}
 	}
 
