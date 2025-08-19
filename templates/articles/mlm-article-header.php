@@ -71,8 +71,32 @@ $article_title = get_the_title($post_id);
                     </div>
                 </div>
             </div>
+            <?php include '/reviews/article-average-rating.php'; // Include average rating template ?>
         </div>
     </div>
+    <?php do_action('labgenz_cm_after_article_header', $post_id); ?>
+<?php
+// Show the article average rating directly under the header
+if (class_exists('LABGENZ_CM\\Articles\\ReviewsHandler')) {
+    $reviews_handler = new \LABGENZ_CM\Articles\ReviewsHandler();
+    $average = $reviews_handler->get_average_rating($post_id);
+
+    if ($average === null) {
+        return;
+    }
+    $count = $reviews_handler->get_rating_count($post_id);
+    if ($count > 0) : ?>
+        <div class="article-average-rating" style="margin: 16px 0 0 0;">
+            <span class="average-rating-label">
+                <?php echo esc_html(number_format($average, 1)); ?>
+                <span class="star" style="color: #f1c40f; font-size: 1.2em;">&#9733;</span>
+            </span>
+            <span class="average-rating-count" style="color: #888; margin-left: 8px;">
+                <?php printf(_n('(%d review)', '(%d reviews)', $count, 'labgenz-cm'), $count); ?>
+            </span>
+        </div>
+    <?php endif;
+}
+?>
 </header>
 
-<?php do_action('labgenz_cm_after_article_header', $post_id); ?>

@@ -84,6 +84,17 @@
         if( articleData.category ) {
             metaContainer.append(`<p><strong>${labgenzArticleDownload.categoryLabel || 'Category'}:</strong> ${articleData.category}</p>`);
         }
+
+        if (articleData.author_avatar) {
+            metaContainer.append(
+                `<p><strong>${labgenzArticleDownload.authorLabel || 'Author'}:</strong> <img src="${articleData.author_avatar}" alt="${articleData.acf_author || articleData.author}" style="width:50px;height:50px;border-radius:50%;vertical-align:middle;margin-right:8px;"></p>`
+            );
+        }
+
+        // Add author bio if available
+        if (articleData.author_bio) {
+            metaContainer.append(`<p><strong>Bio:</strong> ${articleData.author_bio}</p>`);
+        }
         
         pdfContainer.append(metaContainer);
         

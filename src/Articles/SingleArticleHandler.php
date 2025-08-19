@@ -3,7 +3,7 @@
 namespace LABGENZ_CM\Articles;
 
 use LABGENZ_CM\Articles\ReviewsHandler;
-
+use LABGENZ_CM\Admin\DailyArticleAdmin;
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -81,7 +81,7 @@ class SingleArticleHandler {
 			self::ASSET_HANDLE_JS,
 			plugin_dir_url( dirname( __DIR__ ) ) . 'src/Articles/assets/js/article-download.js',
 			[ 'jquery', 'html2pdf' ],
-			'1.1.3',
+			'1.1.5',
 			true
 		);
 
@@ -186,6 +186,8 @@ class SingleArticleHandler {
 			return;
 		}
 
+		
+
 		// Get article data
 		$content = apply_filters( 'the_content', $article->post_content );
 
@@ -203,6 +205,7 @@ class SingleArticleHandler {
 		// Get ACF author using the ArticlesHandler method
 		$acf_author       = '';
 		$articles_handler = new \LABGENZ_CM\Articles\ArticlesHandler();
+
 		if ( method_exists( $articles_handler, 'get_article_author' ) ) {
 			$acf_author = $articles_handler->get_article_author( $article_id );
 		}
@@ -213,6 +216,14 @@ class SingleArticleHandler {
 			$category = '';
 		}
 
+		if( method_exists( $articles_handler, 'get_article_avatar' ) ) {
+			$author_avatar = $articles_handler->get_article_avatar( $article_id );
+		} else {
+			$author_avatar = '';
+		}
+
+		$author_bio = $articles_handler->get_article_author_bio( $article_id );
+
 		// Send response
 		wp_send_json_success(
 			[
@@ -222,6 +233,8 @@ class SingleArticleHandler {
 				'author'         => $author_name,
 				'acf_author'     => $acf_author,
 				'category'       => $category,
+				'author_avatar'  => $author_avatar,
+				'author_bio'     => $author_bio,
 				'average_rating' => $avg_rating,
 				'rating_count'   => $rating_count,
 				'permalink'      => get_permalink( $article_id ),

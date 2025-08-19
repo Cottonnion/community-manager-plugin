@@ -206,9 +206,12 @@ class ReviewsHandler {
 	 * Get the average rating for a post.
 	 *
 	 * @param int $post_id
-	 * @return float
+	 * @return float|null
 	 */
-	public function get_average_rating(int $post_id): float {
+	public function get_average_rating(int $post_id): ?float {
+		$rating_count = $this->get_rating_count($post_id);
+		if ($rating_count < 10) return null;
+
 		$rating = get_post_meta($post_id, self::META_KEY_RATING, true);
 		return $rating ? (float) $rating : 0;
 	}

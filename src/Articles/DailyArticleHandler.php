@@ -208,7 +208,7 @@ class DailyArticleHandler {
 		$user_id = get_current_user_id();
 
 		// If user is admin, grant access to everything
-		if ( current_user_can( 'administrator' ) ) {
+		if ( current_user_can( 'manage_options' ) ) {
 			return true;
 		}
 
@@ -282,6 +282,7 @@ class DailyArticleHandler {
 				'show_meta'     => 'true',
 				'wrapper_class' => 'daily-article-wrapper',
 				'num_related'   => 12, // Number of random articles to show (displaying between 9-12)
+				'show_upsell'   => 'true', // New attribute to control upsell visibility
 			],
 			$atts
 		);
@@ -478,121 +479,122 @@ class DailyArticleHandler {
 					</div>
 				</div>
 				<?php endif; ?>
-				
-				<div class="daily-article-upsell" style="flex: 1; min-width: 100%; background: linear-gradient(to right, #f8f9fa, #e9ecef); border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-top: 20px;">
-					<div class="upsell-content">
-						<?php if ( ! $this->user_has_premium_access() ) : ?>
-						<h3 style="color: #2c3e50; margin-top: 0; font-size: 22px; font-weight: 600;">Get Access to Premium Content</h3>
-						<button class="upsell-button" style="background-color: #3498db; color: white; border: none; padding: 12px 24px; font-size: 16px; font-weight: 600; border-radius: 6px; cursor: pointer; transition: all 0.3s ease; margin: 15px 0; display: inline-block; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 6px rgba(52, 152, 219, 0.2);" onmouseover="this.style.backgroundColor='#2980b9'" onmouseout="this.style.backgroundColor='#3498db'" onclick="window.location.href='<?php echo esc_url( home_url( '#pricing' ) ); ?>'">
-							Get Full Access
-						</button>
-						<?php else : ?>
-						<div style="margin-bottom: 15px; text-align: center;">
-							<a href="<?php echo esc_url( home_url( '/mlmmc-articles/' ) ); ?>" class="view-all-articles-button" style="background-color: #3498db; color: white; border: none; padding: 12px 24px; font-size: 16px; font-weight: 600; border-radius: 6px; cursor: pointer; transition: all 0.3s ease; display: inline-block; text-decoration: none; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 6px rgba(52, 152, 219, 0.2);" onmouseover="this.style.backgroundColor='#2980b9'" onmouseout="this.style.backgroundColor='#3498db'">
-								View All Articles
-							</a>
-						</div>
-						<?php endif; ?>
-						
-						<?php
-						// Get random articles for display -- not used
-						$args = [
-							'post_type'      => self::POST_TYPE,
-							'post_status'    => 'publish',
-							'posts_per_page' => intval( $atts['num_related'] ),
-							'orderby'        => 'rand',
-							'post__not_in'   => [ $daily_data['article']->ID ], // Exclude current article
-						];
-
-						$random_articles = new \WP_Query( $args );
-
-						if ( $random_articles->have_posts() ) :
-							?>
-							<div class="related-articles" style="margin-top: 25px; border-top: 1px solid #dee2e6; padding-top: 25px;">
-								<h4 style="color: #2c3e50; font-size: 22px; margin-bottom: 15px; font-weight: 700; position: relative; display: inline-block;">
-									Explore More Articles
-									<span style="position: absolute; bottom: -4px; left: 0; width: 40px; height: 3px; background-color: #3498db;"></span>
-								</h4>
-								<p style="color: #5a6a7e; margin-bottom: 20px; font-size: 16px; line-height: 1.6;">Check out these selected articles from our premium collection:</p>
-								<div class="article-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-top: 10px;">
-								<?php
-								$count        = 0;
-								$min_articles = 9; // Minimum number of articles to show
-								while ( $random_articles->have_posts() ) :
-									$random_articles->the_post();
-									++$count;
-									// Get author info
-									$author_name = get_post_meta( get_the_ID(), 'mlmmc_article_author', true );
-									$author_name = $author_name ? $author_name : get_the_author();
-									$author_id   = get_post_field( 'post_author', get_the_ID() );
-
-									// Get author image
-									$author_image_id = get_post_meta( get_the_ID(), 'mlmmc_author_photo', true );
-									$author_image    = $author_image_id ? wp_get_attachment_image_url( $author_image_id, 'thumbnail' ) : '';
-									$has_video       = get_post_meta( get_the_ID(), 'mlmmc_video_link', true );
-									if ( ! $author_image ) {
-										$author_image = get_avatar_url( $author_id, [ 'size' => 40 ] );
-									}
-
-									// Get featured image if available
-									$thumb_url = get_the_post_thumbnail_url( get_the_ID(), 'thumbnail' );
-									$has_thumb = ! empty( $thumb_url );
-									?>
-									<div class="article-card" style="position: relative; background-color: white; border-radius: 10px; overflow: hidden; transition: all 0.3s ease; box-shadow: 0 3px 8px rgba(0,0,0,0.08); display: flex; flex-direction: column; border: 1px solid rgba(0,0,0,0.05);" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 3px 8px rgba(0,0,0,0.08)'">
-										<?php if ( $has_thumb ) : ?>
-										<div class="article-card-image" style="height: 150px; overflow: hidden; position: relative;">
-											<img src="<?php echo esc_url( $thumb_url ); ?>" alt="<?php echo esc_attr( get_the_title() ); ?>" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-										</div>
-										<?php endif; ?>
-										<div class="article-card-content" style="padding: <?php echo $has_thumb ? '16px' : '22px'; ?>; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; min-height: 120px;">
-											<h5 style="margin: 0 0 12px; font-size: 17px; line-height: 1.4; font-weight: 600; color: #2c3e50;">
-												<a href="<?php echo esc_url( get_permalink() ); ?>" style="color: inherit; text-decoration: none;" onmouseover="this.style.color='#3498db'" onmouseout="this.style.color='inherit'">
-													<?php echo esc_html( get_the_title() ); ?>
-												</a>
-											</h5>
-											<div class="article-meta" style="font-size: 13px; color: #7f8c8d; margin-top: auto; display: flex; align-items: center; border-top: 1px solid #f5f5f5; padding-top: 12px; margin-top: 12px;">
-												<?php if ( $author_image ) : ?>
-												<div class="article-author-avatar" style="margin-right: 10px; flex-shrink: 0;">
-													<img src="<?php echo esc_url( $author_image ); ?>" alt="<?php echo esc_attr( $author_name ); ?>" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid #f1f1f1; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-												</div>
-												<?php endif; ?>
-												<div>
-													<span class="article-author-small" style="display: block; font-weight: 600; color: #34495e;">
-														<?php echo esc_html( $author_name ); ?>
-													</span>
-													<span class="article-date-small" style="font-size: 12px; color: #95a5a6;">
-														<?php echo get_the_date( 'M j, Y' ); ?>
-													</span>
-												</div>
-											</div>
-											<?php
-											if ( $has_video ) {
-												echo '<div class="video-badge" style="position: absolute;bottom: 10px;left: 10px;background-color: green;color: white;padding: 2px 10px;/* border-radius: 4px; */font-size: 12px;font-weight: 600;box-shadow: 0 2px 4px rgba(0,0,0,0.2);">Has Video</div>';
-											}
-											?>
-										</div>
-									</div>
-									<?php
-									// Display between 9 and 12 articles
-									if ( $count >= intval( $atts['num_related'] ) || ( $count >= $min_articles && $count >= 9 ) ) {
-										break;
-									}
-								endwhile;
-								?>
-								</div>
-								
-								<div class="view-more" style="margin-top: 20px; text-align: center;">
-									<a href="<?php echo esc_url( home_url( '/mlmmc-articles/' ) ); ?>" style="color: #3498db; text-decoration: none; font-weight: 600; font-size: 15px; display: inline-block; padding: 8px 0;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
-										View All Articles →
-									</a>
-								</div>
+				<?php if ( $atts['show_upsell'] === 'true' ) : ?>
+					<div class="daily-article-upsell" style="flex: 1; min-width: 100%; background: linear-gradient(to right, #f8f9fa, #e9ecef); border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-top: 20px;">
+						<div class="upsell-content">
+							<?php if ( ! $this->user_has_premium_access() ) : ?>
+							<h3 style="color: #2c3e50; margin-top: 0; font-size: 22px; font-weight: 600;">Get Access to Premium Content</h3>
+							<button class="upsell-button" style="background-color: #3498db; color: white; border: none; padding: 12px 24px; font-size: 16px; font-weight: 600; border-radius: 6px; cursor: pointer; transition: all 0.3s ease; margin: 15px 0; display: inline-block; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 6px rgba(52, 152, 219, 0.2);" onmouseover="this.style.backgroundColor='#2980b9'" onmouseout="this.style.backgroundColor='#3498db'" onclick="window.location.href='<?php echo esc_url( home_url( '#pricing' ) ); ?>'">
+								Get Full Access
+							</button>
+							<?php else : ?>
+							<div style="margin-bottom: 15px; text-align: center;">
+								<a href="<?php echo esc_url( home_url( '/mlmmc-articles/' ) ); ?>" class="view-all-articles-button" style="background-color: #3498db; color: white; border: none; padding: 12px 24px; font-size: 16px; font-weight: 600; border-radius: 6px; cursor: pointer; transition: all 0.3s ease; display: inline-block; text-decoration: none; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 6px rgba(52, 152, 219, 0.2);" onmouseover="this.style.backgroundColor='#2980b9'" onmouseout="this.style.backgroundColor='#3498db'">
+									View All Articles
+								</a>
 							</div>
+							<?php endif; ?>
+							
 							<?php
-							wp_reset_postdata();
-						endif;
-						?>
+							// Get random articles for display -- not used
+							$args = [
+								'post_type'      => self::POST_TYPE,
+								'post_status'    => 'publish',
+								'posts_per_page' => intval( $atts['num_related'] ),
+								'orderby'        => 'rand',
+								'post__not_in'   => [ $daily_data['article']->ID ], // Exclude current article
+							];
+
+							$random_articles = new \WP_Query( $args );
+
+							if ( $random_articles->have_posts() ) :
+								?>
+								<div class="related-articles" style="margin-top: 25px; border-top: 1px solid #dee2e6; padding-top: 25px;">
+									<h4 style="color: #2c3e50; font-size: 22px; margin-bottom: 15px; font-weight: 700; position: relative; display: inline-block;">
+										Explore More Articles
+										<span style="position: absolute; bottom: -4px; left: 0; width: 40px; height: 3px; background-color: #3498db;"></span>
+									</h4>
+									<p style="color: #5a6a7e; margin-bottom: 20px; font-size: 16px; line-height: 1.6;">Check out these selected articles from our premium collection:</p>
+									<div class="article-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-top: 10px;">
+									<?php
+									$count        = 0;
+									$min_articles = 9; // Minimum number of articles to show
+									while ( $random_articles->have_posts() ) :
+										$random_articles->the_post();
+										++$count;
+										// Get author info
+										$author_name = get_post_meta( get_the_ID(), 'mlmmc_article_author', true );
+										$author_name = $author_name ? $author_name : get_the_author();
+										$author_id   = get_post_field( 'post_author', get_the_ID() );
+
+										// Get author image
+										$author_image_id = get_post_meta( get_the_ID(), 'mlmmc_author_photo', true );
+										$author_image    = $author_image_id ? wp_get_attachment_image_url( $author_image_id, 'thumbnail' ) : '';
+										$has_video       = get_post_meta( get_the_ID(), 'mlmmc_video_link', true );
+										if ( ! $author_image ) {
+											$author_image = get_avatar_url( $author_id, [ 'size' => 40 ] );
+										}
+
+										// Get featured image if available
+										$thumb_url = get_the_post_thumbnail_url( get_the_ID(), 'thumbnail' );
+										$has_thumb = ! empty( $thumb_url );
+										?>
+										<div class="article-card" style="position: relative; background-color: white; border-radius: 10px; overflow: hidden; transition: all 0.3s ease; box-shadow: 0 3px 8px rgba(0,0,0,0.08); display: flex; flex-direction: column; border: 1px solid rgba(0,0,0,0.05);" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 3px 8px rgba(0,0,0,0.08)'">
+											<?php if ( $has_thumb ) : ?>
+											<div class="article-card-image" style="height: 150px; overflow: hidden; position: relative;">
+												<img src="<?php echo esc_url( $thumb_url ); ?>" alt="<?php echo esc_attr( get_the_title() ); ?>" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+											</div>
+											<?php endif; ?>
+											<div class="article-card-content" style="padding: <?php echo $has_thumb ? '16px' : '22px'; ?>; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; min-height: 120px;">
+												<h5 style="margin: 0 0 12px; font-size: 17px; line-height: 1.4; font-weight: 600; color: #2c3e50;">
+													<a href="<?php echo esc_url( get_permalink() ); ?>" style="color: inherit; text-decoration: none;" onmouseover="this.style.color='#3498db'" onmouseout="this.style.color='inherit'">
+														<?php echo esc_html( get_the_title() ); ?>
+													</a>
+												</h5>
+												<div class="article-meta" style="font-size: 13px; color: #7f8c8d; margin-top: auto; display: flex; align-items: center; border-top: 1px solid #f5f5f5; padding-top: 12px; margin-top: 12px;">
+													<?php if ( $author_image ) : ?>
+													<div class="article-author-avatar" style="margin-right: 10px; flex-shrink: 0;">
+														<img src="<?php echo esc_url( $author_image ); ?>" alt="<?php echo esc_attr( $author_name ); ?>" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid #f1f1f1; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+													</div>
+													<?php endif; ?>
+													<div>
+														<span class="article-author-small" style="display: block; font-weight: 600; color: #34495e;">
+															<?php echo esc_html( $author_name ); ?>
+														</span>
+														<span class="article-date-small" style="font-size: 12px; color: #95a5a6;">
+															<?php echo get_the_date( 'M j, Y' ); ?>
+														</span>
+													</div>
+												</div>
+												<?php
+												if ( $has_video ) {
+													echo '<div class="video-badge" style="position: absolute;bottom: 10px;left: 10px;background-color: green;color: white;padding: 2px 10px;/* border-radius: 4px; */font-size: 12px;font-weight: 600;box-shadow: 0 2px 4px rgba(0,0,0,0.2);">Has Video</div>';
+												}
+												?>
+											</div>
+										</div>
+										<?php
+										// Display between 9 and 12 articles
+										if ( $count >= intval( $atts['num_related'] ) || ( $count >= $min_articles && $count >= 9 ) ) {
+											break;
+										}
+									endwhile;
+									?>
+									</div>
+									
+									<div class="view-more" style="margin-top: 20px; text-align: center;">
+										<a href="<?php echo esc_url( home_url( '/mlmmc-articles/' ) ); ?>" style="color: #3498db; text-decoration: none; font-weight: 600; font-size: 15px; display: inline-block; padding: 8px 0;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
+											View All Articles →
+										</a>
+									</div>
+								</div>
+								<?php
+								wp_reset_postdata();
+							endif;
+							?>
+						</div>
 					</div>
-				</div>
+				<?php endif; ?>
 			</div>
 		</div>
 		
