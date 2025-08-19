@@ -206,6 +206,21 @@ var MarkerManager = (function ($) {
 			var popupContent = this.createMemberPopupContent( member );
 			marker.bindPopup( popupContent );
 
+			// Show popup content as hover box
+			marker.on('mouseover', function(e) {
+				var popupContent = MarkerManager.createMemberPopupContent(member);
+				MarkerManager._showMemberHoverBox({
+					html: popupContent,
+					latlng: e.latlng,
+					avatar: member.avatar ? member.avatar.match(/src="([^"]+)"/)[1] : 'https://www.gravatar.com/avatar/?d=mp&f=y',
+					map: e.target._map
+				});
+			});
+
+			marker.on('mouseout', function(e) {
+				MarkerManager._hideMemberHoverBoxDelayed();
+			});
+
 			// Add a namespace to our event handler to avoid duplicates
 			marker._privacyHandlerAdded = false;
 
@@ -401,6 +416,7 @@ var MarkerManager = (function ($) {
 				lng: originalLng
 			};
 
+			// No hover box for grouped member markers
 			// Create popup content for multiple members
 			var popupContent = this.createGroupedMemberPopupContent( members );
 			marker.bindPopup( popupContent, { maxWidth: 300 } );
@@ -645,3 +661,82 @@ var MarkerManager = (function ($) {
 		}
 	};
 })( jQuery );
+
+(function() {
+    let hoverTimeout = null;
+
+    MarkerManager._showMemberHoverBox = function(opts) {
+        MarkerManager._hideMemberHoverBox(true);
+
+        if (!opts || !opts.map || !opts.latlng || !opts.html || !opts.avatar) return;
+
+        const mapContainer = opts.map.getContainer();
+        if (!mapContainer) return;
+
+        const existingBox = document.getElementById('member-hover-box-custom');
+        if (existingBox) existingBox.remove();
+
+        const box = document.createElement('div');
+        box.className = 'member-hover-box-custom';
+        box.innerHTML = `
+            <div class="hover-avatar">
+                <img src="${opts.avatar}" alt="Avatar">
+            </div>
+            <div class="hover-content">
+                ${opts.html}
+            </div>
+        `;
+        box.style.position = 'absolute';
+        box.style.zIndex = 9999;
+        box.style.pointerEvents = 'auto';
+        box.id = 'member-hover-box-custom';
+
+        const pt = opts.map.latLngToContainerPoint(opts.latlng);
+        const boxWidth = 220;
+        const markerIconHeight = 40;
+        const verticalOffset = 16;
+
+        box.style.left = (pt.x - boxWidth / 2) + 'px';
+        box.style.top = (pt.y - markerIconHeight - verticalOffset) + 'px';
+
+        mapContainer.appendChild(box);
+
+        box.offsetHeight; // force reflow for transition
+        box.classList.add('show'); // trigger CSS transition
+
+        if (hoverTimeout) clearTimeout(hoverTimeout);
+        box.addEventListener('mouseenter', function() {
+            if (hoverTimeout) clearTimeout(hoverTimeout);
+        });
+        box.addEventListener('mouseleave', function() {
+            MarkerManager._hideMemberHoverBoxDelayed();
+        });
+    };
+
+    MarkerManager._hideMemberHoverBox = function(immediate) {
+        const box = document.getElementById('member-hover-box-custom');
+        if (!box) return;
+
+        if (immediate) {
+            box.remove();
+        } else {
+            box.classList.remove('show');
+            hoverTimeout = setTimeout(() => {
+                box.remove();
+            }, 200); // match CSS transition duration._sho
+        }
+    };
+
+    MarkerManager._hideMemberHoverBoxDelayed = function() {
+        if (hoverTimeout) clearTimeout(hoverTimeout);
+        hoverTimeout = setTimeout(() => {
+            const box = document.getElementById('member-hover-box-custom');
+            if (!box) return;
+
+            if (!box.matches(':hover')) {
+                MarkerManager._hideMemberHoverBox();
+            }
+        }, 250);
+    };
+})();
+
