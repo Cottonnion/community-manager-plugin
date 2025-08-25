@@ -85,26 +85,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<?php endif; ?>
 		</div>
 
-		<?php if ( $show_rating && ! empty( $article['average_rating'] ) && $article['average_rating'] > 0 ) : ?>
-			<div class="mlmmc-article-rating">
-				<div class="mlmmc-article-stars">
-					<?php echo $article['stars_html']; ?>
-				</div>
-				<div class="mlmmc-article-rating-count">
-					<?php
-					echo sprintf(
-						_n( '%d review', '%d reviews', $article['rating_count'], 'labgenz-community-management' ),
-						(int) $article['rating_count']
-					);
-					?>
-				</div>
-			</div>
-		<?php endif; ?>
-
+		
 		<div class="mlmmc-article-actions">
 			<a href="<?php echo esc_url( $article['permalink'] ); ?>" class="mlmmc-read-more">
 				<?php esc_html_e( 'Read Article', 'labgenz-community-management' ); ?> →
 			</a>
+
+			<?php if ( $show_rating && ! empty( $article['average_rating'] ) && $article['average_rating'] > 0 ) : ?>
+				<div class="mlmmc-article-rating">
+					<div class="mlmmc-article-rating-count">
+						<?php
+						echo sprintf(
+							_n( '%d review', '%d reviews', $article['rating_count'], 'labgenz-community-management' ),
+							(int) $article['rating_count']
+						);
+						?>
+					</div>
+				</div>
+			<?php endif; ?>
 		</div>
 
 	</div>

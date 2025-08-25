@@ -374,4 +374,45 @@ class ArticleMetaHelper {
 			'authors'    => $filtered_authors,
 		];
 	}
+
+	/**
+	 * Get articles with videos only.
+	 *
+	 * @param array $args Query arguments.
+	 * @return array List of articles with videos.
+	 */
+	public function get_articles_with_videos( array $args = [] ): array {
+		// Ensure post type is set
+		$args['post_type']   = self::POST_TYPE;
+		$args['post_status'] = 'publish';
+
+		// Add meta query to filter articles with a non-empty video link
+		$args['meta_query'][] = [
+			'key'     => 'mlmmc_video_link',
+			'value'   => '',
+			'compare' => '!=',
+		];
+
+		// Query articles
+		$query    = new \WP_Query( $args );
+		$articles = [];
+
+		if ( $query->have_posts() ) {
+			while ( $query->have_posts() ) {
+				$query->the_post();
+				$post_id = get_the_ID();
+
+				// Add article data to the result
+				$articles[] = [
+					'id'         => $post_id,
+					'title'      => get_the_title(),
+					'permalink'  => get_permalink(),
+					'video_link' => get_post_meta( $post_id, 'mlmmc_video_link', true ),
+				];
+			}
+			wp_reset_postdata();
+		}
+
+		return $articles;
+	}
 }

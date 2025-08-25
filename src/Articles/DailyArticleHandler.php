@@ -300,15 +300,6 @@ class DailyArticleHandler {
 			<?php if ( $atts['show_title'] === 'true' ) : ?>
 				<div class="daily-article-header">
 					<h2 class="daily-article-title">🌟 Article of the Day</h2>
-					
-					<?php
-					if ( $atts['show_meta'] === 'true' ) :
-						$day_date = new \DateTime( $daily_data['day_start'] );
-						?>
-						<p class="daily-article-meta">
-							Today: <?php echo $day_date->format( 'F j, Y' ); ?>
-						</p>
-					<?php endif; ?>
 				</div>
 			<?php endif; ?>
 			
@@ -539,19 +530,19 @@ class DailyArticleHandler {
 										$thumb_url = get_the_post_thumbnail_url( get_the_ID(), 'thumbnail' );
 										$has_thumb = ! empty( $thumb_url );
 										?>
-										<div class="article-card" style="position: relative; background-color: white; border-radius: 10px; overflow: hidden; transition: all 0.3s ease; box-shadow: 0 3px 8px rgba(0,0,0,0.08); display: flex; flex-direction: column; border: 1px solid rgba(0,0,0,0.05);" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 3px 8px rgba(0,0,0,0.08)'">
+										<div class="article-card" style="position: relative;background-color: white;border-radius: 10px;overflow: hidden;transition: 0.3s;box-shadow: rgba(0, 0, 0, 0.08) 0px 3px 8px;display: flex;flex-direction: column;border: 1px solid rgba(0, 0, 0, 0.05);transform: translateY(0px);padding: 10px;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 3px 8px rgba(0,0,0,0.08)'">
 											<?php if ( $has_thumb ) : ?>
 											<div class="article-card-image" style="height: 150px; overflow: hidden; position: relative;">
 												<img src="<?php echo esc_url( $thumb_url ); ?>" alt="<?php echo esc_attr( get_the_title() ); ?>" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
 											</div>
 											<?php endif; ?>
-											<div class="article-card-content" style="padding: <?php echo $has_thumb ? '16px' : '22px'; ?>; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; min-height: 120px;">
-												<h5 style="margin: 0 0 12px; font-size: 17px; line-height: 1.4; font-weight: 600; color: #2c3e50;">
-													<a href="<?php echo esc_url( get_permalink() ); ?>" style="color: inherit; text-decoration: none;" onmouseover="this.style.color='#3498db'" onmouseout="this.style.color='inherit'">
-														<?php echo esc_html( get_the_title() ); ?>
-													</a>
-												</h5>
-												<div class="article-meta" style="font-size: 13px; color: #7f8c8d; margin-top: auto; display: flex; align-items: center; border-top: 1px solid #f5f5f5; padding-top: 12px; margin-top: 12px;">
+											<div class="article-card-content" >
+											<h5 style="margin: 0 0 8px 0; font-size: 16px; line-height: 1.3; font-weight: 600;">
+												<a href="<?php echo esc_url( get_permalink() ); ?>" style="color: inherit; text-decoration: none;" onmouseover="this.style.color='#3498db'" onmouseout="this.style.color='inherit'">
+													<?php echo esc_html( get_the_title() ); ?>
+												</a>
+											</h5>
+												<div class="article-meta" style="font-size: 13px; color: #7f8c8d; margin-top: auto; display: flex; align-items: center; border-top: 1px solid #f5f5f5; padding-top: 8px; margin-top: 8px;">
 													<?php if ( $author_image ) : ?>
 													<div class="article-author-avatar" style="margin-right: 10px; flex-shrink: 0;">
 														<img src="<?php echo esc_url( $author_image ); ?>" alt="<?php echo esc_attr( $author_name ); ?>" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid #f1f1f1; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
@@ -731,6 +722,7 @@ class DailyArticleHandler {
 	public function get_random_articles( $had_vid = false, int $min_articles = 1, int $max_articles = 12 ): array {
 		$total_articles = rand( $min_articles, $max_articles );
 		$articles       = [];
+		$reviews_handler = new ReviewsHandler();
 
 		if ( $had_vid === 'mixed' ) {
 			$video_count    = (int) ceil( $total_articles * 0.4 );
@@ -763,6 +755,7 @@ class DailyArticleHandler {
 							'link'      => get_permalink(),
 							'has_video' => true,
 							'category'  => $category ? $category : 'Uncategorized',
+							'avg_rating'=> $reviews_handler->get_average_rating( get_the_ID() ),
 						];
 					}
 					wp_reset_postdata();
@@ -796,6 +789,8 @@ class DailyArticleHandler {
 							'link'      => get_permalink(),
 							'has_video' => false,
 							'category'  => $category ? $category : 'Uncategorized',
+							'avg_rating'=> $reviews_handler->get_average_rating( get_the_ID() ),
+							
 						];
 					}
 					wp_reset_postdata();
@@ -836,6 +831,7 @@ class DailyArticleHandler {
 						'link'      => get_permalink(),
 						'has_video' => ! empty( $has_video ),
 						'category'  => $category ? $category : 'Uncategorized',
+						'avg_rating'=> $reviews_handler->get_average_rating( get_the_ID() ),
 					];
 				}
 				wp_reset_postdata();

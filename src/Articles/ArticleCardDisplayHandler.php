@@ -9,7 +9,7 @@ use LABGENZ_CM\Articles\Helpers\ArticleSearchHelper;
  * Handles the displays in a card-based layout.
  */
 class ArticleCardDisplayHandler {
-	private const POST_TYPE = 'mlmmc_artiicle';
+	public const POST_TYPE = 'mlmmc_artiicle';
 	public const SHORTCODE  = 'mlmmc_articles';
 
 	/**
@@ -29,6 +29,7 @@ class ArticleCardDisplayHandler {
 	 * ArticleCardDisplayHandler constructor.
 	 */
 	public function __construct() {
+		$articles_handler = new ArticlesHandler();
 		$this->init_hooks();
 	}
 
@@ -92,8 +93,8 @@ class ArticleCardDisplayHandler {
 		wp_register_style(
 			self::ASSET_HANDLE_CSS,
 			LABGENZ_CM_URL . 'src/Articles/assets/css/article-cards.css',
-			[ self::ASSET_HANDLE_CSS . '-category', self::ASSET_HANDLE_CSS . '-filter-common' ],
-			'1.0.7'
+			[ self::ASSET_HANDLE_CSS . '-filter-common' ],
+			'1.1.0'
 		);
 
 		// Register category filter JS
@@ -142,7 +143,7 @@ class ArticleCardDisplayHandler {
 	public function render_articles_shortcode( array $atts = [] ): string {
 		// Enqueue styles and scripts
 		wp_enqueue_style( self::ASSET_HANDLE_CSS . '-improved-dropdown' );
-		wp_enqueue_style( self::ASSET_HANDLE_CSS . '-category' );
+		// wp_enqueue_style( self::ASSET_HANDLE_CSS . '-category' );
 		wp_enqueue_style( self::ASSET_HANDLE_CSS );
 
 		// Enqueue category filter, author filter, and main JS
@@ -987,57 +988,7 @@ class ArticleCardDisplayHandler {
 	 * @return array Associative array with filtered authors, categories, and ratings
 	 */
 	private function get_filtered_data_for_response( array $authors, array $categories, array $ratings ): array {
-		$filtered_authors    = [];
-		$filtered_categories = [];
-		$filtered_ratings    = [];
-
-		// If no ratings but categories are selected
-		if ( ! empty( $categories ) ) {
-			$filtered_authors = ArticleMetaHelper::get_filtered_authors_by_categories( $categories, self::POST_TYPE );
-
-			// If authors are also selected, filter categories by authors
-			if ( ! empty( $authors ) ) {
-				$filtered_categories = ArticleMetaHelper::get_filtered_categories_by_authors( $authors, self::POST_TYPE );
-
-				// Keep only categories that match the original category selection
-				$filtered_categories = array_filter(
-					$filtered_categories,
-					function ( $category ) use ( $categories ) {
-						return in_array( $category['name'], $categories );
-					}
-				);
-
-				// Re-index array
-				$filtered_categories = array_values( $filtered_categories );
-			}
-		}
-		// If only authors are selected
-		elseif ( ! empty( $authors ) ) {
-			$filtered_categories = ArticleMetaHelper::get_filtered_categories_by_authors( $authors, self::POST_TYPE );
-		}
-
-		// For ratings, always prepare data for display with counts regardless of selection
-		// Run direct SQL query to get accurate counts regardless of other filters
-		$rating_counts = $this->get_rating_counts(
-			$authors,      // Pass current author filters
-			$categories,   // Pass current category filters
-			$ratings       // Also pass current rating filters to reflect accurate counts
-		);
-
-		// Prepare filtered ratings with counts - always show all ratings
-		$filtered_ratings = [];
-		for ( $i = 5; $i >= 1; $i-- ) {
-			$filtered_ratings[] = [
-				'rating' => $i,
-				'count'  => $rating_counts[ $i ],
-			];
-		}
-
-		return [
-			'filtered_authors'    => $filtered_authors,
-			'filtered_categories' => $filtered_categories,
-			'filtered_ratings'    => $filtered_ratings,
-		];
+		return ArticleSearchHelper::get_filtered_data_for_response( $authors, $categories, $ratings, self::POST_TYPE );
 	}
 
 
@@ -1063,37 +1014,6 @@ class ArticleCardDisplayHandler {
 	 * @return array List of articles with videos.
 	 */
 	public function get_articles_with_videos( array $args = [] ): array {
-		// Ensure post type is set
-		$args['post_type']   = self::POST_TYPE;
-		$args['post_status'] = 'publish';
-
-		// Add meta query to filter articles with a non-empty video link
-		$args['meta_query'][] = [
-			'key'     => 'mlmmc_video_link',
-			'value'   => '',
-			'compare' => '!=',
-		];
-
-		// Query articles
-		$query    = new \WP_Query( $args );
-		$articles = [];
-
-		if ( $query->have_posts() ) {
-			while ( $query->have_posts() ) {
-				$query->the_post();
-				$post_id = get_the_ID();
-
-				// Add article data to the result
-				$articles[] = [
-					'id'         => $post_id,
-					'title'      => get_the_title(),
-					'permalink'  => get_permalink(),
-					'video_link' => get_post_meta( $post_id, 'mlmmc_video_link', true ),
-				];
-			}
-			wp_reset_postdata();
-		}
-
-		return $articles;
+		return ArticleMetaHelper::get_articles_with_videos( $args );
 	}
 }

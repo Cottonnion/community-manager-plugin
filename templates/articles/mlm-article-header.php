@@ -8,6 +8,7 @@
 namespace LABGENZ_CM\Articles;
 
 use LABGENZ_CM\Admin\DailyArticleAdmin;
+use LABGENZ_CM\Articles\ArticlesHandler;
 
 // Prevent direct access
 if (!defined('ABSPATH')) {
@@ -23,6 +24,8 @@ if ($post_type !== ReviewsHandler::POST_TYPE) {
 }
 
 $daily_article_admin = new DailyArticleAdmin();
+$article_handler     = new ArticlesHandler();
+
 $author = $daily_article_admin->get_article_author($post_id);
 $category = $daily_article_admin->get_article_category($post_id);
 $author_avatar = $daily_article_admin->get_article_author_image_url($post_id);
@@ -69,6 +72,7 @@ $article_title = get_the_title($post_id);
                             </span>
                         <?php endif; ?>
                     </div>
+
                 </div>
             </div>
             <?php include '/reviews/article-average-rating.php'; // Include average rating template ?>

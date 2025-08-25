@@ -3,6 +3,7 @@
 namespace LABGENZ_CM\Articles\Helpers;
 
 use LABGENZ_CM\Articles\ReviewsHandler;
+use LABGENZ_CM\Articles\ArticleCardDisplayHandler;
 use WP_Query;
 
 /**
@@ -199,5 +200,68 @@ class ArticleSearchHelper {
 		}
 
 		return $unique_articles;
+	}
+
+	/**
+	 * Get filtered data for AJAX response based on selected filters
+	 *
+	 * @param array $authors Selected authors
+	 * @param array $categories Selected categories
+	 * @param array $ratings Selected ratings
+	 * @return array Associative array with filtered authors, categories, and ratings
+	 */
+	public static function get_filtered_data_for_response( array $authors, array $categories, array $ratings ): array {
+		$filtered_authors    = [];
+		$filtered_categories = [];
+		$filtered_ratings    = [];
+
+		// If no ratings but categories are selected
+		if ( ! empty( $categories ) ) {
+			$filtered_authors = ArticleMetaHelper::get_filtered_authors_by_categories( $categories, ArticleCardDisplayHandler::POST_TYPE );
+
+			// If authors are also selected, filter categories by authors
+			if ( ! empty( $authors ) ) {
+				$filtered_categories = ArticleMetaHelper::get_filtered_categories_by_authors( $authors, ArticleCardDisplayHandler::POST_TYPE );
+
+				// Keep only categories that match the original category selection
+				$filtered_categories = array_filter(
+					$filtered_categories,
+					function ( $category ) use ( $categories ) {
+						return in_array( $category['name'], $categories );
+					}
+				);
+
+				// Re-index array
+				$filtered_categories = array_values( $filtered_categories );
+			}
+		}
+		// If only authors are selected
+		elseif ( ! empty( $authors ) ) {
+			$filtered_categories = ArticleMetaHelper::get_filtered_categories_by_authors( $authors, ArticleCardDisplayHandler::POST_TYPE );
+		}
+
+		// For ratings, always prepare data for display with counts regardless of selection
+		// Run direct SQL query to get accurate counts regardless of other filters
+		$article_cards = new ArticleCardDisplayHandler();
+		$rating_counts = $article_cards->get_rating_counts(
+			$authors,      // Pass current author filters
+			$categories,   // Pass current category filters
+			$ratings       // Also pass current rating filters to reflect accurate counts
+		);
+
+		// Prepare filtered ratings with counts - always show all ratings
+		$filtered_ratings = [];
+		for ( $i = 5; $i >= 1; $i-- ) {
+			$filtered_ratings[] = [
+				'rating' => $i,
+				'count'  => $rating_counts[ $i ],
+			];
+		}
+
+		return [
+			'filtered_authors'    => $filtered_authors,
+			'filtered_categories' => $filtered_categories,
+			'filtered_ratings'    => $filtered_ratings,
+		];
 	}
 }
