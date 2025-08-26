@@ -97,10 +97,17 @@ class AssetsManager {
 
 		add_action('wp_enqueue_scripts', function () {
 				wp_enqueue_script(
+					'buddypanel-controller-js-file',
+					get_stylesheet_directory_uri() . '/template-parts/buddypanel/buddypanel-controller.js',
+					array('jquery'),
+					'1.3.9',
+					true
+				);
+				wp_enqueue_script(
 					'lab-commons',
 					LABGENZ_CM_URL . 'src/Public/assets/js/commons.js',
 					[ 'jquery' ],
-					'1.0.1',
+					'1.0.6',
 					true
 				);
 		}, 20 );
@@ -608,7 +615,7 @@ class AssetsManager {
 		$this->add_frontend_asset(
 			'labgenz-ajax-articles-search',
 			[ '' ],
-			'lab-ajax-articles-search.js',
+		'lab-ajax-articles-search.js',
 			[ 'jquery' ],
 			'3.7',
 			true,
@@ -627,7 +634,32 @@ class AssetsManager {
 			[ '' ],
 			'gamipress-header.js',
 			[ 'jquery' ],
-			'1.2.0',
+			'1.2.7',
+			true,
+			'js',
+			[]
+		);
+
+		$this->add_frontend_asset(
+			'aliase-emails',
+			[ '' ],
+			'alias-emails.js',
+			[ 'jquery' ],
+			'1.0.9',
+			true,
+			'js',
+			[
+				'ajax_url' => admin_url('admin-ajax.php'),
+				'nonce'    => wp_create_nonce('email_alias_nonce'),
+			]
+		);
+
+		$this->add_frontend_asset(
+			'single-article-js',
+			[ '' ],
+			'single-article.js',
+			[ 'jquery' ],
+			'1.0.1',
 			true,
 			'js',
 			[]
@@ -655,11 +687,31 @@ class AssetsManager {
 		);
 
 		$this->add_frontend_asset(
+			'alias-emails-css',
+			[ '' ],
+			'alias-emails.css',
+			[],
+			'1.1.7',
+			false,
+			'css'
+		);
+
+		$this->add_frontend_asset(
 			'labgenz-gamipress-header-css',
 			[ '' ],
 			'lab-gamipress-header.css',
 			[],
-			'2.6.1',
+			'2.6.2',
+			false,
+			'css'
+		);
+
+		$this->add_frontend_asset(
+			'mlmmc-checkout-css',
+			[ '' ],
+			'checkout.css',
+			[],
+			'1.0.1',
 			false,
 			'css'
 		);
@@ -700,7 +752,7 @@ class AssetsManager {
 			[ ' ' ],
 			'single-article.css',
 			[],
-			'1.0.0',
+			'1.0.8',
 			false,
 			'css'
 		);
@@ -811,7 +863,7 @@ class AssetsManager {
 				'marker-manager-js',
 				LABGENZ_CM_URL . 'src/Public/assets/js/map-modules/marker-manager.js',
 				[ 'jquery', 'leaflet-js', 'leaflet-markercluster-js', 'map-core-js' ],
-				'7.2.6',
+				'7.2.7',
 				true
 			);
 
