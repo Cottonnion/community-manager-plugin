@@ -28,7 +28,7 @@ class SearchUserHelper {
 		}
 
 		// Check if user is an organizer of the target group
-		if ( ! groups_is_user_admin( $current_user_id, $group_id ) ) {
+		if ( ! groups_is_user_admin( $current_user_id, $group_id ) && ! current_user_can( 'administrator' ) ) {
 			wp_send_json_error( 'You do not have permission to manage this group' );
 		}
 

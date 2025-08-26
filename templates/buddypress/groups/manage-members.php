@@ -72,7 +72,7 @@ if ( ! $data['success'] ) {
     return;
 }
 
-if ( ! $data['is_organizer'] ) {
+if ( ! $data['is_organizer'] && ! current_user_can( 'administrator' ) ) {
     echo '<div class="notice error">Access restricted. You must be a group leader to view this page.</div>';
     return;
 }
