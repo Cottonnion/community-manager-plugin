@@ -113,7 +113,7 @@ class UserAccountManager {
 	 * @param array $billing_data Billing information array
 	 * @return void
 	 */
-	private static function update_billing_data( int $user_id, array $billing_data ) {
+	public static function update_billing_data( int $user_id, array $billing_data ) {
 		// Get user email as fallback
 		$user_email = get_user_by( 'ID', $user_id )->user_email ?? '';
 
@@ -134,15 +134,15 @@ class UserAccountManager {
 
 		// Define all standard WooCommerce shipping fields with defaults
 		$shipping_fields = [
-			'shipping_first_name' => $billing_data['shipping_first_name'] ?? $billing_data['first_name'] ?? '',
-			'shipping_last_name'  => $billing_data['shipping_last_name'] ?? $billing_data['last_name'] ?? '',
-			'shipping_company'    => $billing_data['shipping_company'] ?? $billing_data['company'] ?? '',
-			'shipping_address_1'  => $billing_data['shipping_address_1'] ?? $billing_data['address_1'] ?? '',
-			'shipping_address_2'  => $billing_data['shipping_address_2'] ?? $billing_data['address_2'] ?? '',
-			'shipping_city'       => $billing_data['shipping_city'] ?? $billing_data['city'] ?? '',
-			'shipping_postcode'   => $billing_data['shipping_postcode'] ?? $billing_data['postcode'] ?? '',
-			'shipping_country'    => $billing_data['shipping_country'] ?? $billing_data['country'] ?? '',
-			'shipping_state'      => $billing_data['shipping_state'] ?? $billing_data['state'] ?? '',
+			'shipping_first_name' => $billing_data['shipping_first_name'] ?? $billing_data['billing_first_name'] ?? '',
+			'shipping_last_name'  => $billing_data['shipping_last_name'] ?? $billing_data['billing_last_name'] ?? '',
+			'shipping_company'    => $billing_data['shipping_company'] ?? $billing_data['billing_company'] ?? '',
+			'shipping_address_1'  => $billing_data['shipping_address_1'] ?? $billing_data['billing_address_1'] ?? '',
+			'shipping_address_2'  => $billing_data['shipping_address_2'] ?? $billing_data['billing_address_2'] ?? '',
+			'shipping_city'       => $billing_data['shipping_city'] ?? $billing_data['billing_city'] ?? '',
+			'shipping_postcode'   => $billing_data['shipping_postcode'] ?? $billing_data['billing_postcode'] ?? '',
+			'shipping_country'    => $billing_data['shipping_country'] ?? $billing_data['billing_country'] ?? '',
+			'shipping_state'      => $billing_data['shipping_state'] ?? $billing_data['billing_state'] ?? '',
 		];
 
 		// Additional WooCommerce customer meta fields
