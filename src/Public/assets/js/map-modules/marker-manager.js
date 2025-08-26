@@ -663,80 +663,136 @@ var MarkerManager = (function ($) {
 })( jQuery );
 
 (function() {
-    let hoverTimeout = null;
+	let hoverTimeout = null;
 
-    MarkerManager._showMemberHoverBox = function(opts) {
-        MarkerManager._hideMemberHoverBox(true);
+	MarkerManager._showMemberHoverBox = function(opts) {
+		MarkerManager._hideMemberHoverBox(true);
 
-        if (!opts || !opts.map || !opts.latlng || !opts.html || !opts.avatar) return;
+		if (!opts || !opts.map || !opts.latlng || !opts.html || !opts.avatar) return;
 
-        const mapContainer = opts.map.getContainer();
-        if (!mapContainer) return;
+		const mapContainer = opts.map.getContainer();
+		if (!mapContainer) return;
 
-        const existingBox = document.getElementById('member-hover-box-custom');
-        if (existingBox) existingBox.remove();
+		const existingBox = document.getElementById('member-hover-box-custom');
+		if (existingBox) existingBox.remove();
 
-        const box = document.createElement('div');
-        box.className = 'member-hover-box-custom';
-        box.innerHTML = `
-            <div class="hover-avatar">
-                <img src="${opts.avatar}" alt="Avatar">
-            </div>
-            <div class="hover-content">
-                ${opts.html}
-            </div>
-        `;
-        box.style.position = 'absolute';
-        box.style.zIndex = 9999;
-        box.style.pointerEvents = 'auto';
-        box.id = 'member-hover-box-custom';
+		const box = document.createElement('div');
+		box.className = 'member-hover-box-custom';
+		box.innerHTML = `
+			<div class="hover-avatar">
+				<a href="#" class="hover-avatar-link" tabindex="0">
+					<img src="${opts.avatar}" alt="Avatar">
+				</a>
+			</div>
+			<div class="hover-content">
+				${opts.html}
+			</div>
+		`;
+		// Add click handler for avatar to show lightbox
+		const avatarLink = box.querySelector('.hover-avatar-link');
+		if (avatarLink) {
+			avatarLink.addEventListener('click', function(e) {
+				e.preventDefault();
+				MarkerManager._showAvatarLightbox(opts.avatar);
+			});
+		}
+	// Lightbox/modal for avatar
+	MarkerManager._showAvatarLightbox = function(avatarUrl) {
+		MarkerManager._hideAvatarLightbox();
+		const modal = document.createElement('div');
+		modal.className = 'avatar-lightbox-modal';
+		modal.innerHTML = `
+			<div class="avatar-lightbox-backdrop"></div>
+			<div class="avatar-lightbox-content">
+				<img src="${avatarUrl}" alt="Avatar" />
+				<button class="avatar-lightbox-close" aria-label="Close">&times;</button>
+			</div>
+		`;
+		document.body.appendChild(modal);
+		// Close on backdrop or button click
+		modal.querySelector('.avatar-lightbox-backdrop').addEventListener('click', MarkerManager._hideAvatarLightbox);
+		modal.querySelector('.avatar-lightbox-close').addEventListener('click', MarkerManager._hideAvatarLightbox);
+		// Close on Escape key
+		document.addEventListener('keydown', MarkerManager._avatarLightboxEscHandler);
+	};
 
-        const pt = opts.map.latLngToContainerPoint(opts.latlng);
-        const boxWidth = 220;
-        const markerIconHeight = 40;
-        const verticalOffset = 16;
+	MarkerManager._hideAvatarLightbox = function() {
+		const modal = document.querySelector('.avatar-lightbox-modal');
+		if (modal) modal.remove();
+		document.removeEventListener('keydown', MarkerManager._avatarLightboxEscHandler);
+	};
 
-        box.style.left = (pt.x - boxWidth / 2) + 'px';
-        box.style.top = (pt.y - markerIconHeight - verticalOffset) + 'px';
+	MarkerManager._avatarLightboxEscHandler = function(e) {
+		if (e.key === 'Escape') {
+			MarkerManager._hideAvatarLightbox();
+		}
+	};
+	// Minimal CSS for the lightbox (inject if not present)
+	(function() {
+		if (!document.getElementById('avatar-lightbox-style')) {
+			const style = document.createElement('style');
+			style.id = 'avatar-lightbox-style';
+			style.textContent = `
+				.avatar-lightbox-modal { position: fixed; z-index: 10000; top: 0; left: 0; width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; }
+				.avatar-lightbox-backdrop { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); }
+				.avatar-lightbox-content { position: relative; z-index: 1; background: #fff; border-radius: 8px; padding: 16px; box-shadow: 0 2px 16px rgba(0,0,0,0.3); display: flex; flex-direction: column; align-items: center; }
+				.avatar-lightbox-content img { max-width: 320px; max-height: 70vh; border-radius: 8px; box-shadow: 0 1px 8px rgba(0,0,0,0.2); }
+				.avatar-lightbox-close { position: absolute; top: 8px; right: 12px; background: none; border: none; font-size: 2rem; color: #333; cursor: pointer; }
+			`;
+			document.head.appendChild(style);
+		}
+	})();
+		box.style.position = 'absolute';
+		box.style.zIndex = 9999;
+		box.style.pointerEvents = 'auto';
+		box.id = 'member-hover-box-custom';
 
-        mapContainer.appendChild(box);
+		const pt = opts.map.latLngToContainerPoint(opts.latlng);
+		const boxWidth = 220;
+		const markerIconHeight = 40;
+		const verticalOffset = 16;
 
-        box.offsetHeight; // force reflow for transition
-        box.classList.add('show'); // trigger CSS transition
+		box.style.left = (pt.x - boxWidth / 2) + 'px';
+		box.style.top = (pt.y - markerIconHeight - verticalOffset) + 'px';
 
-        if (hoverTimeout) clearTimeout(hoverTimeout);
-        box.addEventListener('mouseenter', function() {
-            if (hoverTimeout) clearTimeout(hoverTimeout);
-        });
-        box.addEventListener('mouseleave', function() {
-            MarkerManager._hideMemberHoverBoxDelayed();
-        });
-    };
+		mapContainer.appendChild(box);
 
-    MarkerManager._hideMemberHoverBox = function(immediate) {
-        const box = document.getElementById('member-hover-box-custom');
-        if (!box) return;
+		box.offsetHeight; // force reflow for transition
+		box.classList.add('show'); // trigger CSS transition
 
-        if (immediate) {
-            box.remove();
-        } else {
-            box.classList.remove('show');
-            hoverTimeout = setTimeout(() => {
-                box.remove();
-            }, 200); // match CSS transition duration._sho
-        }
-    };
+		if (hoverTimeout) clearTimeout(hoverTimeout);
+		box.addEventListener('mouseenter', function() {
+			if (hoverTimeout) clearTimeout(hoverTimeout);
+		});
+		box.addEventListener('mouseleave', function() {
+			MarkerManager._hideMemberHoverBoxDelayed();
+		});
+	};
 
-    MarkerManager._hideMemberHoverBoxDelayed = function() {
-        if (hoverTimeout) clearTimeout(hoverTimeout);
-        hoverTimeout = setTimeout(() => {
-            const box = document.getElementById('member-hover-box-custom');
-            if (!box) return;
+	MarkerManager._hideMemberHoverBox = function(immediate) {
+		const box = document.getElementById('member-hover-box-custom');
+		if (!box) return;
 
-            if (!box.matches(':hover')) {
-                MarkerManager._hideMemberHoverBox();
-            }
-        }, 250);
-    };
+		if (immediate) {
+			box.remove();
+		} else {
+			box.classList.remove('show');
+			hoverTimeout = setTimeout(() => {
+				box.remove();
+			}, 200); // match CSS transition duration._sho
+		}
+	};
+
+	MarkerManager._hideMemberHoverBoxDelayed = function() {
+		if (hoverTimeout) clearTimeout(hoverTimeout);
+		hoverTimeout = setTimeout(() => {
+			const box = document.getElementById('member-hover-box-custom');
+			if (!box) return;
+
+			if (!box.matches(':hover')) {
+				MarkerManager._hideMemberHoverBox();
+			}
+		}, 250);
+	};
 })();
 

@@ -419,11 +419,11 @@
 }
 
 .mlmmc-article-card h3 {
-	margin: 0 0 15px;
-	font-size: 20px;
-	line-height: 1.4;
-	font-weight: 600;
-	color: #2c3e50;
+    margin: 0 0 15px;
+    font-size: 17px;
+    line-height: 1.4;
+    font-weight: 500;
+    color: #2c3e50;
 }
 
 .mlmmc-article-card h3 a {
@@ -497,8 +497,10 @@
 }
 
 .mlmmc-article-actions {
-	margin-top: 20px;
-	text-align: right;
+    margin-top: 20px;
+    text-align: right;
+    display: flex;
+    justify-content: space-between;
 }
 
 .mlmmc-read-more {

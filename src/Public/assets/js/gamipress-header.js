@@ -41,23 +41,25 @@ class GamificationHeaderInterface {
 		}
 	}
 
-	createCoinsElement() {
-		const data    = this.gamificationData;
-		const credits = data.current_coins ?? 0;
-		const points  = data.current_reward_points ?? 0;
+createCoinsElement() {
+    const data    = this.gamificationData;
+    const credits = data.current_coins ?? 0;
+    const points  = data.current_reward_points ?? 0;
+	const shop_url = data.shop_url
 
-		return `
-			<div class="ghi-coins-navbar" style="display:flex;align-items:center;gap:10px;margin-left:auto;">
-				<div style="display:flex;align-items:center;">
-					<img src="${this.defaultImages.credits}" style="width:24px;height:24px;margin-right:5px;">
-					<span style="font-weight:bold;">Credits: ${credits}</span>
-				</div>
-				<div style="display:flex;align-items:center;">
-					<span style="font-weight:bold;">Points: ${points}</span>
-				</div>
-			</div>
-		`;
-	}
+    return `
+        <div class="ghi-coins-navbar" style="display:flex;align-items:center;gap:10px;margin-left:auto;">
+            <a href="${shop_url}?currency=credits" style="display:flex;align-items:center;text-decoration:none;color:inherit;">
+                <img src="${this.defaultImages.credits}" style="width:24px;height:24px;margin-right:5px;">
+                <span style="font-weight:bold;">Credits: ${credits}</span>
+            </a>
+            <a href="${shop_url}?currency=points" style="display:flex;align-items:center;text-decoration:none;color:inherit;">
+                <span style="font-weight:bold;">Points: ${points}</span>
+            </a>
+        </div>
+    `;
+}
+
 
 	injectIntoHeader(coinsHtml) {
 		// Append to the end of primary-navbar on desktop
