@@ -8,13 +8,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Simple class to add a "Manage Members" tab to BuddyBoss groups with organization type
  */
-class ManageMembersTab {
+class GroupTabs {
 	private static $instance = null;
 
 	/**
 	 * Get singleton instance
 	 *
-	 * @return ManageMembersTab
+	 * @return GroupTabs
 	 */
 	public static function get_instance() {
 		if ( null === self::$instance ) {
@@ -50,12 +50,12 @@ class ManageMembersTab {
 		}
 
 		// Check if this group has the organization group type
-		if ( ! $this->has_organization_group_type( $group->id ) ) {
+		if ( ! $this->has_organization_group_type( $group->id ) && ! $this->has_membership_group_type( $group->id ) ) {
 			return;
 		}
 
 		if ( $this->is_user_group_organizer( $group->id, get_current_user_id() ) ) {
-					// Add Manage Members tab
+			// Add Manage Members tab
 			bp_core_new_subnav_item(
 				[
 					'name'            => __( 'Manage Members', 'buddyboss' ),
@@ -193,9 +193,45 @@ class ManageMembersTab {
 			return true;
 		}
 
+		// Check if the group was created by the organization creation handler
+		// This is based on the metadata we found in GroupCreationHandler
+		$subscription_status = groups_get_groupmeta( $group_id, 'mlmmc_subscription_status', true );
+		if ( ! empty( $subscription_status ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Check if a group has the memebrship group type
+	 *
+	 * @param int $group_id Group ID
+	 * @return bool True if has the membership group type
+	 */
+	private function has_membership_group_type( $group_id ) {
+		// Allow overriding via URL for testing purposes - only if user is admin
+		if ( current_user_can( 'administrator' ) && isset( $_GET['force_organization_tab'] ) && $_GET['force_organization_tab'] === '1' ) {
+			return true;
+		}
+
+		// If BP Group Types component is active
+		if ( function_exists( 'bp_groups_get_group_type' ) ) {
+			$group_type = bp_groups_get_group_type( $group_id );
+			if ( $group_type === 'membership' ) {
+				return true;
+			}
+		}
+
+		// Check for group meta - BuddyBoss Platform may store group type in group meta
+		$group_type = groups_get_groupmeta( $group_id, 'group_type', true );
+		if ( $group_type === 'membership' ) {
+			return true;
+		}
+
 		// Additional check for custom group_type meta field
 		$mlmmc_group_type = groups_get_groupmeta( $group_id, 'mlmmc_group_type', true );
-		if ( $mlmmc_group_type === 'organization' ) {
+		if ( $mlmmc_group_type === 'membership' ) {
 			return true;
 		}
 
@@ -208,7 +244,6 @@ class ManageMembersTab {
 
 		return false;
 	}
-
 	/**
 	 * Remove unwanted tabs from group navigation
 	 */
