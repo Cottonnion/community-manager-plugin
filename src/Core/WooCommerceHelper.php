@@ -67,6 +67,7 @@ class WooCommerceHelper {
 		// Order status management
 		add_filter( 'woocommerce_payment_complete_order_status', [ OrderStatusManager::class, 'auto_complete_virtual_orders' ], 10, 3 );
 		add_action( 'woocommerce_thankyou', [ OrderStatusManager::class, 'force_complete_order' ], 5 );
+
 		// Also catch orders that might be set to "on-hold" through other payment methods
 		add_action( 'woocommerce_order_status_on-hold', [ OrderStatusManager::class, 'change_on_hold_to_complete' ], 10, 1 );
 
@@ -78,6 +79,7 @@ class WooCommerceHelper {
 		// Direct checkout functionality
 		add_filter( 'woocommerce_add_to_cart_redirect', [ CheckoutHandler::class, 'redirect_to_checkout' ] );
 		add_action( 'woocommerce_add_to_cart', [ CheckoutHandler::class, 'add_to_cart_message' ], 10, 6 );
+		add_filter( 'wp_head', [ CheckoutHandler::class, 'maybe_remove_billing_fields' ] );   
 
 		// Subscription processing
 		add_action( 'woocommerce_payment_complete', [ SubscriptionProcessor::class, 'auto_complete_subscription_order' ], 1 );
