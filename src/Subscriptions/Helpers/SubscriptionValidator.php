@@ -60,23 +60,23 @@ class SubscriptionValidator {
 		$subscription_hierarchy = [
 			// Basic family
 			'basic'                         => 1,
-			'monthly-basic-subscription'    => 1,
+			'yearly-basic-subscription'     => 2,
 
 			// Apprentice family
-			'apprentice-yearly'             => 2,
-			'apprentice-monthly'            => 1,
+			'apprentice-monthly'            => 3,
+			'apprentice-yearly'             => 4,
 
 			// Team Leader family
-			'team-leader-yearly'            => 2,
-			'team-leader-monthly'           => 1,
+			'team-leader-monthly'           => 5,
+			'team-leader-yearly'            => 6,
 
 			// Freedom Builder family
-			'freedom-builder-yearly'        => 2,
-			'freedom-builder-monthly'       => 1,
+			'freedom-builder-monthly'       => 7,
+			'freedom-builder-yearly'        => 8,
 
 			// Articles family (legacy)
-			'articles-annual-subscription'  => 2,
 			'articles-monthly-subscription' => 1,
+			'articles-annual-subscription'  => 2,
 		];
 
 		$existing_level = $subscription_hierarchy[ $existing_subscription ] ?? 0;
@@ -102,23 +102,23 @@ class SubscriptionValidator {
 		$subscription_hierarchy = [
 			// Basic family
 			'basic'                         => 1,
-			'monthly-basic-subscription'    => 1,
+			'yearly-basic-subscription'     => 2,
 
 			// Apprentice family
-			'apprentice-yearly'             => 2,
-			'apprentice-monthly'            => 1,
+			'apprentice-monthly'            => 3,
+			'apprentice-yearly'             => 4,
 
 			// Team Leader family
-			'team-leader-yearly'            => 2,
-			'team-leader-monthly'           => 1,
+			'team-leader-monthly'           => 5,
+			'team-leader-yearly'            => 6,
 
 			// Freedom Builder family
-			'freedom-builder-yearly'        => 2,
-			'freedom-builder-monthly'       => 1,
+			'freedom-builder-monthly'       => 7,
+			'freedom-builder-yearly'        => 8,
 
 			// Articles family (legacy)
-			'articles-annual-subscription'  => 2,
 			'articles-monthly-subscription' => 1,
+			'articles-annual-subscription'  => 2,
 		];
 
 		$existing_level = $subscription_hierarchy[ $existing_subscription ] ?? 0;

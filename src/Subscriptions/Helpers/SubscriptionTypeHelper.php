@@ -18,7 +18,7 @@ class SubscriptionTypeHelper {
 	 *
 	 * @var array
 	 */
-	private static $subscription_hierarchy = [
+	public static $subscription_hierarchy = [
 		'basic'                      => 10,
 		'monthly-basic-subscription' => 10,
 		'apprentice-monthly'         => 20,

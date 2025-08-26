@@ -9,6 +9,8 @@ use LABGENZ_CM\Core\WooCommerceHelper;
 use LABGENZ_CM\Subscriptions\Helpers\SubscriptionValidator;
 use LABGENZ_CM\Subscriptions\Helpers\SubscriptionStorage;
 use LABGENZ_CM\Subscriptions\Helpers\SubscriptionResources;
+use LABGENZ_CM\Subscriptions\Helpers\SubscriptionTypeHelper;
+use LABGENZ_CM\Gamipress\Helpers\GamiPressDataProvider;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -179,12 +181,7 @@ class SubscriptionHandler {
 	private function init_hooks(): void {
 		// Cart validation - use priority 35 to run AFTER cart clearing hook (which is 20)
 		add_filter( 'woocommerce_add_to_cart_validation', [ $this, 'validate_subscription_cart' ], 35, 3 );
-		add_action( 'wp', [ $this, 'validate_subscription_checkout' ], 10, 2 );
 		add_action( 'woocommerce_checkout_process', [ $this, 'validate_subscription_checkout' ], 10, 2 );
-		add_action( 'woocommerce_before_calculate_totals', [ $this, 'validate_subscription_checkout' ], 10, 2 );
-		// Additional hooks to ensure notices display properly
-		add_action( 'woocommerce_before_single_product_summary', [ $this, 'display_stored_validation_notices' ], 5 );
-		add_action( 'woocommerce_before_shop_loop', [ $this, 'display_stored_validation_notices' ], 5 );
 
 		// For AJAX add to cart validation (alternative approach)
 		add_action( 'wp_ajax_woocommerce_add_to_cart', [ $this, 'ajax_add_to_cart_validation' ], 5 );
@@ -371,123 +368,105 @@ class SubscriptionHandler {
 		return $passed;
 	}
 
-/**
- * Validate subscription products during checkout initialization
- *
- * @param WC_Checkout $checkout Checkout object
- * @return void
- */
 public function validate_subscription_checkout( $checkout ): void {
-	if(is_checkout()) {
-		error_log( 'pppp -Checkout validation started' );
-	
-	// if ( ! WC()->cart || WC()->cart->is_empty() ) {
-	// 	error_log( 'Cart is empty, skipping validation' );
-	// 	return;
-	// }
+    error_log( 'pppp -Checkout validation started' );
 
-	$user_id = get_current_user_id();
-	if ( ! $user_id ) {
-		error_log( 'pppp Guest checkout detected, skipping validation' );
-		return; // Skip validation for guest checkout
-	}
+    $user_id = get_current_user_id();
+    if ( ! $user_id ) {
+        error_log( 'pppp Guest checkout detected, skipping validation' );
+        return;
+    }
 
-	error_log( "pppp Validating checkout for user ID: $user_id" );
-	$user_subscriptions = SubscriptionStorage::get_active_user_subscriptions( $user_id );
-	error_log( 'pppp User has ' . count( $user_subscriptions ) . ' active subscriptions' );
+    error_log( "pppp Validating checkout for user ID: $user_id" );
+    $user_subscriptions = SubscriptionStorage::get_active_user_subscriptions( $user_id );
+    error_log( 'pppp User has ' . count( $user_subscriptions ) . ' active subscriptions' );
 
-	foreach ( WC()->cart->get_cart() as $cart_item ) {
-		$product = $cart_item['data'];
-		if ( ! $product || ! method_exists( $product, 'get_sku' ) ) {
-			continue;
-		}
+    foreach ( WC()->cart->get_cart() as $cart_item ) {
+        $product = $cart_item['data'];
+        if ( ! $product || ! method_exists( $product, 'get_sku' ) ) continue;
 
-		$sku = $product->get_sku();
-		error_log( "pppp Checking product SKU: $sku" );
+        $sku = $product->get_sku();
+        error_log( "pppp Checking product SKU: $sku" );
 
-		// Check if this is a subscription product
-		if ( ! in_array( $sku, self::SUBSCRIPTION_SKUS, true ) ) {
-			error_log( " pppp SKU $sku is not a subscription product, skipping" );
-			continue;
-		}
+        if ( ! in_array( $sku, self::SUBSCRIPTION_SKUS, true ) ) {
+            error_log( "pppp SKU $sku is not a subscription product, skipping" );
+            continue;
+        }
 
-		error_log( "Processing subscription product: $sku" );
+        $subscription_data = self::SUBSCRIPTION_TYPES[ $sku ] ?? null;
+        if ( ! $subscription_data ) continue;
+        $new_subscription_type = $subscription_data['type'];
 
-		// Get the subscription type being added
-		$subscription_data = self::SUBSCRIPTION_TYPES[ $sku ] ?? null;
-		if ( ! $subscription_data ) {
-			error_log( "No subscription data found for SKU: $sku" );
-			continue;
-		}
-		$new_subscription_type = $subscription_data['type'];
-		error_log( "New subscription type: $new_subscription_type" );
+        if ( ! empty( $user_subscriptions ) ) {
+            foreach ( $user_subscriptions as $subscription ) {
+                $existing_subscription_type = $subscription['type'];
 
-		if ( ! empty( $user_subscriptions ) ) {
-			error_log( "Checking against existing subscriptions" );
-			foreach ( $user_subscriptions as $subscription ) {
-				$existing_subscription_type = $subscription['type'];
-				error_log( "Comparing new type '$new_subscription_type' with existing type '$existing_subscription_type'" );
+                // Exact duplicate
+                if ( $existing_subscription_type === $new_subscription_type ) {
+                    ?>
+<script>
+    const notice = document.getElementById('lab-msgs-bar');
+    if (notice) {
+        notice.style.display = 'block';
+        notice.textContent = 'You already have a <?php echo ucfirst(str_replace("-", " ", $existing_subscription_type)); ?> subscription active.';
+    }
+</script>
+                    <?php
+                    return;
+                }
 
-				// Check if it's the same subscription (exact match)
-				if ( $existing_subscription_type === $new_subscription_type ) {
-					error_log( "VALIDATION FAILED: Duplicate subscription detected" );
-					wc_add_notice( sprintf(
-						__( 'You already have a %s subscription active.', 'labgenz-community-management' ),
-						ucfirst( str_replace( '-', ' ', $existing_subscription_type ) )
-					), 'error' );
-					return;
-				}
+                // Related subscriptions
+                if ( SubscriptionValidator::are_subscriptions_related( $existing_subscription_type, $new_subscription_type ) ) {
+                    // Downgrade
+                    if ( SubscriptionValidator::is_subscription_downgrade( $existing_subscription_type, $new_subscription_type ) ) {
+                        ?>
+<script>
+    const notice = document.getElementById('lab-msgs-bar');
+    if (notice) {
+        notice.style.display = 'block';
+        notice.textContent = 'You already have a <?php echo ucfirst(str_replace("-", " ", $existing_subscription_type)); ?> subscription active.';
+    }
+</script>
+                        <?php
+                        return;
+                    }
 
-				// Check if subscriptions are related (same family)
-				if ( SubscriptionValidator::are_subscriptions_related( $existing_subscription_type, $new_subscription_type ) ) {
-					error_log( "Subscriptions are related, checking compatibility" );
-					// Check if it's a downgrade within the same family
-					if ( SubscriptionValidator::is_subscription_downgrade( $existing_subscription_type, $new_subscription_type ) ) {
-						error_log( "VALIDATION FAILED: Downgrade detected" );
-						wc_add_notice( sprintf(
-							__( 'You cannot downgrade from %1$s to %2$s. Downgrades within the same subscription family are not supported.', 'labgenz-community-management' ),
-							ucfirst( str_replace( '-', ' ', $existing_subscription_type ) ),
-							ucfirst( str_replace( '-', ' ', $new_subscription_type ) )
-						), 'error' );
-						return;
-					}
+                    // Monthly to yearly upgrade
+                    if ( SubscriptionValidator::is_monthly_to_yearly_upgrade( $existing_subscription_type, $new_subscription_type ) ) {
+                        $remaining_days = SubscriptionStorage::calculate_remaining_days( $subscription );
+                        if ( $remaining_days > 0 ) {
+                            ?>
+<script>
+    const notice = document.getElementById('lab-msgs-bar');
+    if (notice) {
+        notice.style.display = 'block';
+        notice.textContent = 'You already have a <?php echo ucfirst(str_replace("-", " ", $existing_subscription_type)); ?> subscription active.';
+    }
+</script>
+                            <?php
+                        }
+                        continue;
+                    }
 
-					// Skip monthly to yearly upgrade validation - allow it to proceed
-					if ( SubscriptionValidator::is_monthly_to_yearly_upgrade( $existing_subscription_type, $new_subscription_type ) ) {
-						error_log( "Monthly to yearly upgrade detected, allowing" );
-							$remaining_days = SubscriptionStorage::calculate_remaining_days( $subscription );
-							if ( $remaining_days > 0 ) {
-								wc_add_notice(
-									sprintf(
-										__( 'You currently have %d days remaining on your monthly subscription. After purchase, these days will be added to your new yearly subscription.', 'labgenz-community-management' ),
-										$remaining_days
-									),
-									'success'
-								);
-							}
-							// Allow the upgrade and return true
-							// return true;
-						continue;
-					}
+                    // Incompatible related subscriptions
+                    ?>
+<script>
+    const notice = document.getElementById('lab-msgs-bar');
+    if (notice) {
+        notice.style.display = 'block';
+        notice.textContent = 'You already have a <?php echo ucfirst(str_replace("-", " ", $existing_subscription_type)); ?> subscription active.';
+    }
+</script>
+                    <?php
+                    return;
+                }
+            }
+        }
+    }
 
-					// If we get here, subscriptions are related but not compatible
-					error_log( "VALIDATION FAILED: Incompatible related subscriptions" );
-					wc_add_notice( sprintf(
-						__( 'You cannot have both %1$s and %2$s subscriptions. Please contact support if you need assistance.', 'labgenz-community-management' ),
-						ucfirst( str_replace( '-', ' ', $existing_subscription_type ) ),
-						ucfirst( str_replace( '-', ' ', $new_subscription_type ) )
-					), 'error' );
-					return;
-				} else {
-					error_log( "Subscriptions are not related, allowing" );
-				}
-			}
-		}
-	}
-	
-	error_log( 'Checkout validation completed successfully' );
-	}
+    error_log( 'Checkout validation completed successfully' );
 }
+
 
 	/**
 	 * Process subscription after payment completion
@@ -542,6 +521,12 @@ public function validate_subscription_checkout( $checkout ): void {
 			return;
 		}
 
+		// Prevent duplicate activation
+	    if ( $order->get_meta( '_subscription_activated' ) ) {
+			return;
+    	}
+
+    
 		$subscription_type = $order->get_meta( self::SUBSCRIPTION_TYPE_META );
 
 		// If no subscription type in meta, try to get it from order items
@@ -565,7 +550,7 @@ public function validate_subscription_checkout( $checkout ): void {
 			$order->update_meta_data( self::SUBSCRIPTION_EXPIRES_META, $expires );
 			$order->update_meta_data( self::SUBSCRIPTION_RESOURCES_META, $resources );
 		}
-
+    	$order->update_meta_data( '_subscription_activated', time() );
 		$order->save();
 
 		// Apply to user if exists
@@ -597,7 +582,7 @@ public function validate_subscription_checkout( $checkout ): void {
 		WC()->session->set( 'active_subscription', null );
 	}
 
-/**
+	/**
 	 * Apply subscription to user by ID
 	 *
 	 * @param  int            $user_id           User ID
@@ -607,18 +592,105 @@ public function validate_subscription_checkout( $checkout ): void {
 	 */
 	public function apply_subscription_to_user_by_id( $user_id, $order = null, $subscription_data = null ): void {
 		if ( $order ) {
-			// Extract subscription data from order items instead of order meta
-			$subscription_type = $this->wc_helper->get_subscription_type_from_order( $order );
-			$status            = 'active';
-			$expires           = $this->calculate_expiry_date( $subscription_type );
-			$resources         = $subscription_type ? SubscriptionResources::get_allowed_resources( $subscription_type ) : [];
+			$processing_flag = '_subscription_processed_' . $user_id;
 
-			// Store subscription data in order meta for future reference
-			$order->update_meta_data( self::SUBSCRIPTION_TYPE_META, $subscription_type );
-			$order->update_meta_data( self::SUBSCRIPTION_STATUS_META, $status );
-			$order->update_meta_data( self::SUBSCRIPTION_EXPIRES_META, $expires );
-			$order->update_meta_data( self::SUBSCRIPTION_RESOURCES_META, $resources );
-			$order->save();
+		// Check if this order was already processed for this user
+		if ( $order->get_meta( $processing_flag ) ) {
+			error_log( "Subscription already processed for order {$order->get_id()}, user {$user_id} - skipping" );
+			return;
+		}
+		$order->update_meta_data( $processing_flag, time() );
+
+		// Extract subscription data from order items instead of order meta
+		$subscription_type = $this->wc_helper->get_subscription_type_from_order( $order );
+		$status            = 'active';
+		$expires           = $this->calculate_expiry_date( $subscription_type );
+		$resources         = $subscription_type ? SubscriptionResources::get_allowed_resources( $subscription_type ) : [];
+
+		// Store subscription data in order meta for future reference
+		$order->update_meta_data( self::SUBSCRIPTION_TYPE_META, $subscription_type );
+		$order->update_meta_data( self::SUBSCRIPTION_STATUS_META, $status );
+		$order->update_meta_data( self::SUBSCRIPTION_EXPIRES_META, $expires );
+		$order->update_meta_data( self::SUBSCRIPTION_RESOURCES_META, $resources );
+		$order->save();
+
+		// Logging setup
+		$log_file = defined('LABGENZ_LOGS_DIR') ? LABGENZ_LOGS_DIR . '/subscription_upgrade.log' : __DIR__ . '/subscription_upgrade.log';
+		$log_entry = '[' . date('Y-m-d H:i:s') . "] User $user_id attempting upgrade to: $subscription_type\n";
+
+		// Get new subscription family and hierarchy
+		$type_helper = new SubscriptionTypeHelper();
+		$new_family = $type_helper::get_subscription_level($subscription_type);
+		$new_hierarchy = $type_helper::$subscription_hierarchy[$subscription_type] ?? 0;
+		$log_entry .= "New subscription family: $new_family, hierarchy: $new_hierarchy\n";
+
+		// Get all active subscriptions for user
+		$active_subscriptions = SubscriptionStorage::get_active_user_subscriptions($user_id);
+		$log_entry .= "Current subscriptions:\n";
+
+		$subscriptions_to_cancel = [];
+		$total_points_to_award = 0;
+
+		foreach ($active_subscriptions as $sub) {
+			$existing_type = $sub['type'];
+			$existing_family = $type_helper::get_subscription_level($existing_type);
+			$existing_hierarchy = $type_helper::$subscription_hierarchy[$existing_type] ?? 0;
+
+			$log_entry .= "- $existing_type (status: {$sub['status']}, family: $existing_family, hierarchy: $existing_hierarchy)\n";
+
+			// Check if we should cancel this subscription (different family + lower hierarchy)
+			if ($existing_family !== $new_family && $existing_hierarchy < $new_hierarchy) {
+				$remaining_days = SubscriptionStorage::calculate_remaining_days($sub);
+				
+				if ($remaining_days > 0) {
+					$subscriptions_to_cancel[] = $sub;
+					$total_points_to_award += $remaining_days;
+					
+					$log_entry .= "=> Will cancel $existing_type: $remaining_days days remaining = $remaining_days points\n";
+				} else {
+					$log_entry .= "=> Will cancel $existing_type: 0 days remaining = 0 points\n";
+					$subscriptions_to_cancel[] = $sub;
+				}
+			} else {
+				$log_entry .= "=> Keeping $existing_type (same family or higher/equal hierarchy)\n";
+			}
+		}
+
+		// Award points if any
+		if ($total_points_to_award > 0) {
+			$points_awarded = GamiPressDataProvider::award_points_with_log(
+				$user_id,
+				$total_points_to_award,
+				'credits',
+				'Subscription upgrade compensation for cancelled lower-tier subscriptions',
+				array(
+					'cancelled_subscriptions' => array_column($subscriptions_to_cancel, 'type'),
+					'reason' => 'subscription_upgrade_compensation',
+					'total_days_converted' => $total_points_to_award
+				)
+			);
+			
+			if ($points_awarded) {
+				$log_entry .= "✓ Awarded $total_points_to_award credits to user $user_id via GamiPressDataProvider\n";
+			} else {
+				$log_entry .= "✗ Failed to award $total_points_to_award credits to user $user_id\n";
+			}
+		}
+
+		// Cancel the lower hierarchy subscriptions from different families
+		foreach ($subscriptions_to_cancel as $sub_to_cancel) {
+			$cancelled = SubscriptionStorage::delete_subscription($user_id, $sub_to_cancel['id']);
+			
+			if ($cancelled) {
+				$log_entry .= "✓ Cancelled subscription: {$sub_to_cancel['type']}\n";
+			} else {
+				$log_entry .= "✗ Failed to cancel subscription: {$sub_to_cancel['type']}\n";
+			}
+		}
+
+		// Write full log
+		file_put_contents($log_file, $log_entry, FILE_APPEND);
+
 
 			$amount         = $order->get_total();
 			$payment_method = $order->get_payment_method_title();

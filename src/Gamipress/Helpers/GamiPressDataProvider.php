@@ -249,6 +249,7 @@ class GamiPressDataProvider {
 			'current_reward_points' => $current_reward_points,
 			'reward_points_img'     => $this->get_coins_image( $this->reward_points_type ),
 			'accent_color'          => $this->default_accent_color,
+			'shop_url'              => get_permalink( wc_get_page_id( 'shop' ) ),
 		];
 
 		return $data;
@@ -406,4 +407,138 @@ class GamiPressDataProvider {
 
 		return false;
 	}
+
+    /**
+     * Award points to a user with logging
+     * 
+     * @param int    $user_id      User ID to award points to
+     * @param int    $points       Number of points to award
+     * @param string $points_type  Points type slug (e.g., 'credits', 'points')
+     * @param string $reason       Reason for awarding points (for log)
+     * @param array  $log_meta     Additional meta data for log entry
+     * 
+     * @return bool True on success, false on failure
+     */
+    public static function award_points_with_log( $user_id, $points, $points_type = 'credits', $reason = 'Points awarded', $log_meta = array() ) {
+        
+        // Validate inputs
+        if ( empty( $user_id ) || empty( $points ) || $points <= 0 ) {
+            return false;
+        }
+        
+        // Check if user exists
+        if ( ! get_userdata( $user_id ) ) {
+            return false;
+        }
+        
+        // Check if GamiPress is active
+        if ( ! function_exists( 'gamipress_award_points_to_user' ) ) {
+            error_log( 'GamiPress plugin is not active or functions are not available' );
+            return false;
+        }
+        
+        try {
+            // Get current points balance before awarding
+            $current_points = gamipress_get_user_points( $user_id, $points_type );
+            
+            // Award points to user
+            $success = gamipress_award_points_to_user( $user_id, $points, $points_type );
+            
+            if ( $success ) {
+                // Get new points balance after awarding
+                $new_points = gamipress_get_user_points( $user_id, $points_type );
+                
+                // Create log entry
+                self::create_log_entry( $user_id, $points, $points_type, $reason, $current_points, $new_points, $log_meta );
+                
+                // Optional: Trigger custom action
+                do_action( 'gamipress_custom_points_awarded', $user_id, $points, $points_type, $reason );
+                
+                return true;
+            }
+            
+        } catch ( Exception $e ) {
+            error_log( 'Error awarding points: ' . $e->getMessage() );
+            return false;
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Create a log entry for points award
+     * 
+     * @param int    $user_id        User ID
+     * @param int    $points         Points awarded
+     * @param string $points_type    Points type slug
+     * @param string $reason         Reason for awarding
+     * @param int    $current_points Points before award
+     * @param int    $new_points     Points after award
+     * @param array  $log_meta       Additional meta data
+     */
+    private static function create_log_entry( $user_id, $points, $points_type, $reason, $current_points, $new_points, $log_meta = array() ) {
+        
+        // Prepare log data
+        $log_data = array(
+            'type'        => 'points_award', // Log type
+            'trigger'     => 'custom_award', // What triggered this
+            'user_id'     => $user_id,
+            'title'       => sprintf( '%d %s awarded', $points, $points_type ),
+            'description' => $reason,
+            'date'        => current_time( 'mysql' ),
+        );
+        
+        // Add meta data
+        $default_meta = array(
+            'points_awarded'    => $points,
+            'points_type'       => $points_type,
+            'points_before'     => $current_points,
+            'points_after'      => $new_points,
+            'awarded_by'        => 'plugin', // Or get_current_user_id() if admin
+            'timestamp'         => time(),
+        );
+        
+        $log_meta = array_merge( $default_meta, $log_meta );
+        
+        // Insert log entry
+        if ( function_exists( 'gamipress_insert_log' ) ) {
+            gamipress_insert_log( $log_data, $log_meta );
+        } else {
+            // Fallback: Log to WordPress error log
+            error_log( sprintf( 
+                'GamiPress Points Award: User %d received %d %s. Reason: %s', 
+                $user_id, 
+                $points, 
+                $points_type, 
+                $reason 
+            ) );
+        }
+    }
+    
+    /**
+     * Quick method for awarding credits to user ID 1
+     * 
+     * @param int    $points Number of credits to award
+     * @param string $reason Reason for awarding
+     * 
+     * @return bool Success status
+     */
+    public static function award_credits_to_user_one( $points, $reason = 'Credits awarded via plugin' ) {
+        return self::award_points_with_log( 1, $points, 'credits', $reason );
+    }
+    
+    /**
+     * Get user points balance
+     * 
+     * @param int    $user_id     User ID
+     * @param string $points_type Points type slug
+     * 
+     * @return int Points balance
+     */
+    public static function get_user_points_balance( $user_id, $points_type = 'credits' ) {
+        if ( function_exists( 'gamipress_get_user_points' ) ) {
+            return gamipress_get_user_points( $user_id, $points_type );
+        }
+        return 0;
+    }
 }
