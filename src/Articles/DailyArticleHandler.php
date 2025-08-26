@@ -3,6 +3,7 @@
 namespace LABGENZ_CM\Articles;
 
 use LABGENZ_CM\Subscriptions\SubscriptionHandler;
+use LABGENZ_CM\Articles\Helpers\ArticleCacheHelper;
 
 /**
  * Handles daily free article functionality.
@@ -643,7 +644,7 @@ class DailyArticleHandler {
 	 * Clear daily article cache.
 	 */
 	public function clear_cache(): void {
-		delete_option( self::OPTION_KEY );
+		ArticleCacheHelper::clear_all();
 	}
 
 	/**
