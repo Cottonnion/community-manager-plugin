@@ -155,4 +155,42 @@ class CheckoutHandler {
 			WC()->session->set( 'active_subscription', null );
 		}
 	}
+
+	/**
+	 * Hide billing fields with CSS for logged-in users who have complete billing data
+	 */
+	public static function maybe_remove_billing_fields() {
+		if ( ! is_checkout() || ! is_user_logged_in() ) {
+			return;
+		}
+		
+		$user_id = get_current_user_id();
+		$required_keys = [
+			'billing_first_name',
+			'billing_last_name',
+			'billing_address_1',
+			'billing_city',
+			'billing_state',
+			'billing_email',
+		];
+
+		$all_filled = true;
+		foreach ( $required_keys as $key ) {
+			if ( ! get_user_meta( $user_id, $key, true ) ) {
+				$all_filled = false;
+				break;
+			}
+		}
+
+		if ( $all_filled ) {
+			echo '<style>
+			.wc-block-checkout__billing-fields,
+			.wc-block-components-checkout-step#billing-fields,
+			fieldset.wc-block-checkout__billing-fields {
+				display: none !important;
+			}
+			</style>';
+		}
+	}
+
 }

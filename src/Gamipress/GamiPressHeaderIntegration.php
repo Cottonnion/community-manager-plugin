@@ -203,7 +203,7 @@ class GamiPressHeaderIntegration {
 		// Also create a namespace for better organization
 		window.GamiPressHeader = window.GamiPressHeader || {};
 		window.GamiPressHeader.data = {$json_data};
-		
+
 		// Trigger events so other scripts know the data is available
 		jQuery(document).ready(function($) {
 			$(document).trigger('gamipress:dataReady', [window.gamificationData]);
