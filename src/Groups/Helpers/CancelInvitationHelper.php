@@ -19,7 +19,7 @@ class CancelInvitationHelper {
 		$current_user_id = get_current_user_id();
 
 		// Check if current user is group admin
-		if ( ! groups_is_user_admin( $current_user_id, $group_id ) ) {
+		if ( ! groups_is_user_admin( $current_user_id, $group_id ) && ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( 'You do not have permission to cancel invitations' );
 		}
 
