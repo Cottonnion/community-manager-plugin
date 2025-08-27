@@ -183,3 +183,16 @@
 		justify-content: flex-start;
 	}
 }
+
+button.mlmmc-layout-btn {
+    background: transparent;
+    color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.mlmmc-layout-toggle {
+    display: flex;
+    gap: 15px;
+}

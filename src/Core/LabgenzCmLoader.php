@@ -111,6 +111,8 @@ class LabgenzCmLoader {
 			'articles.reviews_handler'                => \LABGENZ_CM\Articles\ReviewsHandler::class,
 			'articles.download_handler'               => \LABGENZ_CM\Articles\SingleArticleHandler::class,
 			'articles.card_display'                   => \LABGENZ_CM\Articles\ArticleCardDisplayHandler::class,
+			'articles.authors.Author_cpt'		      => \LABGENZ_CM\Articles\Authors\AuthorCPT::class,
+			'articles.authors.Author_display'          => \LABGENZ_CM\Articles\Authors\AuthorDisplayHandler::class,
 
 			'gamipress.header_integration'            => \LABGENZ_CM\Gamipress\GamiPressHeaderIntegration::class,
 			'gamipress.currency_handler'              => \LABGENZ_CM\Gamipress\GamipressCurrencyHandler::class,

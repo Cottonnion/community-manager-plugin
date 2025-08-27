@@ -75,6 +75,7 @@ class AssetsManager {
 			20
 		);
 
+
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_assets' ], 40, 1 );
 		add_action( 'wp_enqueue_scripts', [ $this, 'register_assets_to_enqueue' ], 20, 0 );
 		add_action( 'admin_init', [ $this, 'register_assets_to_enqueue' ], 20, 0 );
@@ -89,6 +90,19 @@ class AssetsManager {
 					LABGENZ_CM_URL . 'src/Public/assets/css/lab-buddypanel.css',
 					[],
 					'4.6.0'
+				);
+			},
+			1
+		);
+
+		add_action(
+			'wp_enqueue_scripts',
+			function () {
+				wp_enqueue_style(
+					'single-author-css',
+					LABGENZ_CM_URL . 'src/Public/assets/css/single-author.css',
+					[],
+					'1.0.2'
 				);
 			},
 			1
@@ -681,7 +695,7 @@ class AssetsManager {
 			[ '' ],
 			'members-widget.css',
 			[],
-			'1.1.2',
+			'1.1.3',
 			false,
 			'css'
 		);
@@ -752,7 +766,7 @@ class AssetsManager {
 			[ ' ' ],
 			'single-article.css',
 			[],
-			'1.0.8',
+			'1.0.9',
 			false,
 			'css'
 		);

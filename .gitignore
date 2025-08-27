@@ -9,6 +9,7 @@ node_modules/
 Thumbs.db
 # Ignore logs and environment files
 *.log
+error_log
 .env
 # Ignore temporary files
 /src/stubs-buddypress.php
