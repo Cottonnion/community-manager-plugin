@@ -33,6 +33,89 @@ class SubscriptionStorage {
 	}
 
 	/**
+	 * Get the highest user subscription based on a defined priority order.
+	 *
+	 * @param int $user_id User ID
+	 * @param array|null $priority_order Optional. Array of subscription types in descending priority.
+	 * @return array|null The highest priority active subscription, or null if none found.
+	 */
+	public static function get_highest_user_subscription( int $user_id, ?array $priority_order = null ): ?array {
+		$active_subscriptions = self::get_active_user_subscriptions( $user_id );
+		if ( empty( $active_subscriptions ) ) {
+			return null;
+		}
+
+		// If no priority order is given, use the first active subscription (fallback)
+		if ( empty( $priority_order ) ) {
+			return $active_subscriptions[0];
+		}
+
+		// Build a map of type => subscription
+		$subs_by_type = [];
+		foreach ( $active_subscriptions as $sub ) {
+			if ( isset( $sub['type'] ) ) {
+				$subs_by_type[ $sub['type'] ] = $sub;
+			}
+		}
+
+		// Find the highest priority subscription present
+		foreach ( $priority_order as $type ) {
+			if ( isset( $subs_by_type[ $type ] ) ) {
+				return $subs_by_type[ $type ];
+			}
+		}
+
+		// If none match the priority order, return the first active subscription
+		return $active_subscriptions[0];
+	}
+
+	/**
+	 * Get the highest user subscription name (beautified).
+	 *
+	 * @param int $user_id User ID
+	 * @param array|null $priority_order Optional. Array of subscription types in descending priority.
+	 * @return string|null Subscription name, or null if none.
+	 */
+	public static function get_highest_user_subscription_name( int $user_id, ?array $priority_order = null ): ?string {
+		$sub = self::get_highest_user_subscription( $user_id, $priority_order );
+
+		if ( empty( $sub ) || empty( $sub['type'] ) ) {
+			return null;
+		}
+
+		return self::beautify_subscription_type( $sub['type'] );
+	}
+
+
+	/**
+	 * Beautify subscription type into a readable name.
+	 *
+	 * @param string $type
+	 * @return string
+	 */
+	public static function beautify_subscription_type( string $type ): string {
+		$map = [
+			'basic'                         => 'Discovery Member',
+			'monthly-basic-subscription'    => 'Discovery Member',
+			'yearly-basic-subscription'     => 'Discovery Member',
+
+			'apprentice-monthly'            => 'Apprentice',
+			'apprentice-yearly'             => 'Apprentice',
+
+			'team-leader-monthly'           => 'Team Leader',
+			'team-leader-yearly'            => 'Team Leader',
+
+			'freedom-builder-monthly'       => 'Freedom Builder',
+			'freedom-builder-yearly'        => 'Freedom Builder',
+
+			'articles-monthly-subscription' => 'Articles',
+			'articles-annual-subscription'  => 'Articles',
+		];
+
+		return $map[ $type ] ?? ucwords( str_replace( '-', ' ', $type ) );
+	}
+
+	/**
 	 * Get active user subscriptions
 	 *
 	 * @param int $user_id User ID
