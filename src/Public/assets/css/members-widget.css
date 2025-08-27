@@ -45,11 +45,12 @@
 
 /* Profile Banner */
 .bp-profile-banner {
-  position: relative;
-  height: 250px;
-  background-color: var(--bb-primary-color);
-  background-size: cover;
-  background-position: center;
+    position: relative;
+    height: 250px;
+    background-color: var(--bb-primary-color);
+    background-size: cover;
+    background-position: center;
+    margin-bottom: 10px;
 }
 
 .bp-banner-edit {
