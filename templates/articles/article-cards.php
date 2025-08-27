@@ -18,6 +18,7 @@ if (!defined('ABSPATH')) {
  * @var array $articles - Articles data 
  * @var array $categories - Available categories for filtering
  * @var int $posts_per_page - Number of posts per page
+ * @var string $layout - Layout type (grid or list)
  * @var int $columns - Number of columns in the grid
  * @var int $excerpt_length - Maximum length of excerpts
  * @var bool $show_excerpt - Whether to show excerpts
@@ -39,7 +40,9 @@ if (!defined('ABSPATH')) {
      data-show-category="<?php echo $show_category ? 'true' : 'false'; ?>"
      data-show-rating="<?php echo $show_rating ? 'true' : 'false'; ?>"
      data-excerpt-length="<?php echo esc_attr($excerpt_length); ?>"
-     data-posts-per-page="<?php echo esc_attr($posts_per_page); ?>">
+     data-posts-per-page="<?php echo esc_attr($posts_per_page); ?>"
+     data-layout="<?php echo esc_attr($layout); ?>"
+>
 
     <?php if ($show_search || $show_filters): ?>
     <div class="mlmmc-articles-search-filter">
@@ -50,6 +53,20 @@ if (!defined('ABSPATH')) {
                 <button id="mlmmc-search-button" aria-label="<?php _e('Search', 'labgenz-community-management'); ?>">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                         <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Layout Toggle -->
+            <div class="mlmmc-layout-toggle">
+                <button id="mlmmc-grid-view" class="mlmmc-layout-btn <?php echo $layout === 'grid' ? 'active' : ''; ?>" title="<?php _e('Grid View', 'labgenz-community-management'); ?>">
+                    <svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5v-3zm8 0A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5v-3zm-8 8A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5v-3zm8 0A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5v-3z"/>
+                    </svg>
+                </button>
+                <button id="mlmmc-list-view" class="mlmmc-layout-btn <?php echo $layout === 'list' ? 'active' : ''; ?>" title="<?php _e('List View', 'labgenz-community-management'); ?>">
+                    <svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
                     </svg>
                 </button>
             </div>
@@ -193,7 +210,7 @@ if (!defined('ABSPATH')) {
             <div class="mlmmc-loading-text"><?php _e('Loading articles...', 'labgenz-community-management'); ?></div>
         </div>
         
-        <div class="mlmmc-articles-grid" style="grid-template-columns: repeat(<?php echo esc_attr($columns); ?>, 1fr);">
+        <div id="mlmmc-articles-wrapper" class="mlmmc-articles-<?php echo esc_attr($layout); ?>" <?php if ($layout === 'grid'): ?>style="grid-template-columns: repeat(<?php echo esc_attr($columns); ?>, 1fr);"<?php endif; ?>>
             <?php 
             if (!empty($articles)) {
                 foreach ($articles as $article) {
@@ -218,3 +235,40 @@ if (!defined('ABSPATH')) {
         <?php endif; ?>
     </div>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const gridBtn = document.getElementById('mlmmc-grid-view');
+    const listBtn = document.getElementById('mlmmc-list-view');
+    const articlesWrapper = document.getElementById('mlmmc-articles-wrapper');
+    const container = document.querySelector('.mlmmc-articles-container');
+    
+    if (gridBtn && listBtn && articlesWrapper && container) {
+        gridBtn.addEventListener('click', function() {
+            switchLayout('grid');
+        });
+        
+        listBtn.addEventListener('click', function() {
+            switchLayout('list');
+        });
+        
+        function switchLayout(layout) {
+            // Update button states
+            gridBtn.classList.toggle('active', layout === 'grid');
+            listBtn.classList.toggle('active', layout === 'list');
+            
+            // Update wrapper classes and styles
+            articlesWrapper.className = 'mlmmc-articles-' + layout;
+            
+            if (layout === 'grid') {
+                const columns = <?php echo esc_js($columns); ?>;
+                articlesWrapper.style.gridTemplateColumns = 'repeat(' + columns + ', 1fr)';
+            } else {
+                articlesWrapper.style.gridTemplateColumns = '';
+            }
+
+            // ✅ Update container data attribute
+            container.setAttribute('data-layout', layout);
+        }
+    }
+});
+</script>

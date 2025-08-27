@@ -148,6 +148,7 @@
 
 		// Get container data attributes
 		const $container    = $( '.mlmmc-articles-container' );
+		const layout 	    = $container.data( 'layout' ) || 'grid';
 		const showExcerpt   = $container.data( 'show-excerpt' );
 		const showAuthor    = $container.data( 'show-author' );
 		const showDate      = $container.data( 'show-date' );
@@ -169,6 +170,7 @@
 					authors: authors,
 					ratings: ratings,
 					vid_only: videoOnly, // Pass video-only filter
+					layout: layout,
 					page: window.currentPage,
 					posts_per_page: postsPerPage,
 					show_excerpt: showExcerpt ? 'true' : 'false',
@@ -179,77 +181,57 @@
 					excerpt_length: excerptLength,
 					cache_buster: new Date().getTime() // Add cache buster timestamp
 				},
-				success: function (response) {
-					// Update authors based on current filters
-					if (response.data.filtered_authors && typeof window.updateAuthorsFilter === 'function') {
-						window.updateAuthorsFilter( response.data.filtered_authors );
-					}
+success: function (response) {
+    $('.mlmmc-articles-loading').fadeOut(200);
+    isLoading = false;
 
-					// Update categories based on current filters
-					if (response.data.filtered_categories && typeof window.updateCategoriesFilter === 'function') {
-						window.updateCategoriesFilter( response.data.filtered_categories );
-					}
+    if (response.success) {
+        const $wrapper  = $('#mlmmc-articles-wrapper'); // ✅ works for grid or list
+        const $loadMore = $('#mlmmc-load-more');
 
-					// Update ratings based on current filters
-					if (response.data.filtered_ratings && typeof window.updateRatingsFilter === 'function') {
-						window.updateRatingsFilter( response.data.filtered_ratings );
-					}
-					$( '.mlmmc-articles-loading' ).fadeOut( 200 );
-					$( '.mlmmc-articles-grid' )
-					isLoading = false;
+        // Remove old no-results
+        $wrapper.find('.mlmmc-articles-no-results').remove();
 
-					if (response.success) {
+        // Update content
+        if (response.data.html) {
+            if (append) {
+                $wrapper.append(response.data.html);
+            } else {
+                $wrapper.html(response.data.html);
+            }
+        } else {
+            $wrapper.html('<div class="mlmmc-articles-no-results">No articles found.</div>');
+        }
 
-						const $grid     = $( '.mlmmc-articles-grid' );
-						const $loadMore = $( '#mlmmc-load-more' );
+        // Reset opacity
+        $wrapper.css('opacity', '1');
 
-						// Check if there's already a "no articles found" message and remove it
-						$grid.find( '.mlmmc-articles-no-results' ).remove();
+        // Update counter
+        if (response.data.found_posts !== undefined) {
+            const count = parseInt(response.data.found_posts);
+            const text  = count === 1 ? '1 article' : count + ' articles';
+            $('#mlmmc-total-count').text(text);
+        }
 
-						// Clear the grid content before repopulating it
-						// if(append == true) {
-						// $grid.empty();
-						// }
+        // Update load more
+        if (response.data.max_pages > 1) {
+            $loadMore.data('max-pages', response.data.max_pages);
 
-						// Update grid content
-						if (response.data.html) {
-							if (append) {
-								$grid.append( response.data.html );
-							} else {
-								$grid.html( response.data.html );
-							}
-						} else {
-							$grid.html( '<div class="mlmmc-articles-no-results">No articles found.</div>' );
-						}
-
-						// Restore grid opacity
-						$grid.css( 'opacity', '1' );
-
-						// Update the articles counter
-						if (response.data.found_posts !== undefined) {
-							const count = parseInt( response.data.found_posts );
-							const text  = count === 1 ? '1 article' : count + ' articles';
-							$( '#mlmmc-total-count' ).text( text );
-						}
-
-						// Update load more button
-						if (response.data.max_pages > 1) {
-							$loadMore.data( 'max-pages', response.data.max_pages );
-
-							if (window.currentPage < response.data.max_pages) {
-								$loadMore.show();
-							} else {
-								$loadMore.hide();
-							}
-						} else {
-							$loadMore.hide();
-						}
-
-					} else {
-						// Clear any previous content and show error
-						$( '.mlmmc-articles-grid' ).empty().html( '<div class="mlmmc-articles-error">Error loading articles. Please try again.</div>' ).css( 'opacity', '1' );
-					}
-				},
+            if (window.currentPage < response.data.max_pages) {
+                $loadMore.show();
+            } else {
+                $loadMore.hide();
+            }
+        } else {
+            $loadMore.hide();
+        }
+    } else {
+        $('#mlmmc-articles-wrapper')
+            .empty()
+            .html('<div class="mlmmc-articles-error">Error loading articles. Please try again.</div>')
+            .css('opacity', '1');
+    }
+},
 				error: function () {
 					$( '.mlmmc-articles-loading' ).fadeOut( 200 );
 					// Clear any previous content and show error

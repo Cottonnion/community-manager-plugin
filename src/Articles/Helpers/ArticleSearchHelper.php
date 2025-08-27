@@ -370,6 +370,7 @@ class ArticleSearchHelper {
 			'page' => isset( $_POST['page'] ) ? intval( $_POST['page'] ) : 1,
 			'posts_per_page' => isset( $_POST['posts_per_page'] ) ? intval( $_POST['posts_per_page'] ) : 12,
 			'show_excerpt' => isset( $_POST['show_excerpt'] ) ? ( $_POST['show_excerpt'] === 'true' ) : true,
+			'layout' => isset( $_POST['layout'] ) && in_array( $_POST['layout'], ['grid', 'list'] ) ? $_POST['layout'] : 'grid',
 			'show_author' => isset( $_POST['show_author'] ) ? ( $_POST['show_author'] === 'true' ) : true,
 			'show_date' => isset( $_POST['show_date'] ) ? ( $_POST['show_date'] === 'true' ) : true,
 			'show_category' => isset( $_POST['show_category'] ) ? ( $_POST['show_category'] === 'true' ) : true,
@@ -379,7 +380,8 @@ class ArticleSearchHelper {
 
 		// Try to get from cache first
 		$cache_key = self::get_search_cache_key($search_params);
-		$cached_result = ArticleCacheHelper::get($cache_key);
+		$cached_result = false;
+		// $cached_result = ArticleCacheHelper::get($cache_key);
 		
 		if (false !== $cached_result) {
 			// Add cache buster for frontend
@@ -397,6 +399,7 @@ class ArticleSearchHelper {
 		$page = $search_params['page'];
 		$posts_per_page = $search_params['posts_per_page'];
 		$show_excerpt = $search_params['show_excerpt'];
+		$layout = $search_params['layout'];
 		$show_author = $search_params['show_author'];
 		$show_date = $search_params['show_date'];
 		$show_category = $search_params['show_category'];

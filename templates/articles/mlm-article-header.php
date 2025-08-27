@@ -74,8 +74,8 @@ $article_title = get_the_title($post_id);
                     </div>
 
                 </div>
+                <?php include '/reviews/article-average-rating.php'; // Include average rating template ?>
             </div>
-            <?php include '/reviews/article-average-rating.php'; // Include average rating template ?>
         </div>
     </div>
     <?php do_action('labgenz_cm_after_article_header', $post_id); ?>

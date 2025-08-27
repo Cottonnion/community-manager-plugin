@@ -82,13 +82,13 @@ if (!empty($args['class'])) {
             ?>
         </div>
         
-        <?php if ($args['show_count']) : ?>
-        <span class="article-rating-average-count"><?php 
-            printf(
-                _n('(%d rating)', '(%d ratings)', $rating_count, 'labgenz-cm'),
-                $rating_count
-            ); 
-        ?></span>
+        <?php if ($args['show_count'] && $rating_count > 10) : ?>
+            <span class="article-rating-average-count"><?php 
+                printf(
+                    _n('(%d rating)', '(%d ratings)', $rating_count, 'labgenz-cm'),
+                    $rating_count
+                ); 
+            ?></span>
         <?php endif; ?>
     </div>
     <?php endif; ?>

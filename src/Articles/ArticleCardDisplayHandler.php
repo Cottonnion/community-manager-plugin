@@ -42,9 +42,22 @@ class ArticleCardDisplayHandler {
 	 * Initialize class hooks.
 	 */
 	private function init_hooks(): void {
+		add_action('wp_head', function() {
+			?>
+				<style>
+					.container {
+						max-width: 1450px !important;
+						/* margin-left: auto;
+						margin-right: auto;
+						width: 100%; */
+					}
+				</style>
+			<?php
+		});
+
 		add_shortcode( self::SHORTCODE, [ $this, 'render_articles_shortcode' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'register_assets' ] );
-
+		
 		// AJAX handlers
 		add_action( 'wp_ajax_' . self::AJAX_ACTION_SEARCH, [ $this, 'ajax_search_articles' ] );
 		add_action( 'wp_ajax_nopriv_' . self::AJAX_ACTION_SEARCH, [ $this, 'ajax_search_articles' ] );
@@ -102,7 +115,7 @@ class ArticleCardDisplayHandler {
 			self::ASSET_HANDLE_CSS,
 			LABGENZ_CM_URL . 'src/Articles/assets/css/article-cards.css',
 			[ self::ASSET_HANDLE_CSS . '-filter-common' ],
-			'1.1.0'
+			'1.1.7'
 		);
 
 		// Register category filter JS
@@ -137,7 +150,7 @@ class ArticleCardDisplayHandler {
 			self::ASSET_HANDLE_JS,
 			LABGENZ_CM_URL . 'src/Articles/assets/js/article-cards.js',
 			[ 'jquery', self::ASSET_HANDLE_JS . '-category', self::ASSET_HANDLE_JS . '-author' ],
-			'1.2.5',
+			'1.2.7',
 			true
 		);
 	}
@@ -187,7 +200,8 @@ public function render_articles_shortcode( array $atts = [] ): string {
 			'author'         => '',
 			'orderby'        => 'date',
 			'order'          => 'DESC',
-			'columns'        => 3,
+			'columns'        => 4,
+			'layout'         => 'list',
 			'show_excerpt'   => 'true',
 			'excerpt_length' => 20,
 			'show_author'    => 'true',
@@ -204,6 +218,7 @@ public function render_articles_shortcode( array $atts = [] ): string {
 	$posts_per_page = intval( $atts['posts_per_page'] );
 	$columns        = intval( $atts['columns'] );
 	$excerpt_length = intval( $atts['excerpt_length'] );
+	$layout         = in_array( $atts['layout'], ['grid', 'list'] ) ? $atts['layout'] : 'grid';
 	$show_excerpt   = $atts['show_excerpt'] === 'true';
 	$show_author    = $atts['show_author'] === 'true';
 	$show_date      = $atts['show_date'] === 'true';
