@@ -247,10 +247,10 @@ class ArticleCacheHelper {
      */
     public static function init_hooks(): void {
         // Clear cache when articles are saved/updated/deleted
-        add_action( 'save_post_mlmmc_artiicle', [ __CLASS__, 'invalidate_on_post_change' ], 10, 2 );
-        add_action( 'delete_post', [ __CLASS__, 'invalidate_on_post_change' ], 10, 2 );
-        add_action( 'wp_trash_post', [ __CLASS__, 'invalidate_on_post_change' ], 10, 2 );
-        add_action( 'untrash_post', [ __CLASS__, 'invalidate_on_post_change' ], 10, 2 );
+        // add_action( 'save_post_mlmmc_artiicle', [ __CLASS__, 'invalidate_on_post_change' ], 10, 2 );
+        // add_action( 'delete_post', [ __CLASS__, 'invalidate_on_post_change' ], 10, 2 );
+        // add_action( 'wp_trash_post', [ __CLASS__, 'invalidate_on_post_change' ], 10, 2 );
+        // add_action( 'untrash_post', [ __CLASS__, 'invalidate_on_post_change' ], 10, 2 );
         
         // Clear cache when post meta is updated
         // add_action( 'updated_post_meta', [ __CLASS__, 'invalidate_on_meta_change' ], 10, 4 );
