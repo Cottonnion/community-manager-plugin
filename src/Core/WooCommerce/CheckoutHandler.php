@@ -185,6 +185,8 @@ class CheckoutHandler {
 		if ( $all_filled ) {
 			echo '<style>
 			.wc-block-checkout__billing-fields,
+			.wp-block-woocommerce-checkout-shipping-method-block,
+			.wp-block-woocommerce-checkout-pickup-options-block,
 			.wc-block-components-checkout-step#billing-fields,
 			fieldset.wc-block-checkout__billing-fields {
 				display: none !important;
