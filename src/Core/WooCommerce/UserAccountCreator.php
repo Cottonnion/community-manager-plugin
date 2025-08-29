@@ -77,7 +77,9 @@ class UserAccountCreator {
 			$subscription_handler->apply_subscription_to_user_by_id( $existing_user->ID, $order );
 			
 			// Auto-login the existing user
-			UserAccountManager::auto_login_user( $existing_user->ID );
+			// This should ONLY be used in development environments to avoid security issues
+			// Should NEVER auto login existing users in production - it causes accounts hijacking
+			// UserAccountManager::auto_login_user( $existing_user->ID );
 			return;
 		}
 
