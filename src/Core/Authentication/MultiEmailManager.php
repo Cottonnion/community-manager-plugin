@@ -11,7 +11,7 @@ namespace LABGENZ_CM\Core\Authentication;
 class MultiEmailManager {
     
     private $table_name;
-    private $max_aliases_per_user = 5;
+    private $max_aliases_per_user = 2;
     private $token_expiry = 1800; // 30 minutes
     
     public function __construct() {
@@ -96,7 +96,7 @@ class MultiEmailManager {
         
         // Rate limiting check
         if ($this->is_rate_limited($user_id)) {
-            wp_send_json_error('Too many attempts. Please wait before adding another alias.');
+            wp_send_json_error('Too many attempts. Please wait before adding another email.');
         }
         
         $result = $this->create_alias_with_verification($user_id, $email);
@@ -105,7 +105,7 @@ class MultiEmailManager {
             wp_send_json_error($result->get_error_message());
         }
         
-        wp_send_json_success('Verification email sent. Please check your inbox.');
+        wp_send_json_success('Verification email sent. Please check your email inbox.');
     }
     
     /**
@@ -134,7 +134,7 @@ class MultiEmailManager {
         }
 
         // Redirect to a success page or dashboard
-        wp_safe_redirect(home_url('/email-verified/'));
+        wp_safe_redirect(home_url('/my-account/edit-account/'));
         exit;
     }
  
@@ -161,52 +161,56 @@ class MultiEmailManager {
             wp_send_json_error($result->get_error_message());
         }
         
-        wp_send_json_success('Email alias removed');
+        wp_send_json_success('Email removed');
     }
     
     /**
-     * Validate alias addition security
+     * Validate adding a new email alias.
+     *
+     * Checks if the email is already registered, already an alias, matches the user's primary email,
+     * exceeds the alias limit, or is a disposable email.
+     *
+     * @param int    $user_id User ID of the main account.
+     * @param string $email   Email address to validate.
+     *
+     * @return void Sends JSON error and exits on failure; returns nothing on success.
      */
-    private function validate_alias_addition($user_id, $email) {
+    private function validate_alias_addition($user_id, $email): void {
         global $wpdb;
-        
+
         // Check if email already exists as a WordPress user
         if (email_exists($email)) {
-            return new \WP_Error('email_exists', 'This email is already registered as a main account (roma)');
+            wp_send_json_error('This email is already registered as a main account (roma)');
         }
-        
+
         // Check if email already exists as an alias
         $existing = $wpdb->get_var($wpdb->prepare(
             "SELECT id FROM {$this->table_name} WHERE alias_email = %s",
             $email
         ));
-        
         if ($existing) {
-            return new \WP_Error('alias_exists', 'This email is already used as an alias (route)');
+            wp_send_json_error('This email is already used as an alias (route)');
         }
-        
+
         // Check user's primary email
         $user = get_user_by('ID', $user_id);
         if ($user && $user->user_email === $email) {
-            return new \WP_Error('own_primary_email', 'Cannot add your primary email as an alias');
+            wp_send_json_error('Cannot add your primary email as an alias');
         }
-        
+
         // Check alias limit
         $alias_count = $wpdb->get_var($wpdb->prepare(
             "SELECT COUNT(*) FROM {$this->table_name} WHERE user_id = %d",
             $user_id
         ));
-        
         if ($alias_count >= $this->max_aliases_per_user) {
-            return new \WP_Error('alias_limit', "Maximum {$this->max_aliases_per_user} aliases allowed per account");
+            wp_send_json_error("Maximum {$this->max_aliases_per_user} aliases allowed per account");
         }
-        
+
         // Block disposable email domains
         if ($this->is_disposable_email($email)) {
-            return new \WP_Error('disposable_email', 'Temporary email services are not allowed');
+            wp_send_json_error('Temporary email services are not allowed');
         }
-        
-        return true;
     }
     
     /**
@@ -411,7 +415,7 @@ class MultiEmailManager {
         $this->log_alias_activity($user_id, 'alias_removed', $email);
         return true;
     }
-    
+
     /**
      * Check for disposable email domains
      */
