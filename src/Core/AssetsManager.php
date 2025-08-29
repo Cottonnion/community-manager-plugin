@@ -114,14 +114,23 @@ class AssetsManager {
 					'buddypanel-controller-js-file',
 					get_stylesheet_directory_uri() . '/template-parts/buddypanel/buddypanel-controller.js',
 					array('jquery'),
-					'1.3.9',
+					'1.4.0	',
 					true
 				);
+
 				wp_enqueue_script(
 					'lab-commons',
 					LABGENZ_CM_URL . 'src/Public/assets/js/commons.js',
 					[ 'jquery' ],
 					'1.0.6',
+					true
+				);
+
+				wp_enqueue_script(
+					'lab-toolip-global',
+					LABGENZ_CM_URL . 'src/Public/assets/js/global-toolip.js',
+					[ 'jquery' ],
+					'1.0.1',
 					true
 				);
 		}, 20 );
@@ -533,7 +542,7 @@ class AssetsManager {
 			[ 'group_single' ],
 			'lab-group-management.css',
 			[],
-			'1.7.2',
+			'1.7.32',
 			false,
 			'css'
 		);
@@ -543,7 +552,7 @@ class AssetsManager {
 			[ 'group_single' ],
 			'lab-group-management.js',
 			[ 'jquery', 'xlsx-js' ],
-			'2.7.3',
+			'2.7.4',
 			true,
 			'js',
 			[
@@ -659,7 +668,7 @@ class AssetsManager {
 			[ '' ],
 			'alias-emails.js',
 			[ 'jquery' ],
-			'1.0.9',
+			'1.1.3',
 			true,
 			'js',
 			[
@@ -695,7 +704,7 @@ class AssetsManager {
 			[ '' ],
 			'members-widget.css',
 			[],
-			'1.1.3',
+			'1.1.7',
 			false,
 			'css'
 		);
@@ -705,7 +714,7 @@ class AssetsManager {
 			[ '' ],
 			'alias-emails.css',
 			[],
-			'1.1.7',
+			'1.1.9',
 			false,
 			'css'
 		);
@@ -755,7 +764,7 @@ class AssetsManager {
 			[ '' ],
 			'lab-weekly-article-page.css',
 			[],
-			'1.0.1',
+			'1.0.2',
 			false,
 			'css'
 		);
