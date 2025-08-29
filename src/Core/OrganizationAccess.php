@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace LABGENZ_CM\Core;
 
+use LABGENZ_CM\Groups\Helpers\NotificationHelper;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -38,6 +40,11 @@ class OrganizationAccess {
 	const STATUS_META_KEY = '_labgenz_org_access_status';
 
 	/**
+	 * User meta key for storing rejection timestamp
+	 */
+	const REJECTED_AT_META_KEY = '_labgenz_org_access_rejected_at';
+	
+	/**
 	 * Request status constants
 	 */
 	const STATUS_PENDING   = 'pending';
@@ -57,97 +64,164 @@ class OrganizationAccess {
 	 */
 	public function init(): void {
 		add_action( 'init', [ $this, 'handle_create_group_access' ] );
-
-		// ADD THESE TWO LINES:
-		add_filter( 'bp_notifications_get_notifications_for_user', [ $this, 'format_organization_approval_notification' ], 10, 7 );
-		add_filter( 'bp_notifications_get_registered_components', [ $this, 'register_notification_component' ] );
-
 		add_action( 'wp_ajax_labgenz_submit_org_access_request', [ $this, 'handle_form_submission' ] );
+		
+		// Initialize notification system
+		$this->init_notification_system();
 	}
 
-	// 2. ADD THIS NEW METHOD - Register the custom component
-	public function register_notification_component( $components ) {
-		if ( ! is_array( $components ) ) {
-			$components = [];
-		}
-		$components['labgenz_community'] = 'labgenz_community';
-		return $components;
+	/**
+	 * Initialize the notification system with custom types
+	 *
+	 * @return void
+	 */
+	private function init_notification_system(): void {
+		// Register custom notification types for organization access
+		NotificationHelper::register_notification_type('org_access_approved', [
+			'title' => 'Organization Access Approved',
+			'description' => 'Organization access request has been approved',
+			'component' => 'labgenz_community',
+			'template' => 'Your organization access request for "<strong>%s</strong>" has been approved! Check your email for instructions.',
+			'link_callback' => [ $this, 'get_approval_notification_link' ],
+			'data_formatter' => [ $this, 'format_approval_notification' ]
+		]);
+
+		NotificationHelper::register_notification_type('org_access_rejected', [
+			'title' => 'Organization Access Rejected',
+			'description' => 'Organization access request has been rejected',
+			'component' => 'labgenz_community',
+			'template' => 'Your organization access request for "<strong>%s</strong>" has been rejected. Check your email for details.',
+			'link_callback' => [ $this, 'get_rejection_notification_link' ],
+			'data_formatter' => [ $this, 'format_rejection_notification' ]
+		]);
+
+		// Register the component with BuddyPress
+		add_filter('bp_notifications_get_registered_components', function ($components) {
+			if (!is_array($components)) $components = [];
+			$components['labgenz_community'] = 'labgenz_community';
+			return $components;
+		});
+
+		// Register the notification formatter
+		add_filter('bp_notifications_get_notifications_for_user', 
+			[ 'LABGENZ_CM\Groups\Helpers\NotificationHelper', 'format_notification' ], 10, 7);
+
+		// Initialize all notification types
+		NotificationHelper::register_all_types();
 	}
 
-	// 3. REPLACE YOUR send_buddyboss_notification METHOD with this working version:
-	private function send_buddyboss_notification( int $user_id, array $request_data, string $create_group_url, string $admin_note ): void {
-		global $wpdb;
+	/**
+	 * Custom approval notification formatter
+	 *
+	 * @param int $item_id
+	 * @param int $secondary_item_id
+	 * @param int $total_items
+	 * @param string $format
+	 * @return string|array
+	 */
+	public function format_approval_notification(int $item_id, int $secondary_item_id, int $total_items, string $format) {
+		$user_id = $item_id;
+		$request_data = get_user_meta($user_id, self::REQUEST_DATA_META_KEY, true);
+		$organization_name = $request_data['organization_name'] ?? 'your organization';
 
-		$component = 'labgenz_community';
-		$action    = 'organization_access_approved';
-
-		// Insert notification directly into database (this method works)
-		$table_name = $wpdb->prefix . 'bp_notifications';
-
-		$result = $wpdb->insert(
-			$table_name,
-			[
-				'user_id'           => $user_id,
-				'item_id'           => 0,
-				'secondary_item_id' => 0,
-				'component_name'    => $component,
-				'component_action'  => $action,
-				'date_notified'     => current_time( 'mysql' ),
-				'is_new'            => 1,
-			]
-		);
-
-		if ( $result && function_exists( 'bp_notifications_update_meta' ) ) {
-			$notification_id = $wpdb->insert_id;
-
-			// Add custom meta data
-			bp_notifications_update_meta( $notification_id, 'organization_name', $request_data['organization_name'] );
-			bp_notifications_update_meta( $notification_id, 'create_group_url', $create_group_url );
-			if ( $admin_note ) {
-				bp_notifications_update_meta( $notification_id, 'admin_note', $admin_note );
-			}
-		}
-	}
-
-	// 4. UPDATE YOUR format_organization_approval_notification METHOD:
-	public function format_organization_approval_notification( $content, $item_id, $secondary_item_id, $action_item_count, $component_action, $component_name, $notification_id ) {
-		// Only handle our custom notifications
-		if ( 'labgenz_community' !== $component_name || 'organization_access_approved' !== $component_action ) {
-			return $content;
-		}
-
-		$organization_name = '';
-		$create_group_url  = '';
-
-		if ( function_exists( 'bp_notifications_get_meta' ) ) {
-			$organization_name = bp_notifications_get_meta( $notification_id, 'organization_name', true );
-			$create_group_url  = bp_notifications_get_meta( $notification_id, 'create_group_url', true );
-		}
-
-		if ( $action_item_count > 1 ) {
+		if ($total_items > 1) {
 			$text = sprintf(
-				__( 'You have %d approved organization access requests', 'labgenz-community-management' ),
-				$action_item_count
+				__('You have %d approved organization access requests', 'labgenz-community-management'),
+				$total_items
 			);
 		} else {
 			$text = sprintf(
-				__( 'Your organization access request for "%s" has been approved! Click here to create your group.', 'labgenz-community-management' ),
-				$organization_name ?: __( 'your organization', 'labgenz-community-management' )
+				__('Your organization access request for "%s" has been approved! Check your email for instructions.', 'labgenz-community-management'),
+				$organization_name
 			);
 		}
 
-		// Add link if available
-		if ( $create_group_url ) {
-			$content = sprintf(
-				'<a href="%s">%s</a>',
-				esc_url( $create_group_url ),
-				$text
+		if ($format === 'array') {
+			return [
+				'text' => $text,
+				'link' => $this->get_approval_notification_link($item_id, $secondary_item_id),
+			];
+		}
+
+		return $text;
+	}
+
+	/**
+	 * Custom rejection notification formatter
+	 *
+	 * @param int $item_id
+	 * @param int $secondary_item_id
+	 * @param int $total_items
+	 * @param string $format
+	 * @return string|array
+	 */
+	public function format_rejection_notification(int $item_id, int $secondary_item_id, int $total_items, string $format) {
+		$user_id = $item_id;
+		$request_data = get_user_meta($user_id, self::REQUEST_DATA_META_KEY, true);
+		$organization_name = $request_data['organization_name'] ?? 'your organization';
+
+		if ($total_items > 1) {
+			$text = sprintf(
+				__('You have %d organization access request updates', 'labgenz-community-management'),
+				$total_items
 			);
 		} else {
-			$content = $text;
+			$text = sprintf(
+				__('Your organization access request for "%s" has been rejected.', 'labgenz-community-management'),
+				$organization_name
+			);
 		}
 
-		return $content;
+		if ($format === 'array') {
+			return [
+				'text' => $text,
+				'link' => $this->get_rejection_notification_link($item_id, $secondary_item_id),
+			];
+		}
+
+		return $text;
+	}
+
+	/**
+	 * Get approval notification link
+	 *
+	 * @param int $item_id
+	 * @param int $secondary_item_id
+	 * @return string
+	 */
+	public function get_approval_notification_link(int $item_id, int $secondary_item_id): string {
+		$user_id = $item_id;
+		$user = get_userdata($user_id);
+		
+		if (!$user) {
+			return home_url();
+		}
+
+		$token_data = get_user_meta($user_id, self::TOKEN_META_KEY, true);
+		
+		if ($token_data && isset($token_data['token'])) {
+			return add_query_arg([
+				'token' => $token_data['token'],
+				'user_email' => urlencode($user->user_email),
+			], home_url('/groups/create/step/group-details/'));
+		}
+
+		return home_url('/groups/create/step/group-details/');
+	}
+
+	/**
+	 * Get rejection notification link
+	 *
+	 * @param int $item_id
+	 * @param int $secondary_item_id
+	 * @return string
+	 */
+	public function get_rejection_notification_link(int $item_id, int $secondary_item_id): string {
+		// Default to notifications page or contact page
+		if (function_exists('bp_get_notifications_slug')) {
+			return home_url(trailingslashit(bp_get_notifications_slug()));
+		}
+		return home_url('/contact/');
 	}
 
 	/**
@@ -176,6 +250,27 @@ class OrganizationAccess {
 			if ( $current_status === self::STATUS_PENDING ) {
 				wp_send_json_error( [ 'message' => __( 'You already have a pending organization access request', 'labgenz-community-management' ) ], 400 );
 				return;
+			}
+
+			// Block new request if rejected within last 7 days
+			if ( $current_status === self::STATUS_REJECTED ) {
+				$rejected_at = get_user_meta( $user_id, self::REJECTED_AT_META_KEY, true );
+				if ( $rejected_at ) {
+					$rejected_timestamp = strtotime( $rejected_at );
+					$now = time();
+					$wait_seconds = 7 * 24 * 60 * 60;
+					if ( ( $now - $rejected_timestamp ) < $wait_seconds ) {
+						$remaining = $wait_seconds - ( $now - $rejected_timestamp );
+						$days = ceil( $remaining / ( 24 * 60 * 60 ) );
+						wp_send_json_error( [
+							'message' => sprintf(
+								__( 'You must wait %d more day(s) before submitting another organization access request.', 'labgenz-community-management' ),
+								$days
+							)
+						], 400 );
+						return;
+					}
+				}
 			}
 
 			// Sanitize form data
@@ -372,6 +467,19 @@ class OrganizationAccess {
 		// Send approval email
 		$this->send_approval_email( $user_id, $request_data, $token, $admin_note );
 
+		// Send BuddyPress notification using NotificationHelper
+		NotificationHelper::send_notification(
+			'org_access_approved',
+			$user_id,
+			$user_id,
+			$user_id, // Use user_id as secondary for this case
+			[
+				'organization_name' => $request_data['organization_name'],
+				'admin_note' => $admin_note,
+				'token' => $token
+			]
+		);
+
 		return true;
 	}
 
@@ -386,9 +494,22 @@ class OrganizationAccess {
 	private function reject_request( int $user_id, array $request_data, string $admin_note ): bool {
 		// Update status
 		update_user_meta( $user_id, self::STATUS_META_KEY, self::STATUS_REJECTED );
+		update_user_meta( $user_id, self::REJECTED_AT_META_KEY, current_time( 'mysql' ) );
 
 		// Send rejection email
 		$this->send_rejection_email( $user_id, $request_data, $admin_note );
+
+		// Send BuddyPress notification using NotificationHelper
+		NotificationHelper::send_notification(
+			'org_access_rejected',
+			$user_id,
+			$user_id,
+			$user_id, // Use user_id as secondary for this case
+			[
+				'organization_name' => $request_data['organization_name'],
+				'admin_note' => $admin_note
+			]
+		);
 
 		return true;
 	}
@@ -406,7 +527,7 @@ class OrganizationAccess {
 	}
 
 	/**
-	 * Send approval email and BuddyBoss notification
+	 * Send approval email
 	 *
 	 * @param int    $user_id User ID
 	 * @param array  $request_data Request data
@@ -444,11 +565,7 @@ class OrganizationAccess {
 
 		// Send email
 		wp_mail( $user->user_email, $subject, $message );
-
-		// Send BuddyBoss notification
-		$this->send_buddyboss_notification( $user_id, $request_data, $create_group_url, $admin_note );
 	}
-
 
 	/**
 	 * Send rejection email

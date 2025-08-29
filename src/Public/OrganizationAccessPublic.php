@@ -66,7 +66,7 @@ class OrganizationAccessPublic {
 			'labgenz-org-access-public',
 			LABGENZ_CM_URL . 'src/Public/assets/js/organization-access.js',
 			[ 'jquery' ],
-			'1.0.3',
+			'1.0.4',
 			true
 		);
 
@@ -84,6 +84,7 @@ class OrganizationAccessPublic {
 				'ajax_url'          => admin_url( 'admin-ajax.php' ),
 				'nonce'             => wp_create_nonce( 'labgenz_org_access_nonce' ),
 				'is_logged_in'      => is_user_logged_in(),
+				'is_user_admin'     => current_user_can( 'manage_options' ),
 				'user_status'       => is_user_logged_in() ? $this->org_access->get_user_request_status( get_current_user_id() ) : null,
 				'user_request_info' => is_user_logged_in() ? $this->get_user_request_info() : null,
 				'strings'           => [
