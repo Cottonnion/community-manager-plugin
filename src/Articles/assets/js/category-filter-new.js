@@ -11,8 +11,6 @@
      * Initialize the category filter
      */
     function init() {
-        console.log('Category filter initialized');
-        
         // Fetch categories initially
         // fetchCategories();
         
@@ -134,7 +132,6 @@
      */
     function updateCategoriesFilter(filteredCategories) {
         if (!filteredCategories || !filteredCategories.length) {
-            // If no categories match the current filter, show all categories
             $('.mlmmc-checkbox-option').show();
             return;
         }
@@ -152,7 +149,7 @@
                 $(this).show();
                 
                 // Update the count if provided
-                const countSpan = $(this).find('.category-count');
+                const countSpan = $(this).find('.mlmmc-category-count');    
                 if (countSpan.length) {
                     const categoryData = filteredCategories.find(c => c.name === categoryName);
                     if (categoryData && categoryData.count !== undefined) {
@@ -181,8 +178,6 @@
      */
     function updateSelectedCategoriesUI() {
         const $container = $('.mlmmc-selected-categories');
-        
-        console.log('MLMMC Debug - Updating selected categories:', selectedCategories);
         
         if (selectedCategories.length === 0) {
             $container.empty().hide();
@@ -260,7 +255,6 @@
      */
     function fetchCategories() {
         if (typeof mlmmcArticlesData === 'undefined') {
-            console.error('mlmmcArticlesData is not defined');
             return;
         }
         
@@ -275,11 +269,9 @@
                 if (response.success && response.data && response.data.categories) {
                     populateCategoryDropdown(response.data.categories);
                 } else {
-                    console.error('Failed to fetch categories:', response);
                 }
             },
             error: function(xhr, status, error) {
-                console.error('AJAX error:', error);
             }
         });
     }

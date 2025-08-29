@@ -147,33 +147,53 @@
             const authorName = author.name || author;
             const authorCount = author.count || 0;
             const isSelected = selectedAuthors.includes(authorName);
+            
+            // Properly escape the author name for HTML attributes
+            const escapedAuthorName = authorName.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+            
             html += `
-                <div class="mlmmc-author-option ${isSelected ? 'selected' : ''} mlmmc-checkbox-option" data-author="${authorName}">
+                <div class="mlmmc-author-option ${isSelected ? 'selected' : ''} mlmmc-checkbox-option" data-author="${escapedAuthorName}">
                     <label>    
-                        <input type="checkbox" value="${authorName}" ${isSelected ? 'checked' : ''}>
+                        <input type="checkbox" value="${escapedAuthorName}">
                         ${authorName}
                         <span class="author-count">(${authorCount})</span>
                     </label>        
                 </div>
             `;
+            
+            // Set checked state after HTML is inserted (safer approach)
+            if (isSelected) {
+                // We'll set this after the HTML is inserted
+            }
         });
         
         $('.mlmmc-author-options').html(html);
         
+        // Set checked state for selected authors after HTML insertion
+        authors.forEach(function(author) {
+            const authorName = author.name || author;
+            const isSelected = selectedAuthors.includes(authorName);
+            if (isSelected) {
+                $(`.mlmmc-author-option input[value="${authorName.replace(/"/g, '&quot;').replace(/'/g, '&#39;')}"]`).prop('checked', true);
+            }
+        });
+        
         // Add event listeners to checkboxes
         $('.mlmmc-author-option input').on('change', function() {
             const author = $(this).val();
+            // Decode the escaped author name back to original
+            const decodedAuthor = author.replace(/&quot;/g, '"').replace(/&#39;/g, "'");
             const $option = $(this).closest('.mlmmc-author-option');
             
             if ($(this).is(':checked')) {
                 $option.addClass('selected');
-                if (!selectedAuthors.includes(author)) {
-                    selectedAuthors.push(author);
+                if (!selectedAuthors.includes(decodedAuthor)) {
+                    selectedAuthors.push(decodedAuthor);
                     updateSelectedAuthorsUI();
                 }
             } else {
                 $option.removeClass('selected');
-                selectedAuthors = selectedAuthors.filter(a => a !== author);
+                selectedAuthors = selectedAuthors.filter(a => a !== decodedAuthor);
                 updateSelectedAuthorsUI();
             }
         });

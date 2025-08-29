@@ -181,15 +181,16 @@
 
 /* New improved video filter section styles */
 .mlmmc-video-filter-section {
-	margin-top: 15px;
-	padding: 20px;
-	background: #f8f9fa;
-	border-radius: 8px;
-	border: 1px solid #e9ecef;
+    /* margin-top: 15px; */
+    padding: 9px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    display: flex;
 }
-
 .mlmmc-video-filter-wrapper {
-	margin-bottom: 15px;
+    display: flex;
+    padding-right: 10px;
 }
 
 .mlmmc-video-checkbox-label {
@@ -247,8 +248,6 @@
 	align-items: center;
 	flex-wrap: wrap;
 	gap: 15px;
-	padding-top: 15px;
-	border-top: 1px solid #dee2e6;
 }
 
 .mlmmc-search-notice {
