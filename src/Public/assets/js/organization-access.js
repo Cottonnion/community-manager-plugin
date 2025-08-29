@@ -58,6 +58,10 @@
 		 * Check user status and update button accordingly
 		 */
 		checkUserStatus: function () {
+			if (labgenz_org_access.is_user_admin) {
+				return;
+			}
+
 			if ( ! labgenz_org_access.is_logged_in) {
 				return;
 			}

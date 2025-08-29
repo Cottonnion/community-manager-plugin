@@ -207,7 +207,7 @@
 
 /* Show message only when truly empty */
 .alias-email-tags:not(:has(.alias-tag))::after {
-  content: 'No alias emails added yet. Add some above!';
+  content: 'No emails added yet. Add some above!';
   display: block;
   color: #94a3b8;
   font-style: italic;
@@ -248,4 +248,20 @@ div#alias-tooltip {
     padding: 10px;
     color: white;
     font-weight: 600;
+}
+
+.main-email-label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.main-email {
+    background: #f5f5f5;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    margin-bottom: 15px;
+    color: #333;
+    border: 1px solid #ddd;
 }

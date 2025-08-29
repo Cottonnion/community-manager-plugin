@@ -1,4 +1,9 @@
-// Access localized data from WordPress
+/*
+* LabGenz Community Manager - Lab Group Management JS
+* dev note: This file should be refactored to use modules and imports if possible,
+* and also use strict mode.
+* But for now, we'll keep it simple and in one file.
+*/
 const labGroupManagement = lab_group_management_js_data || {};
 const groupId = labGroupManagement.group_id || 0;
 jQuery(document).ready(function ($) {
@@ -19,7 +24,7 @@ jQuery(document).ready(function ($) {
         });
     }
     
-    // Handle member action buttons
+    // Handle member action buttons -- doesnt exist??
     $(document).on('click', '.lab-member-actions', function() {
         const userId = $(this).data('user-id');
         const userName = $(this).data('user-name');
@@ -54,47 +59,47 @@ jQuery(document).ready(function ($) {
         });
     });
     
-// Handle invitation action buttons
-$(document).on('click', '.lab-invitation-actions', function() {
-    const userId = $(this).data('user-id');
-    const userName = $(this).data('name');
-    const userEmail = $(this).data('email');
-    const groupId = $(this).data('group-id');
-    
-    Swal.fire({
-        title: 'Invitation Actions',
-        html: `<p>Select an action for <strong>${userName}</strong>'s invitation</p>`,
-        showCancelButton: false,
-        showConfirmButton: false,
-        showDenyButton: false,
-        footer: `
-            <div style="display: flex; gap: 10px; justify-content: center;">
-                <button type="button" class="swal2-confirm swal2-styled lab-resend-btn" style="background-color: #3498db;">
-                    Resend Invitation
-                </button>
-                <button type="button" class="swal2-deny swal2-styled lab-cancel-btn" style="background-color: #e74c3c;">
-                    Cancel Invitation
-                </button>
-            </div>
-        `,
-        customClass: {
-            container: 'lab-actions-popup'
-        },
-        didOpen: () => {
-            // Add event listener for resend button
-            $('.lab-resend-btn').on('click', function() {
-                resendInvitation(userId, userName, userEmail, groupId);
-                Swal.close();
-            });
-            
-            // Add event listener for cancel button
-            $('.lab-cancel-btn').on('click', function() {
-                cancelInvitation(userId, userName, groupId);
-                Swal.close();
-            });
-        }
+    // Handle invitation action buttons
+    $(document).on('click', '.lab-invitation-actions', function() {
+        const userId = $(this).data('user-id');
+        const userName = $(this).data('name');
+        const userEmail = $(this).data('email');
+        const groupId = $(this).data('group-id');
+        
+        Swal.fire({
+            title: 'Invitation Actions',
+            html: `<p>Select an action for <strong>${userName}</strong>'s invitation</p>`,
+            showCancelButton: false,
+            showConfirmButton: false,
+            showDenyButton: false,
+            footer: `
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <button type="button" class="swal2-confirm swal2-styled lab-resend-btn" style="background-color: #3498db;">
+                        Resend Invitation
+                    </button>
+                    <button type="button" class="swal2-deny swal2-styled lab-cancel-btn" style="background-color: #e74c3c;">
+                        Cancel Invitation
+                    </button>
+                </div>
+            `,
+            customClass: {
+                container: 'lab-actions-popup'
+            },
+            didOpen: () => {
+                // Add event listener for resend button
+                $('.lab-resend-btn').on('click', function() {
+                    resendInvitation(userId, userName, userEmail, groupId);
+                    Swal.close();
+                });
+                
+                // Add event listener for cancel button
+                $('.lab-cancel-btn').on('click', function() {
+                    cancelInvitation(userId, userName, groupId);
+                    Swal.close();
+                });
+            }
+        });
     });
-});
     
     // Function to resend invitation
     function resendInvitation(userId, userName, userEmail, groupId) {
@@ -311,7 +316,7 @@ $(document).on('click', '.lab-invitation-actions', function() {
                     </tr>
                 </thead>
                 <tbody>
-    `;
+        `;
     
         invitees.forEach(invitee => {
             // Apply CSS class based on status
@@ -380,13 +385,13 @@ $(document).on('click', '.lab-invitation-actions', function() {
         });
     
         previewHtml += `
-                </tbody>
-            </table>
-        </div>
-    `;
+                    </tbody>
+                </table>
+            </div>
+        `;
     
         $bulkPreviewContent.html(previewHtml);
-    
+
         // Add "Send Invitations" button after the preview table if there are users to invite
         if (newUsers > 0 || existingUsers > 0) {
             const $sendButton = $('<button>')
@@ -399,11 +404,11 @@ $(document).on('click', '.lab-invitation-actions', function() {
                 });
             $bulkPreviewContent.append($sendButton);
         }
-    
+
         $bulkPreview.show();
-}
+    }
     
-    // Tab functionality
+    // Tab functionality -- doesnt exist??
     $('.threedinst-tab-btn').on('click', function () {
         const targetTab = $(this).data('tab');
         
@@ -838,45 +843,7 @@ $(document).on('click', '.lab-invitation-actions', function() {
                 processNextInvitation(0);
             }
         });
-        
-        // Update search functionality to include invited users
-        const $searchInput = $('#lab-email-search');
-        if ($searchInput.length) {
-            const $rows = $('#lab-members-table tbody tr');
-            let debounce;
-
-            // Create no results message element
-            const $noResultsMsg = $('<div>')
-                .addClass('notice info')
-                .hide()
-                .html('<p>No members or invitations found matching your search.</p>')
-                .insertAfter('.lab-members-table');
-
-            $searchInput.on('input', function () {
-                clearTimeout(debounce);
-                debounce = setTimeout(() => {
-                    const searchTerm = $searchInput.val().toLowerCase().trim();
-                    let hasResults = false;
-                
-                    $rows.each(function () {
-                        const $row = $(this);
-                        const username = $row.find('td:nth-child(2)').text().toLowerCase();
-                        const displayName = $row.find('td:nth-child(3)').text().toLowerCase();
-                        const status = $row.find('td:nth-child(6)').text().toLowerCase();
-                    
-                        const isMatch = username.includes(searchTerm) ||
-                            displayName.includes(searchTerm) ||
-                            status.includes(searchTerm);
-                    
-                        $row.toggle(isMatch);
-                        if (isMatch) hasResults = true;
-                    });
-
-                    // Show/hide no results message
-                    $noResultsMsg.toggle(!hasResults && searchTerm !== '');
-                }, 150);
-            });
-        }
+    
 
         // Responsive table enhancements
         const $tableContainer = $('.lab-table-responsive');
@@ -901,4 +868,43 @@ $(document).on('click', '.lab-invitation-actions', function() {
             });
         }
     });
+
+    // Update search functionality to include invited users
+    const $searchInput = $('#lab-email-search');
+    if ($searchInput.length) {
+        const $rows = $('#lab-members-table tbody tr');
+        let debounce;
+
+        // Create no results message element
+        const $noResultsMsg = $('<div>')
+            .addClass('notice info')
+            .hide()
+            .html('<p>No members or invitations found matching your search.</p>')
+            .insertAfter('.lab-members-table');
+
+        $searchInput.on('input', function () {
+            clearTimeout(debounce);
+            debounce = setTimeout(() => {
+                const searchTerm = $searchInput.val().toLowerCase().trim();
+                let hasResults = false;
+            
+                $rows.each(function () {
+                    const $row = $(this);
+                    const username = $row.find('td:nth-child(2)').text().toLowerCase();
+                    const displayName = $row.find('td:nth-child(3)').text().toLowerCase();
+                    const status = $row.find('td:nth-child(6)').text().toLowerCase();
+                
+                    const isMatch = username.includes(searchTerm) ||
+                        displayName.includes(searchTerm) ||
+                        status.includes(searchTerm);
+                
+                    $row.toggle(isMatch);
+                    if (isMatch) hasResults = true;
+                });
+
+                // Show/hide no results message
+                $noResultsMsg.toggle(!hasResults && searchTerm !== '');
+            }, 150);
+        });
+    }
 });

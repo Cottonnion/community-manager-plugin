@@ -35,12 +35,12 @@
 /* Profile Header Section */
 .bp-profile-header {
   position: relative;
-  margin-bottom: 30px;
   border-radius: var(--bb-radius);
   overflow: hidden;
   box-shadow: var(--bb-shadow);
   background: var(--bb-background-color);
   width: 100% !important;
+  overflow: visible !important;
 }
 
 /* Profile Banner */
@@ -401,6 +401,51 @@
   text-align: center;
   padding: 15px;
   color: var(--bb-text-color);
+}
+
+/* Modern Badge Styles */
+.badge-item.modern-badge:hover {
+    transform: translateY(-2px);
+}
+
+.badge-item.modern-badge:hover .badge-image-container img,
+.badge-item.modern-badge:hover .badge-image-container > div {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+}
+
+.badge-item.modern-badge:hover .badge-image-container > div:last-child {
+    opacity: 0.3;
+}
+
+.more-badges-indicator:hover {
+    transform: scale(1.05);
+}
+
+.badges-header h4 {
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .badges-display {
+        justify-content: center;
+    }
+    
+    .badge-item.modern-badge .badge-image-container img,
+    .badge-item.modern-badge .badge-image-container > div,
+    .more-badges-indicator {
+        width: 48px !important;
+        height: 48px !important;
+    }
+    
+    .badge-title {
+        font-size: 10px !important;
+        max-width: 60px !important;
+    }
 }
 
 /* Animation */

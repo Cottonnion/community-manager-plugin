@@ -255,35 +255,6 @@ $total_articles = wp_count_posts()->publish ?? 0;
                     </div>
                 </div>
                 <?php endif; ?>
-
-                <!-- Stats -->
-                <?php if ($books_published || $books_sold || $languages) : ?>
-                <div class="mlmmc-card">
-                    <div class="mlmmc-card-content">
-                        <h3 class="mlmmc-card-title">By the Numbers</h3>
-                        <div class="mlmmc-stats">
-                            <?php if ($books_published) : ?>
-                                <div class="mlmmc-stat-item">
-                                    <span class="mlmmc-stat-number"><?php echo esc_html($books_published); ?></span>
-                                    <div class="mlmmc-stat-label">Published Novels</div>
-                                </div>
-                            <?php endif; ?>
-                            <?php if ($books_sold) : ?>
-                                <div class="mlmmc-stat-item">
-                                    <span class="mlmmc-stat-number"><?php echo esc_html($books_sold); ?></span>
-                                    <div class="mlmmc-stat-label">Books Sold</div>
-                                </div>
-                            <?php endif; ?>
-                            <?php if ($languages) : ?>
-                                <div class="mlmmc-stat-item">
-                                    <span class="mlmmc-stat-number"><?php echo esc_html($languages); ?></span>
-                                    <div class="mlmmc-stat-label">Languages</div>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                </div>
-                <?php endif; ?>
                 
             </div>
         </div>
