@@ -23,7 +23,14 @@ class GroupMemberVisibility {
 		add_filter( 'bp_group_has_members', [ $this, 'filter_group_members' ], 10, 2 );
 		add_filter( 'bp_groups_member_get_group_member_ids', [ $this, 'filter_member_ids' ], 10, 2 );
 
-		// Template filters for custom admin/member loops
+		/**
+		 * Core BuddyPress filters
+		 *
+		 * These filters are added to the source code of the buddyboss platform plugin.
+		 * They should be added again once the plugin is updated.
+		 * - bp_group_list_admins_filter buddyboss-platform/bp-groups/bp-groups-template.php @bp_group_list_admins
+		 * - bb_groups_loop_members_filter buddyboss-platform/bp-groups/bp-groups-functions.php @bb_groups_loop_members
+		 */
 		add_filter( 'bp_group_list_admins_filter', [ $this, 'filter_admins' ], 10, 2 );
 		add_filter( 'bb_groups_loop_members_filter', [ $this, 'filter_members' ], 10, 2 );
 	}
