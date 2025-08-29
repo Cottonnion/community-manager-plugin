@@ -105,6 +105,10 @@ class CheckoutHandler {
 			return;
 		}
 
+		if( ! is_user_logged_in() ) {
+			return; // Only for logged-in users
+		}
+
 		// Check if this order has already been reloaded
 		$reloaded_orders = WC()->session->get( 'reloaded_thank_you_pages', [] );
 
