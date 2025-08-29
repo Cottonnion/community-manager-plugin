@@ -20,6 +20,4 @@ class AccountPageHandler {
         // Call the function using its full namespace
         \LABGENZ_CM\Account\Templates\render_alias_emails_field();
     }
-
-
 }

@@ -21,14 +21,13 @@ class UserMenuHandler {
 		add_action( 'buddyboss_theme_header_user_menu_items', [ $this, 'add_subscription_menu_item' ] );
 	}
 
-	/**
-	 * Add Subscription item to BuddyBoss user dropdown menu
-	 */
 	public function add_subscription_menu_item(): void {
 		if ( is_user_logged_in() && SubscriptionHandler::user_has_active_subscription( get_current_user_id() ) ) {
-			echo '<li><a href="' . esc_url( site_url( '/my-subscriptions/' ) ) . '">
-                <i class="bb-icon-l bb-icon-credit-card"></i> My Subscription
-            </a></li>';
+			echo '<li>
+				<a href="' . esc_url( site_url( '/my-subscriptions/' ) ) . '">
+					<i class="bb-icon-l bb-icon-credit-card"></i> My Subscription
+				</a>
+			</li>';
 		}
 	}
 
@@ -40,36 +39,43 @@ class UserMenuHandler {
 	 * @return string Modified menu items
 	 */
 	public function add_custom_menu_items( $items, $args ): string {
-		// Only add to the primary/header menu location
 		if ( $args->theme_location === 'header-menu' || $args->theme_location === 'primary' ) {
 			$user_id = get_current_user_id();
 
-			// Use the new helper methods
 			$has_basic            = SubscriptionTypeHelper::user_has_only_basic_subscription( $user_id );
 			$has_other            = ! $has_basic && SubscriptionHandler::user_has_active_subscription( $user_id );
 			$highest_subscription = SubscriptionTypeHelper::get_highest_subscription_type( $user_id );
 
-			// Add custom link for basic subscription
+			// Basic subscription link
 			if ( $has_basic && ! $has_other ) {
 				$custom_item = '<li id="menu-item-other" class="menu-item menu-item-type-custom menu-item-object-custom">
-                    <a href="' . esc_url( home_url( '/memberships/' ) ) . '" class="bb-nav-menu-link">
-                        <span class="link-text">Memberships</span>
-                    </a>
-                </li>';
+					<a href="' . esc_url( home_url( '/memberships/' ) ) . '" class="bb-nav-menu-link">
+						<span class="link-text">Memberships</span>
+					</a>
+				</li>';
 				$items      .= $custom_item;
 			}
 
-			// Add custom link for other subscriptions
+			// Other subscriptions or admin
 			if ( $has_other || current_user_can( 'manage_options' ) ) {
 				$custom_item = '<li id="menu-item-basic" class="menu-item menu-item-type-custom menu-item-object-custom">
-                    <a href="' . esc_url( home_url( '/courses/' ) ) . '" class="bb-nav-menu-link">
-                        <span class="link-text">Courses</span>
-                    </a>
-                </li>';
+					<a href="' . esc_url( home_url( '/courses/' ) ) . '" class="bb-nav-menu-link">
+						<span class="link-text">Courses</span>
+					</a>
+				</li>';
 				$items      .= $custom_item;
+			}
+
+			// Add Organization Access button
+			if ( is_user_logged_in() && ! current_user_can( 'manage_options') && SubscriptionHandler::user_has_resource_access( $user_id, 'organization_access' ) ) {
+				$org_button = '<li>
+					<button id="labgenz-org-access-btn"><span></span></button>
+				</li>';
+				$items     .= $org_button;
 			}
 		}
 
 		return $items;
 	}
+
 }
