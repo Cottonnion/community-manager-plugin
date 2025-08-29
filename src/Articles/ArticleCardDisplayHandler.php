@@ -5,6 +5,7 @@ namespace LABGENZ_CM\Articles;
 use LABGENZ_CM\Articles\Helpers\ArticleMetaHelper;
 use LABGENZ_CM\Articles\Helpers\ArticleSearchHelper;
 use LABGENZ_CM\Articles\Helpers\ArticleCacheHelper;
+use LABGENZ_CM\Articles\Authors\AuthorDisplayHandler;
 
 /**
  * Handles the displays in a card-based layout.
@@ -107,7 +108,7 @@ class ArticleCardDisplayHandler {
 			self::ASSET_HANDLE_CSS . '-filter-common',
 			LABGENZ_CM_URL . 'src/Articles/assets/css/filter-common.css',
 			[],
-			'1.0.3'
+			'1.0.5'
 		);
 
 		// Register CSS
@@ -115,7 +116,7 @@ class ArticleCardDisplayHandler {
 			self::ASSET_HANDLE_CSS,
 			LABGENZ_CM_URL . 'src/Articles/assets/css/article-cards.css',
 			[ self::ASSET_HANDLE_CSS . '-filter-common' ],
-			'1.1.7'
+			'1.1.8'
 		);
 
 		// Register category filter JS
@@ -123,7 +124,7 @@ class ArticleCardDisplayHandler {
 			self::ASSET_HANDLE_JS . '-category',
 			LABGENZ_CM_URL . 'src/Articles/assets/js/category-filter-new.js',
 			[ 'jquery' ],
-			'1.0.8',
+			'1.1.2',
 			true
 		);
 
@@ -132,7 +133,7 @@ class ArticleCardDisplayHandler {
 			self::ASSET_HANDLE_JS . '-author',
 			LABGENZ_CM_URL . 'src/Articles/assets/js/author-filter.js',
 			[ 'jquery' ],
-			'1.0.8',
+			'1.0.9',
 			true
 		);
 
@@ -150,7 +151,7 @@ class ArticleCardDisplayHandler {
 			self::ASSET_HANDLE_JS,
 			LABGENZ_CM_URL . 'src/Articles/assets/js/article-cards.js',
 			[ 'jquery', self::ASSET_HANDLE_JS . '-category', self::ASSET_HANDLE_JS . '-author' ],
-			'1.2.7',
+			'1.3.0',
 			true
 		);
 	}
@@ -351,6 +352,9 @@ public function render_articles_shortcode( array $atts = [] ): string {
 			$mlm_video_link = $post_meta['mlmmc_video_link'] ?? '';
 			$has_video = ! empty( $mlm_video_link );
 
+			$author_display_handler = new AuthorDisplayHandler();
+			$author_url = $author_display_handler->get_author_url($post_id);
+
 			$articles[] = [
 				'id'             => $post_id,
 				'title'          => get_the_title(),
@@ -364,6 +368,7 @@ public function render_articles_shortcode( array $atts = [] ): string {
 				'average_rating' => $average_rating,
 				'rating_count'   => $rating_count,
 				'has_video'      => $has_video,
+				'author_url'	 => $author_url
 			];
 		}
 		wp_reset_postdata();

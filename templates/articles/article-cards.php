@@ -25,6 +25,7 @@ if (!defined('ABSPATH')) {
  * @var bool $show_author - Whether to show author information
  * @var bool $show_date - Whether to show the publication date
  * @var bool $show_category - Whether to show the category
+ * @var string $author_url - URL to the author's archive page
  * @var bool $show_rating - Whether to show ratings
  * @var bool $show_search - Whether to show search box
  * @var bool $show_filters - Whether to show filtering options

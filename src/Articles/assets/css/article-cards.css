@@ -218,13 +218,15 @@
 	background: #5a67d8;
 }
 
-.mlmmc-selected-authors {
+.mlmmc-selected-authors,
+.mlmmc-selected-categories {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 8px;
 }
 
-.mlmmc-selected-author {
+.mlmmc-selected-author,
+.mlmmc-selected-category {
 	display: flex;
 	align-items: center;
 	background: #eef2ff;
@@ -235,7 +237,8 @@
 	color: #4f46e5;
 }
 
-.mlmmc-selected-author .remove-author {
+.mlmmc-selected-author .remove-author,
+.mlmmc-selected-category .remove-category {
 	border: none;
 	background: none;
 	color: #6366f1;
@@ -246,7 +249,8 @@
 	padding: 0 2px;
 }
 
-.mlmmc-selected-author .remove-author:hover {
+.mlmmc-selected-author .remove-author:hover,
+.mlmmc-selected-category .remove-category:hover {
 	color: #4f46e5;
 }
 

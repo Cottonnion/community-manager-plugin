@@ -200,7 +200,7 @@ class DailyArticleHandler {
 	 *
 	 * @return bool True if user has access to premium articles.
 	 */
-	private function user_has_premium_access(): bool {
+	public function user_has_premium_access(): bool {
 		// If user is not logged in, they don't have premium access
 		if ( ! is_user_logged_in() ) {
 			return false;
@@ -368,7 +368,7 @@ class DailyArticleHandler {
 						
 						<div class="article-excerpt">
 							<p><?php echo esc_html( $excerpt ); ?></p>
-							<a href="<?php echo esc_url( $permalink ); ?>" class="read-more-link">Read Full Article →</a>
+							<button onclick="location.href='<?php echo esc_url( $permalink ); ?>'" class="read-more-link">Read Full Article →</button>
 						</div>
 					</article>
 					

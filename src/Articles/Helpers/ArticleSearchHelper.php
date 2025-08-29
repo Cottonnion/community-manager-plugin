@@ -5,6 +5,7 @@ namespace LABGENZ_CM\Articles\Helpers;
 use LABGENZ_CM\Articles\ReviewsHandler;
 use LABGENZ_CM\Articles\ArticlesHandler;
 use LABGENZ_CM\Articles\ArticleCardDisplayHandler;
+use LABGENZ_CM\Articles\Authors\AuthorDisplayHandler;
 use WP_Query;
 
 /**
@@ -217,11 +218,11 @@ class ArticleSearchHelper {
 		$filtered_ratings    = [];
 
 		// If no ratings but categories are selected
-		if ( ! empty( $categories ) ) {
+		if ( is_array( $categories ) && count( $categories ) > 0 ) {
 			$filtered_authors = ArticleMetaHelper::get_filtered_authors_by_categories( $categories, ArticleCardDisplayHandler::POST_TYPE );
 
 			// If authors are also selected, filter categories by authors
-			if ( ! empty( $authors ) ) {
+			if ( is_array( $authors ) && count( $authors ) > 0 ) {
 				$filtered_categories = ArticleMetaHelper::get_filtered_categories_by_authors( $authors, ArticleCardDisplayHandler::POST_TYPE );
 
 				// Keep only categories that match the original category selection
@@ -239,6 +240,12 @@ class ArticleSearchHelper {
 		// If only authors are selected
 		elseif ( ! empty( $authors ) ) {
 			$filtered_categories = ArticleMetaHelper::get_filtered_categories_by_authors( $authors, ArticleCardDisplayHandler::POST_TYPE );
+		}
+
+		// Always filter by authors selection if provided
+		if (is_array($authors) && count($authors) > 0) {
+			// Simply use the requested authors
+			$filtered_authors = $authors;
 		}
 
 		// For ratings, always prepare data for display with counts regardless of selection
@@ -363,8 +370,7 @@ class ArticleSearchHelper {
 		// Get search parameters
 		$search_params = [
 			'search' => isset( $_POST['search'] ) ? sanitize_text_field( $_POST['search'] ) : '',
-			'authors' => isset( $_POST['authors'] ) && is_array( $_POST['authors'] ) ? array_map( 'sanitize_text_field', $_POST['authors'] ) : [],
-			'categories' => isset( $_POST['categories'] ) && is_array( $_POST['categories'] ) ? array_map( 'sanitize_text_field', $_POST['categories'] ) : [],
+'authors' => isset( $_POST['authors'] ) && is_array( $_POST['authors'] ) ? array_map( function($author) { return trim(wp_unslash($author)); }, $_POST['authors'] ) : [],			'categories' => isset( $_POST['categories'] ) && is_array( $_POST['categories'] ) ? array_map( 'sanitize_text_field', $_POST['categories'] ) : [],
 			'ratings' => isset( $_POST['ratings'] ) && is_array( $_POST['ratings'] ) ? array_map( 'intval', $_POST['ratings'] ) : [],
 			'vid_only' => isset( $_POST['vid_only'] ) && $_POST['vid_only'] === 'true' ? true : false,
 			'page' => isset( $_POST['page'] ) ? intval( $_POST['page'] ) : 1,
@@ -574,6 +580,9 @@ class ArticleSearchHelper {
 					$mlm_video_link = get_post_meta( $post_id, 'mlmmc_video_link', true );
 					$has_video = ! empty( $mlm_video_link );
 
+					$author_display_handler = new AuthorDisplayHandler();
+					$author_url = $author_display_handler->get_author_url( $post_id );
+
 					// Generate stars HTML
 					$stars_html = '';
 					if ( $show_rating && $average_rating > 0 ) {
@@ -594,6 +603,7 @@ class ArticleSearchHelper {
 						'average_rating' => $average_rating,
 						'rating_count'   => $rating_count,
 						'stars_html'     => $stars_html,
+						'author_url'     => $author_url,
 						'has_video'      => $has_video,
 					];
 				}
@@ -635,6 +645,7 @@ class ArticleSearchHelper {
 					$date = $article['date'] ?? '';
 					$average_rating = $article['average_rating'] ?? 0;
 					$rating_count = $article['rating_count'] ?? 0;
+					$author_url = $article['author_url'] ?? '';
 					$stars_html = $article['stars_html'] ?? '';
 					$has_video = $article['has_video'] ?? false;
 

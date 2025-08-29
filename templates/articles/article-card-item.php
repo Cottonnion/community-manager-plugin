@@ -17,6 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @var bool  $show_date
  * @var bool  $show_category
  * @var bool  $show_rating
+ * @var string $
  */
 ?>
 <div class="mlmmc-article-card">
@@ -72,9 +73,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<img src="<?php echo esc_url( $article['author_image'] ); ?>" alt="<?php echo esc_attr( $article['author_name'] ); ?>">
 						</div>
 					<?php endif; ?>
-					<div class="mlmmc-article-author-name">
+					<a href="<?php echo esc_url( $article['author_url'] ); ?>" class="mlmmc-article-author-name">
 						<?php echo esc_html( $article['author_name'] ); ?>
-					</div>
+					</a>
 				</div>
 			<?php endif; ?>
 
