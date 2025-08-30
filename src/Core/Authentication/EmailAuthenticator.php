@@ -42,6 +42,7 @@ class EmailAuthenticator {
         // Track failed login attempts
         add_action('wp_login_failed', [$this, 'record_failed_attempt']);
         add_action('wp_login', [$this, 'clear_failed_attempts'], 10, 2);
+        add_action('wp_login', [$this, 'update_last_login_timestamp'], 10, 2);
         
         // Security logging
         add_action('wp_login', [$this, 'log_successful_login'], 10, 2);
@@ -589,5 +590,18 @@ class EmailAuthenticator {
         }
         
         return false;
+    }
+
+    /**
+     * Update user's last login timestamp
+     * @param string $user_login
+     * @param \WP_User $user
+     */
+    public function update_last_login_timestamp($user_login, $user) {
+        $timestamp = current_time('mysql'); // MySQL datetime format
+        update_user_meta($user->ID, '_lab_last_login_at', $timestamp);
+        
+        // Also store human-readable format
+        update_user_meta($user->ID, '_lab_last_login_readable', current_time('Y-m-d H:i:s'));
     }
 }
