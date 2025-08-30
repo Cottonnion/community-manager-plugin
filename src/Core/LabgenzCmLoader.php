@@ -84,8 +84,6 @@ class LabgenzCmLoader {
 			 * their functionality either been refactored or not needed anymore.
 			*/
 			// 'core.admin_hooks'           => \LABGENZ_CM\Admin\AdminHooks::class,
-			// 'core.invite_handler'        => \LABGENZ_CM\Core\InviteHandler::class,
-			// 'core.remove_handler'        => \LABGENZ_CM\Core\RemoveHandler::class,
 
 			'database.database'                       => \LABGENZ_CM\Database\Database::class,
 
