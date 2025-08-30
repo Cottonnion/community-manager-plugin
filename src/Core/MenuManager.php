@@ -36,22 +36,6 @@ class MenuManager {
 			'dashicons-groups',
 			56
 		);
-		// add_submenu_page(
-		// 'labgenz-cm',
-		// __( 'Settings', 'labgenz-community-management' ),
-		// __( 'Settings', 'labgenz-community-management' ),
-		// 'manage_options',
-		// 'labgenz-cm-settings',
-		// array( $this, 'render_settings_page' )
-		// );
-		// add_submenu_page(
-		// 'labgenz-cm',
-		// __( 'Appearance', 'labgenz-community-management' ),
-		// __( 'Appearance', 'labgenz-community-management' ),
-		// 'manage_options',
-		// 'labgenz-cm-appearance',
-		// array( $this, 'render_appearance_page' )
-		// );
 	}
 
 	public function render_main_menu_page(): void {
