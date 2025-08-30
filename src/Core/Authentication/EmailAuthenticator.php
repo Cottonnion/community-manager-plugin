@@ -477,18 +477,14 @@ class EmailAuthenticator {
         ?>
         <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const usernameField = document.getElementById('user_login');
-            if (usernameField) {
-                usernameField.setAttribute('placeholder', 'Username or Email (including aliases)');
-            }
+            setTimeout(() => {
+                const usernameField = document.getElementById('user_login');
+                if (usernameField) {
+                    usernameField.setAttribute('placeholder', 'Email Address (including aliases)');
+                }
+            }, 1000);
         });
         </script>
-        <style>
-        .login form .input, .login input[type="text"] {
-            font-size: 24px;
-            line-height: 1.33333333;
-        }
-        </style>
         <?php
     }
     
@@ -509,6 +505,8 @@ class EmailAuthenticator {
     
     /**
      * Get client IP address
+     * 
+     * @return string
      */
     private function get_client_ip() {
         $ip_keys = ['HTTP_X_FORWARDED_FOR', 'HTTP_X_REAL_IP', 'HTTP_CLIENT_IP', 'REMOTE_ADDR'];
@@ -528,6 +526,8 @@ class EmailAuthenticator {
     
     /**
      * Get sanitized user agent
+     * 
+     * @return string
      */
     private function get_user_agent() {
         return substr(sanitize_text_field($_SERVER['HTTP_USER_AGENT'] ?? 'Unknown'), 0, 500);
@@ -535,6 +535,8 @@ class EmailAuthenticator {
     
     /**
      * Force logout all sessions for security
+     * 
+     * @param int $user_id
      */
     public function force_logout_all_sessions($user_id) {
         $sessions = \WP_Session_Tokens::get_instance($user_id);
@@ -545,6 +547,10 @@ class EmailAuthenticator {
     
     /**
      * Log authentication activities to custom directory
+     * 
+     * @param int $user_id
+     * @param string $action
+     * @param string $email
      */
     private function log_auth_activity($user_id, $action, $email) {
         return;
@@ -564,6 +570,9 @@ class EmailAuthenticator {
     
     /**
      * Get lockout status for email
+     * 
+     * @param string $email
+     * @return array|false  Returns array with lockout info or false if not locked
      */
     public function get_lockout_info($email) {
         if (!$this->is_account_locked($email)) {
