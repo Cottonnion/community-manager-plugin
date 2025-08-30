@@ -25,6 +25,5 @@ class WpProfile {
      */
     public function load_template( $user ) {
         require_once LABGENZ_CM_TEMPLATES_DIR . '/wp-profile/alias-emails.php';
-        // display_alias_emails_admin_profile($user);
     }
 }

@@ -32,7 +32,6 @@ class MultiEmailManager {
         
         // Block registration attempts from alias emails
         add_filter('registration_errors', [$this, 'block_alias_registration'], 10, 3);
-        // add_action('user_register', [$this, 'prevent_duplicate_alias_registration']);
         
         // Clean expired tokens
         add_action('wp_scheduled_delete', [$this, 'cleanup_expired_tokens']);
