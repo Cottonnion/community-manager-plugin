@@ -122,7 +122,7 @@ class AssetsManager {
 					'lab-commons',
 					LABGENZ_CM_URL . 'src/Public/assets/js/commons.js',
 					[ 'jquery' ],
-					'1.0.6',
+					'1.0.7',
 					true
 				);
 
