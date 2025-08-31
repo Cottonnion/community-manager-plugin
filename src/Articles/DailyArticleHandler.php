@@ -721,8 +721,8 @@ class DailyArticleHandler {
 	 * @return array List of articles with video information.
 	 */
 	public function get_random_articles( $had_vid = false, int $min_articles = 1, int $max_articles = 12 ): array {
-		$total_articles = rand( $min_articles, $max_articles );
-		$articles       = [];
+		$total_articles  = rand( $min_articles, $max_articles );
+		$articles        = [];
 		$reviews_handler = new ReviewsHandler();
 
 		if ( $had_vid === 'mixed' ) {
@@ -751,12 +751,12 @@ class DailyArticleHandler {
 						$video_query->the_post();
 						$category   = $this->articles_handler->get_article_category( get_the_ID() );
 						$articles[] = [
-							'id'        => get_the_ID(),
-							'title'     => get_the_title(),
-							'link'      => get_permalink(),
-							'has_video' => true,
-							'category'  => $category ? $category : 'Uncategorized',
-							'avg_rating'=> $reviews_handler->get_average_rating( get_the_ID() ),
+							'id'         => get_the_ID(),
+							'title'      => get_the_title(),
+							'link'       => get_permalink(),
+							'has_video'  => true,
+							'category'   => $category ? $category : 'Uncategorized',
+							'avg_rating' => $reviews_handler->get_average_rating( get_the_ID() ),
 						];
 					}
 					wp_reset_postdata();
@@ -785,13 +785,13 @@ class DailyArticleHandler {
 						$no_video_query->the_post();
 						$category   = $this->articles_handler->get_article_category( get_the_ID() );
 						$articles[] = [
-							'id'        => get_the_ID(),
-							'title'     => get_the_title(),
-							'link'      => get_permalink(),
-							'has_video' => false,
-							'category'  => $category ? $category : 'Uncategorized',
-							'avg_rating'=> $reviews_handler->get_average_rating( get_the_ID() ),
-							
+							'id'         => get_the_ID(),
+							'title'      => get_the_title(),
+							'link'       => get_permalink(),
+							'has_video'  => false,
+							'category'   => $category ? $category : 'Uncategorized',
+							'avg_rating' => $reviews_handler->get_average_rating( get_the_ID() ),
+
 						];
 					}
 					wp_reset_postdata();
@@ -827,12 +827,12 @@ class DailyArticleHandler {
 					$has_video  = get_post_meta( get_the_ID(), 'mlmmc_video_link', true );
 					$category   = $this->articles_handler->get_article_category( get_the_ID() );
 					$articles[] = [
-						'id'        => get_the_ID(),
-						'title'     => get_the_title(),
-						'link'      => get_permalink(),
-						'has_video' => ! empty( $has_video ),
-						'category'  => $category ? $category : 'Uncategorized',
-						'avg_rating'=> $reviews_handler->get_average_rating( get_the_ID() ),
+						'id'         => get_the_ID(),
+						'title'      => get_the_title(),
+						'link'       => get_permalink(),
+						'has_video'  => ! empty( $has_video ),
+						'category'   => $category ? $category : 'Uncategorized',
+						'avg_rating' => $reviews_handler->get_average_rating( get_the_ID() ),
 					];
 				}
 				wp_reset_postdata();

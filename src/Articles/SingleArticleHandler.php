@@ -186,8 +186,6 @@ class SingleArticleHandler {
 			return;
 		}
 
-		
-
 		// Get article data
 		$content = apply_filters( 'the_content', $article->post_content );
 
@@ -216,7 +214,7 @@ class SingleArticleHandler {
 			$category = '';
 		}
 
-		if( method_exists( $articles_handler, 'get_article_avatar' ) ) {
+		if ( method_exists( $articles_handler, 'get_article_avatar' ) ) {
 			$author_avatar = $articles_handler->get_article_avatar( $article_id );
 		} else {
 			$author_avatar = '';

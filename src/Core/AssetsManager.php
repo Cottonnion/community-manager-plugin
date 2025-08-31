@@ -75,7 +75,6 @@ class AssetsManager {
 			20
 		);
 
-
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_assets' ], 40, 1 );
 		add_action( 'wp_enqueue_scripts', [ $this, 'register_assets_to_enqueue' ], 20, 0 );
 		add_action( 'admin_init', [ $this, 'register_assets_to_enqueue' ], 20, 0 );
@@ -108,12 +107,13 @@ class AssetsManager {
 			1
 		);
 
-
-		add_action('wp_enqueue_scripts', function () {
+		add_action(
+			'wp_enqueue_scripts',
+			function () {
 				wp_enqueue_script(
 					'buddypanel-controller-js-file',
 					get_stylesheet_directory_uri() . '/template-parts/buddypanel/buddypanel-controller.js',
-					array('jquery'),
+					[ 'jquery' ],
 					'1.4.0	',
 					true
 				);
@@ -133,7 +133,9 @@ class AssetsManager {
 					'1.0.1',
 					true
 				);
-		}, 20 );
+			},
+			20
+		);
 		// Enqueue map assets
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_map_assets' ], 30 );
 	}
@@ -638,7 +640,7 @@ class AssetsManager {
 		$this->add_frontend_asset(
 			'labgenz-ajax-articles-search',
 			[ '' ],
-		'lab-ajax-articles-search.js',
+			'lab-ajax-articles-search.js',
 			[ 'jquery' ],
 			'3.7',
 			true,
@@ -672,8 +674,8 @@ class AssetsManager {
 			true,
 			'js',
 			[
-				'ajax_url' => admin_url('admin-ajax.php'),
-				'nonce'    => wp_create_nonce('email_alias_nonce'),
+				'ajax_url' => admin_url( 'admin-ajax.php' ),
+				'nonce'    => wp_create_nonce( 'email_alias_nonce' ),
 			]
 		);
 
@@ -865,10 +867,10 @@ class AssetsManager {
 
 			// Enqueue our custom map CSS
 			// wp_enqueue_style(
-			// 	'lab-group-members-map-css',
-			// 	LABGENZ_CM_URL . 'src/Public/assets/css/lab-group-members-map.css',
-			// 	[ 'leaflet-markercluster-default-css' ],
-			// 	'7.1.0'
+			// 'lab-group-members-map-css',
+			// LABGENZ_CM_URL . 'src/Public/assets/css/lab-group-members-map.css',
+			// [ 'leaflet-markercluster-default-css' ],
+			// '7.1.0'
 			// );
 
 			// Enqueue our modular JS files

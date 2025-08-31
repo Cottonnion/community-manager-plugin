@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class UserAccountCreator {
 
-/**
+	/**
 	 * Auto-create user from order if needed
 	 *
 	 * @param int $order_id Order ID
@@ -67,7 +67,7 @@ class UserAccountCreator {
 		if ( $existing_user ) {
 			// Update billing data for existing user
 			UserAccountManager::update_billing_data( $existing_user->ID, $billing_data );
-			
+
 			// Update order with existing user
 			$order->set_customer_id( $existing_user->ID );
 			$order->save();
@@ -75,7 +75,7 @@ class UserAccountCreator {
 			// Apply subscription to existing user
 			$subscription_handler = SubscriptionHandler::get_instance();
 			$subscription_handler->apply_subscription_to_user_by_id( $existing_user->ID, $order );
-			
+
 			// Auto-login the existing user
 			// This should ONLY be used in development environments to avoid security issues
 			// Should NEVER auto login existing users in production - it causes accounts hijacking

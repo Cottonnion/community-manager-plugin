@@ -76,10 +76,10 @@
 			selectedRatings.forEach(
 				function (rating) {
 					html += `
-					<div class="mlmmc-selected-rating">
+					< div class       = "mlmmc-selected-rating" >
 						${rating} Stars
-						<button type="button" class="remove-rating" data-rating="${rating}"> × </button>
-					</div>
+						< button type = "button" class = "remove-rating" data - rating = "${rating}" > × < / button >
+					< / div >
 					`;
 				}
 			);

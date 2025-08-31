@@ -104,61 +104,61 @@
 
 /* Avatar hover effect */
 .author-avatar {
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    border-radius: 50%;
+	cursor: pointer;
+	transition: transform 0.2s, box-shadow 0.2s;
+	border-radius: 50%;
 }
 
 .author-avatar:hover {
-    transform: scale(1.1);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+	transform: scale(1.1);
+	box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
 /* Lightbox overlay */
 .author-lightbox-overlay {
-    display: none;
-    position: fixed;
-    z-index: 9999;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.85);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: auto;
-    padding: 20px;
-    box-sizing: border-box;
+	display: none;
+	position: fixed;
+	z-index: 9999;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background: rgba(0, 0, 0, 0.85);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	overflow: auto;
+	padding: 20px;
+	box-sizing: border-box;
 }
 
 /* Lightbox image */
 .author-lightbox-overlay img {
-    max-width: 80%;
-    max-height: 80%;
-    border-radius: 10px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
-    transition: transform 0.3s, filter 0.3s;
-    display: block;
-    margin: 0 auto;
-    object-fit: contain; /* ensures image is scaled nicely */
+	max-width: 80%;
+	max-height: 80%;
+	border-radius: 10px;
+	box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+	transition: transform 0.3s, filter 0.3s;
+	display: block;
+	margin: 0 auto;
+	object-fit: contain; /* ensures image is scaled nicely */
 }
 
 /* Hover effect */
 .author-lightbox-overlay img:hover {
-    transform: scale(1.05);
-    filter: brightness(1.05);
+	transform: scale(1.05);
+	filter: brightness(1.05);
 }
 
 /* Show overlay */
 .author-lightbox-overlay.active {
-    display: flex;
-    animation: fadeIn 0.25s ease;
+	display: flex;
+	animation: fadeIn 0.25s ease;
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+	from { opacity: 0; }
+	to { opacity: 1; }
 }
 
 
@@ -185,14 +185,14 @@
 }
 
 button.mlmmc-layout-btn {
-    background: transparent;
-    color: black;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+	background: transparent;
+	color: black;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .mlmmc-layout-toggle {
-    display: flex;
-    gap: 15px;
+	display: flex;
+	gap: 15px;
 }

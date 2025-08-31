@@ -34,7 +34,7 @@ class SubscriptionResources {
 			'can_create_articles'   => false,
 			'can_edit_articles'     => false,
 			'can_filter_articles'   => false,
-			'can_private_message'	=> false, // New resource for private messaging
+			'can_private_message'   => false, // New resource for private messaging
 		],
 		'monthly-basic-subscription'        => [
 			'course_categories'     => [ 'basic-courses' ],
@@ -48,7 +48,7 @@ class SubscriptionResources {
 			'can_create_articles'   => false,
 			'can_edit_articles'     => false,
 			'can_filter_articles'   => false,
-			'can_private_message'	=> false, // New resource for private messaging
+			'can_private_message'   => false, // New resource for private messaging
 		],
 		'organization'                      => [
 			'course_categories'     => [ 'basic-courses', 'organization-courses', 'advanced-courses' ],
@@ -62,7 +62,7 @@ class SubscriptionResources {
 			'can_create_articles'   => true,
 			'can_edit_articles'     => true,
 			'can_filter_articles'   => true,
-			'can_private_message'			=> true, // New resource for private messaging
+			'can_private_message'   => true, // New resource for private messaging
 		],
 		'monthly-organization-subscription' => [
 			'course_categories'     => [ 'basic-courses', 'organization-courses', 'advanced-courses' ],
@@ -76,7 +76,7 @@ class SubscriptionResources {
 			'can_create_articles'   => true,
 			'can_edit_articles'     => true,
 			'can_filter_articles'   => true,
-			'can_private_message'			=> true, // New resource for private messaging
+			'can_private_message'   => true, // New resource for private messaging
 		],
 		// New subscription types
 		'apprentice-yearly'                 => [
@@ -92,7 +92,7 @@ class SubscriptionResources {
 			'can_edit_articles'             => true,
 			'can_filter_articles'           => true,
 			'can_view_pre_release_articles' => true,
-			'can_private_message'			=> false, // New resource for private messaging
+			'can_private_message'           => false, // New resource for private messaging
 		],
 		'apprentice-monthly'                => [
 			'course_categories'             => [ 'basic-courses', 'advanced-courses' ],
@@ -107,7 +107,7 @@ class SubscriptionResources {
 			'can_edit_articles'             => true,
 			'can_filter_articles'           => true,
 			'can_view_pre_release_articles' => false,
-			'can_private_message'			=> false, // New resource for private messaging
+			'can_private_message'           => false, // New resource for private messaging
 
 		],
 		'team-leader-yearly'                => [
@@ -123,7 +123,7 @@ class SubscriptionResources {
 			'can_edit_articles'             => true,
 			'can_filter_articles'           => true,
 			'can_view_pre_release_articles' => true,
-			'can_private_message'			=> true, // New resource for private messaging
+			'can_private_message'           => true, // New resource for private messaging
 		],
 		'team-leader-monthly'               => [
 			'course_categories'             => [ 'basic-courses', 'advanced-courses', 'team-leader-courses' ],
@@ -138,7 +138,7 @@ class SubscriptionResources {
 			'can_edit_articles'             => true,
 			'can_filter_articles'           => true,
 			'can_view_pre_release_articles' => false,
-			'can_private_message'			=> true, // New resource for private messaging
+			'can_private_message'           => true, // New resource for private messaging
 		],
 		'freedom-builder-yearly'            => [
 			'course_categories'             => [ 'basic-courses', 'advanced-courses', 'team-leader-courses', 'freedom-builder-courses' ],
@@ -153,7 +153,7 @@ class SubscriptionResources {
 			'can_edit_articles'             => true,
 			'can_filter_articles'           => true,
 			'can_view_pre_release_articles' => true,
-			'can_private_message'			=> true, // New resource for private messaging
+			'can_private_message'           => true, // New resource for private messaging
 		],
 		'freedom-builder-monthly'           => [
 			'course_categories'             => [ 'basic-courses', 'advanced-courses', 'team-leader-courses', 'freedom-builder-courses' ],
@@ -168,7 +168,7 @@ class SubscriptionResources {
 			'can_edit_articles'             => true,
 			'can_filter_articles'           => true,
 			'can_view_pre_release_articles' => false,
-			'can_private_message'			=> true, // New resource for private messaging
+			'can_private_message'           => true, // New resource for private messaging
 		],
 	];
 

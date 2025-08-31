@@ -125,10 +125,10 @@ class CheckoutHandler {
 	 * @return bool True if conditions are met for reload
 	 */
 	private static function should_reload_thank_you_page(): bool {
-		return function_exists( 'WC' ) 
-			&& WC()->session 
-			&& is_user_logged_in() 
-			&& is_checkout() 
+		return function_exists( 'WC' )
+			&& WC()->session
+			&& is_user_logged_in()
+			&& is_checkout()
 			&& isset( $_GET['key'] );
 	}
 
@@ -150,7 +150,7 @@ class CheckoutHandler {
 	 * @return void
 	 */
 	private static function mark_order_as_reloaded( int $order_id ): void {
-		$reloaded_orders = WC()->session->get( 'reloaded_thank_you_pages', [] );
+		$reloaded_orders   = WC()->session->get( 'reloaded_thank_you_pages', [] );
 		$reloaded_orders[] = $order_id;
 		WC()->session->set( 'reloaded_thank_you_pages', $reloaded_orders );
 	}
@@ -161,13 +161,15 @@ class CheckoutHandler {
 	 * @return void
 	 */
 	private static function enqueue_reload_script(): void {
-		add_action( 'wp_footer', function () {
-			$order_key = sanitize_key( $_GET['key'] ?? '' );
-			
-			if ( empty( $order_key ) ) {
-				return;
-			}
-			?>
+		add_action(
+			'wp_footer',
+			function () {
+				$order_key = sanitize_key( $_GET['key'] ?? '' );
+
+				if ( empty( $order_key ) ) {
+					return;
+				}
+				?>
 			<script type="text/javascript">
 			(function() {
 				'use strict';
@@ -193,8 +195,10 @@ class CheckoutHandler {
 				}
 			})();
 			</script>
-			<?php
-		}, 999 ); // High priority to ensure it runs
+				<?php
+			},
+			999
+		); // High priority to ensure it runs
 	}
 
 	/**
@@ -228,9 +232,9 @@ class CheckoutHandler {
 		if ( ! is_checkout() || ! is_user_logged_in() ) {
 			return;
 		}
-		
+
 		$user_id = get_current_user_id();
-		
+
 		// Required billing fields for checkout
 		$required_billing_fields = [
 			'billing_first_name',
@@ -298,7 +302,7 @@ class CheckoutHandler {
 
 	/**
 	 * Clean up expired session data
-	 * 
+	 *
 	 * This method can be called periodically to clean up old session data
 	 *
 	 * @return void
@@ -309,15 +313,15 @@ class CheckoutHandler {
 		}
 
 		$guest_data = WC()->session->get( 'guest_subscription_data' );
-		
+
 		if ( ! $guest_data || ! isset( $guest_data['created_at'] ) ) {
 			return;
 		}
 
 		// Remove guest data older than 24 hours
 		$created_time = strtotime( $guest_data['created_at'] );
-		$expiry_time = $created_time + ( 24 * HOUR_IN_SECONDS );
-		
+		$expiry_time  = $created_time + ( 24 * HOUR_IN_SECONDS );
+
 		if ( time() > $expiry_time ) {
 			WC()->session->set( 'guest_subscription_data', null );
 		}

@@ -30,18 +30,21 @@ class ArticlesHandler {
 		// add_action('wp_ajax_nopriv_search_mlmmc_articles', '__return_false');
 		// add_action('wp_ajax_nopriv_get_mlmmc_categories', '__return_false');
 		// add_action('wp_ajax_nopriv_get_mlmmc_authors', '__return_false');
-		add_filter('single_template', function ($single_template) {
-			global $post;
+		add_filter(
+			'single_template',
+			function ( $single_template ) {
+				global $post;
 
-			if ($post->post_type === self::POST_TYPE) {
+				if ( $post->post_type === self::POST_TYPE ) {
 					$template_path = LABGENZ_CM_TEMPLATES_DIR . '/single-mlmmc-article.php';
-					if (file_exists($template_path)) {
-					return $template_path;
+					if ( file_exists( $template_path ) ) {
+						return $template_path;
+					}
 				}
-			}
 
-			return $single_template;
-		});
+				return $single_template;
+			}
+		);
 	}
 
 	/**

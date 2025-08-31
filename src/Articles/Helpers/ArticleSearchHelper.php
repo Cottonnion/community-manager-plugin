@@ -243,7 +243,7 @@ class ArticleSearchHelper {
 		}
 
 		// Always filter by authors selection if provided
-		if (is_array($authors) && count($authors) > 0) {
+		if ( is_array( $authors ) && count( $authors ) > 0 ) {
 			// Simply use the requested authors
 			$filtered_authors = $authors;
 		}
@@ -281,135 +281,143 @@ class ArticleSearchHelper {
 	 * @param array $ratings Selected ratings (optional)
 	 * @return array Array of rating counts [5 => count, 4 => count, etc.]
 	 */
-
 	public static function get_rating_counts( array $authors = [], array $categories = [], array $ratings = [] ): array {
-		$cache_key = ArticleCacheHelper::get_ratings_cache_key($authors, $categories, $ratings);
-		
-		return ArticleCacheHelper::get_or_set($cache_key, function() use ($authors, $categories, $ratings) {
-			global $wpdb;
-			$rating_counts = [
-				5 => 0,
-				4 => 0,
-				3 => 0,
-				2 => 0,
-				1 => 0,
-			];
+		$cache_key = ArticleCacheHelper::get_ratings_cache_key( $authors, $categories, $ratings );
 
-			try {
-				// Get the meta key for ratings from ReviewsHandler
-				$rating_meta_key = ReviewsHandler::META_KEY_RATING;
+		return ArticleCacheHelper::get_or_set(
+			$cache_key,
+			function () use ( $authors, $categories, $ratings ) {
+				global $wpdb;
+				$rating_counts = [
+					5 => 0,
+					4 => 0,
+					3 => 0,
+					2 => 0,
+					1 => 0,
+				];
 
-				// Base query - for counting ratings
-				$sql = "
+				try {
+					// Get the meta key for ratings from ReviewsHandler
+					$rating_meta_key = ReviewsHandler::META_KEY_RATING;
+
+					// Base query - for counting ratings
+					$sql = "
 					SELECT FLOOR(pm.meta_value) as rating_floor, COUNT(DISTINCT p.ID) as count
 					FROM {$wpdb->posts} p
 					INNER JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id AND pm.meta_key = %s AND pm.meta_value > 0
 					WHERE p.post_type = %s AND p.post_status = 'publish'
 				";
 
-				$params = [ $rating_meta_key, ReviewsHandler::POST_TYPE ];
+					$params = [ $rating_meta_key, ReviewsHandler::POST_TYPE ];
 
-				// Add author filter if needed
-				if ( ! empty( $authors ) ) {
-					$sql   .= " AND p.ID IN (
+					// Add author filter if needed
+					if ( ! empty( $authors ) ) {
+						$sql   .= " AND p.ID IN (
 						SELECT post_id FROM {$wpdb->postmeta} 
 						WHERE meta_key = 'mlmmc_article_author' AND meta_value IN (" .
 						implode( ',', array_fill( 0, count( $authors ), '%s' ) ) . ')
 					)';
-					$params = array_merge( $params, $authors );
-				}
+						$params = array_merge( $params, $authors );
+					}
 
-				// Add category filter if needed
-				if ( ! empty( $categories ) ) {
-					$sql   .= " AND p.ID IN (
+					// Add category filter if needed
+					if ( ! empty( $categories ) ) {
+						$sql   .= " AND p.ID IN (
 						SELECT post_id FROM {$wpdb->postmeta} 
 						WHERE meta_key = 'mlmmc_article_category' AND meta_value IN (" .
 						implode( ',', array_fill( 0, count( $categories ), '%s' ) ) . ')
 					)';
-					$params = array_merge( $params, $categories );
-				}
+						$params = array_merge( $params, $categories );
+					}
 
-				// Add rating filter if needed - exact matching
-				if ( ! empty( $ratings ) ) {
-					$placeholders = implode( ',', array_fill( 0, count( $ratings ), '%s' ) );
-					$sql         .= " AND pm.meta_value IN ($placeholders)";
-					$params       = array_merge( $params, array_map( 'floatval', $ratings ) );
-				}
+					// Add rating filter if needed - exact matching
+					if ( ! empty( $ratings ) ) {
+						$placeholders = implode( ',', array_fill( 0, count( $ratings ), '%s' ) );
+						$sql         .= " AND pm.meta_value IN ($placeholders)";
+						$params       = array_merge( $params, array_map( 'floatval', $ratings ) );
+					}
 
-				// Group by to get counts per rating range
-				$sql .= ' GROUP BY rating_floor';
+					// Group by to get counts per rating range
+					$sql .= ' GROUP BY rating_floor';
 
-				// Prepare and execute the query
-				$query = $wpdb->prepare( $sql, $params );
-				$results = $wpdb->get_results( $query );
+					// Prepare and execute the query
+					$query   = $wpdb->prepare( $sql, $params );
+					$results = $wpdb->get_results( $query );
 
-				// Process results into our standard format
-				if ( $results ) {
-					foreach ( $results as $row ) {
-						$rating_floor = (int) $row->rating_floor;
-						if ( $rating_floor >= 1 && $rating_floor <= 5 ) {
-							$rating_counts[ $rating_floor ] = (int) $row->count;
+					// Process results into our standard format
+					if ( $results ) {
+						foreach ( $results as $row ) {
+							$rating_floor = (int) $row->rating_floor;
+							if ( $rating_floor >= 1 && $rating_floor <= 5 ) {
+								$rating_counts[ $rating_floor ] = (int) $row->count;
+							}
 						}
 					}
+				} catch ( \Exception $e ) {
+					// Silently fail and return empty counts
 				}
-			} catch ( \Exception $e ) {
-				// Silently fail and return empty counts
-			}
 
-			return $rating_counts;
-		}, 900); // Cache for 15 minutes
+				return $rating_counts;
+			},
+			900
+		); // Cache for 15 minutes
 	}
 
 	public static function handle_ajax_search() {
 		// Check nonce
-		if ( ! ArticleSearchHelper::validate_nonce( $_POST['nonce'] ) ) {
+		if ( ! self::validate_nonce( $_POST['nonce'] ) ) {
 			wp_send_json_error( [ 'message' => 'Security check failed' ] );
 			wp_die();
 		}
 
 		// Get search parameters
 		$search_params = [
-			'search' => isset( $_POST['search'] ) ? sanitize_text_field( $_POST['search'] ) : '',
-'authors' => isset( $_POST['authors'] ) && is_array( $_POST['authors'] ) ? array_map( function($author) { return trim(wp_unslash($author)); }, $_POST['authors'] ) : [],			'categories' => isset( $_POST['categories'] ) && is_array( $_POST['categories'] ) ? array_map( 'sanitize_text_field', $_POST['categories'] ) : [],
-			'ratings' => isset( $_POST['ratings'] ) && is_array( $_POST['ratings'] ) ? array_map( 'intval', $_POST['ratings'] ) : [],
-			'vid_only' => isset( $_POST['vid_only'] ) && $_POST['vid_only'] === 'true' ? true : false,
-			'page' => isset( $_POST['page'] ) ? intval( $_POST['page'] ) : 1,
+			'search'         => isset( $_POST['search'] ) ? sanitize_text_field( $_POST['search'] ) : '',
+			'authors'        => isset( $_POST['authors'] ) && is_array( $_POST['authors'] ) ? array_map(
+				function ( $author ) {
+					return trim( wp_unslash( $author ) ); },
+				$_POST['authors']
+			) : [],
+			'categories'     => isset( $_POST['categories'] ) && is_array( $_POST['categories'] ) ? array_map( 'sanitize_text_field', $_POST['categories'] ) : [],
+			'ratings'        => isset( $_POST['ratings'] ) && is_array( $_POST['ratings'] ) ? array_map( 'intval', $_POST['ratings'] ) : [],
+			'vid_only'       => isset( $_POST['vid_only'] ) && $_POST['vid_only'] === 'true' ? true : false,
+			'page'           => isset( $_POST['page'] ) ? intval( $_POST['page'] ) : 1,
 			'posts_per_page' => isset( $_POST['posts_per_page'] ) ? intval( $_POST['posts_per_page'] ) : 12,
-			'show_excerpt' => isset( $_POST['show_excerpt'] ) ? ( $_POST['show_excerpt'] === 'true' ) : true,
-			'layout' => isset( $_POST['layout'] ) && in_array( $_POST['layout'], ['grid', 'list'] ) ? $_POST['layout'] : 'grid',
-			'show_author' => isset( $_POST['show_author'] ) ? ( $_POST['show_author'] === 'true' ) : true,
-			'show_date' => isset( $_POST['show_date'] ) ? ( $_POST['show_date'] === 'true' ) : true,
-			'show_category' => isset( $_POST['show_category'] ) ? ( $_POST['show_category'] === 'true' ) : true,
-			'show_rating' => isset( $_POST['show_rating'] ) ? ( $_POST['show_rating'] === 'true' ) : true,
+			'show_excerpt'   => isset( $_POST['show_excerpt'] ) ? ( $_POST['show_excerpt'] === 'true' ) : true,
+			'layout'         => isset( $_POST['layout'] ) && in_array( $_POST['layout'], [ 'grid', 'list' ] ) ? $_POST['layout'] : 'grid',
+			'show_author'    => isset( $_POST['show_author'] ) ? ( $_POST['show_author'] === 'true' ) : true,
+			'show_date'      => isset( $_POST['show_date'] ) ? ( $_POST['show_date'] === 'true' ) : true,
+			'show_category'  => isset( $_POST['show_category'] ) ? ( $_POST['show_category'] === 'true' ) : true,
+			'show_rating'    => isset( $_POST['show_rating'] ) ? ( $_POST['show_rating'] === 'true' ) : true,
 			'excerpt_length' => isset( $_POST['excerpt_length'] ) ? intval( $_POST['excerpt_length'] ) : 20,
 		];
 
 		// Try to get from cache first
-		$cache_key = self::get_search_cache_key($search_params);
+		$cache_key     = self::get_search_cache_key( $search_params );
 		$cached_result = false;
 		// $cached_result = ArticleCacheHelper::get($cache_key);
-		
-		if (false !== $cached_result) {
+
+		if ( false !== $cached_result ) {
 			// Add cache buster for frontend
 			$cached_result['cache_buster'] = time();
-			wp_send_json_success($cached_result);
+			wp_send_json_success( $cached_result );
 			wp_die();
 		}
 
 		// Extract parameters
-		$search_query = $search_params['search'];
-		$authors = $search_params['authors'];
-		$categories = $search_params['categories'];
-		$ratings = $search_params['ratings'];
-		$vid_only = $search_params['vid_only'];
-		$page = $search_params['page'];
+		$search_query   = $search_params['search'];
+		$authors        = $search_params['authors'];
+		$categories     = $search_params['categories'];
+		$ratings        = $search_params['ratings'];
+		$vid_only       = $search_params['vid_only'];
+		$page           = $search_params['page'];
 		$posts_per_page = $search_params['posts_per_page'];
-		$show_excerpt = $search_params['show_excerpt'];
-		$layout = $search_params['layout'];
-		$show_author = $search_params['show_author'];
-		$show_date = $search_params['show_date'];
-		$show_category = $search_params['show_category'];
-		$show_rating = $search_params['show_rating'];
+		$show_excerpt   = $search_params['show_excerpt'];
+		$layout         = $search_params['layout'];
+		$show_author    = $search_params['show_author'];
+		$show_date      = $search_params['show_date'];
+		$show_category  = $search_params['show_category'];
+		$show_rating    = $search_params['show_rating'];
 		$excerpt_length = $search_params['excerpt_length'];
 
 		try {
@@ -423,7 +431,7 @@ class ArticleSearchHelper {
 				'order'          => 'DESC',
 			];
 
-			$meta_query = [];
+			$meta_query  = [];
 			$has_filters = false;
 
 			// Add search query for title search
@@ -505,7 +513,7 @@ class ArticleSearchHelper {
 					'value'   => '',
 					'compare' => '!=',
 				];
-				$has_filters = true;
+				$has_filters  = true;
 			}
 
 			// Set relation and add meta query
@@ -517,9 +525,9 @@ class ArticleSearchHelper {
 			}
 
 			// Execute query
-			$query = new \WP_Query( $args );
+			$query          = new \WP_Query( $args );
 			$total_articles = $query->found_posts;
-			$max_pages = $query->max_num_pages;
+			$max_pages      = $query->max_num_pages;
 
 			// Remove search filters
 			if ( ! empty( $search_query ) && trim( $search_query ) !== '' ) {
@@ -529,9 +537,9 @@ class ArticleSearchHelper {
 			}
 
 			// Process articles
-			$articles_handler = new ArticlesHandler();
-			$reviews_handler = class_exists( '\LABGENZ_CM\Articles\ReviewsHandler' ) ? new ReviewsHandler() : null;
-			$articles = [];
+			$articles_handler   = new ArticlesHandler();
+			$reviews_handler    = class_exists( '\LABGENZ_CM\Articles\ReviewsHandler' ) ? new ReviewsHandler() : null;
+			$articles           = [];
 			$processed_post_ids = [];
 
 			if ( $query->have_posts() ) {
@@ -568,25 +576,25 @@ class ArticleSearchHelper {
 					$has_thumb = ! empty( $thumb_url );
 
 					$author_image_id = get_post_meta( $post_id, 'mlmmc_author_photo', true );
-					$author_image = $author_image_id ? wp_get_attachment_image_url( $author_image_id, 'thumbnail' ) : '';
+					$author_image    = $author_image_id ? wp_get_attachment_image_url( $author_image_id, 'thumbnail' ) : '';
 
 					if ( ! $author_image ) {
-						$author_id = get_post_field( 'post_author', $post_id );
+						$author_id    = get_post_field( 'post_author', $post_id );
 						$author_image = get_avatar_url( $author_id, [ 'size' => 40 ] );
 					}
 
 					// Get excerpt and video
-					$excerpt = $show_excerpt ? wp_trim_words( get_the_excerpt(), $excerpt_length, '...' ) : '';
+					$excerpt        = $show_excerpt ? wp_trim_words( get_the_excerpt(), $excerpt_length, '...' ) : '';
 					$mlm_video_link = get_post_meta( $post_id, 'mlmmc_video_link', true );
-					$has_video = ! empty( $mlm_video_link );
+					$has_video      = ! empty( $mlm_video_link );
 
 					$author_display_handler = new AuthorDisplayHandler();
-					$author_url = $author_display_handler->get_author_url( $post_id );
+					$author_url             = $author_display_handler->get_author_url( $post_id );
 
 					// Generate stars HTML
 					$stars_html = '';
 					if ( $show_rating && $average_rating > 0 ) {
-						$stars_html = ArticleSearchHelper::generate_stars_html( $average_rating );
+						$stars_html = self::generate_stars_html( $average_rating );
 					}
 
 					$articles[] = [
@@ -611,7 +619,7 @@ class ArticleSearchHelper {
 			}
 
 			// Deduplicate articles
-			$articles = ArticleSearchHelper::deduplicate_articles( $articles );
+			$articles = self::deduplicate_articles( $articles );
 
 			// Generate HTML
 			ob_start();
@@ -633,21 +641,21 @@ class ArticleSearchHelper {
 					$rendered_article_ids[] = $article['id'];
 
 					// Extract variables for template
-					$post_id = $article['id'] ?? 0;
-					$title = $article['title'] ?? '';
-					$permalink = $article['permalink'] ?? '';
-					$excerpt = $article['excerpt'] ?? '';
-					$thumb_url = $article['thumbnail'] ?? '';
-					$has_thumb = $article['has_thumbnail'] ?? false;
-					$author_name = $article['author_name'] ?? '';
-					$author_image = $article['author_image'] ?? '';
-					$category = $article['category'] ?? '';
-					$date = $article['date'] ?? '';
+					$post_id        = $article['id'] ?? 0;
+					$title          = $article['title'] ?? '';
+					$permalink      = $article['permalink'] ?? '';
+					$excerpt        = $article['excerpt'] ?? '';
+					$thumb_url      = $article['thumbnail'] ?? '';
+					$has_thumb      = $article['has_thumbnail'] ?? false;
+					$author_name    = $article['author_name'] ?? '';
+					$author_image   = $article['author_image'] ?? '';
+					$category       = $article['category'] ?? '';
+					$date           = $article['date'] ?? '';
 					$average_rating = $article['average_rating'] ?? 0;
-					$rating_count = $article['rating_count'] ?? 0;
-					$author_url = $article['author_url'] ?? '';
-					$stars_html = $article['stars_html'] ?? '';
-					$has_video = $article['has_video'] ?? false;
+					$rating_count   = $article['rating_count'] ?? 0;
+					$author_url     = $article['author_url'] ?? '';
+					$stars_html     = $article['stars_html'] ?? '';
+					$has_video      = $article['has_video'] ?? false;
 
 					include LABGENZ_CM_PATH . 'templates/articles/article-card-item.php';
 				}
@@ -678,11 +686,11 @@ class ArticleSearchHelper {
 			];
 
 			// Cache result for 10 minutes
-			ArticleCacheHelper::set($cache_key, $result, 600);
+			ArticleCacheHelper::set( $cache_key, $result, 600 );
 
 			// Add cache buster and send response
 			$result['cache_buster'] = time();
-			wp_send_json_success($result);
+			wp_send_json_success( $result );
 			wp_die();
 
 		} catch ( \Exception $e ) {
@@ -700,24 +708,24 @@ class ArticleSearchHelper {
 	 * @param array $search_params Search parameters
 	 * @return string Cache key
 	 */
-	private static function get_search_cache_key($search_params) {
+	private static function get_search_cache_key( $search_params ) {
 		// Create a normalized key based on search parameters
 		$key_data = [
-			'search' => $search_params['search'] ?? '',
-			'authors' => is_array($search_params['authors']) ? sort($search_params['authors']) : [],
-			'categories' => is_array($search_params['categories']) ? sort($search_params['categories']) : [],
-			'ratings' => is_array($search_params['ratings']) ? sort($search_params['ratings']) : [],
-			'vid_only' => $search_params['vid_only'] ?? false,
-			'page' => $search_params['page'] ?? 1,
+			'search'         => $search_params['search'] ?? '',
+			'authors'        => is_array( $search_params['authors'] ) ? sort( $search_params['authors'] ) : [],
+			'categories'     => is_array( $search_params['categories'] ) ? sort( $search_params['categories'] ) : [],
+			'ratings'        => is_array( $search_params['ratings'] ) ? sort( $search_params['ratings'] ) : [],
+			'vid_only'       => $search_params['vid_only'] ?? false,
+			'page'           => $search_params['page'] ?? 1,
 			'posts_per_page' => $search_params['posts_per_page'] ?? 12,
-			'show_excerpt' => $search_params['show_excerpt'] ?? true,
-			'show_author' => $search_params['show_author'] ?? true,
-			'show_date' => $search_params['show_date'] ?? true,
-			'show_category' => $search_params['show_category'] ?? true,
-			'show_rating' => $search_params['show_rating'] ?? true,
+			'show_excerpt'   => $search_params['show_excerpt'] ?? true,
+			'show_author'    => $search_params['show_author'] ?? true,
+			'show_date'      => $search_params['show_date'] ?? true,
+			'show_category'  => $search_params['show_category'] ?? true,
+			'show_rating'    => $search_params['show_rating'] ?? true,
 			'excerpt_length' => $search_params['excerpt_length'] ?? 20,
 		];
-		
-		return ArticleCacheHelper::get_search_cache_key($key_data);
+
+		return ArticleCacheHelper::get_search_cache_key( $key_data );
 	}
 }

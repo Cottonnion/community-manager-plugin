@@ -282,7 +282,7 @@ class GroupTabs {
 		if ( ! $user_id || ! $group_id ) {
 			return false;
 		}
-		if( current_user_can( 'administrator' ) ) {
+		if ( current_user_can( 'administrator' ) ) {
 			return true;
 		}
 		// Check if user is an admin of the group

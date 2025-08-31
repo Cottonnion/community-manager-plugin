@@ -79,7 +79,7 @@ class WooCommerceHelper {
 		// Direct checkout functionality
 		add_filter( 'woocommerce_add_to_cart_redirect', [ CheckoutHandler::class, 'redirect_to_checkout' ] );
 		add_action( 'woocommerce_add_to_cart', [ CheckoutHandler::class, 'add_to_cart_message' ], 10, 6 );
-		add_filter( 'wp_head', [ CheckoutHandler::class, 'maybe_remove_billing_fields' ] );   
+		add_filter( 'wp_head', [ CheckoutHandler::class, 'maybe_remove_billing_fields' ] );
 
 		// Subscription processing
 		add_action( 'woocommerce_payment_complete', [ SubscriptionProcessor::class, 'auto_complete_subscription_order' ], 1 );

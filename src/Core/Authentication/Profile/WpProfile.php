@@ -10,20 +10,20 @@ namespace LABGENZ_CM\Core\Authentication\Profile;
  */
 class WpProfile {
 
-    /**
-     * Register hooks to include template in user profile
-     */
-    public function __construct() {
-        add_action('show_user_profile', [$this, 'load_template']);
-        add_action('edit_user_profile', [$this, 'load_template']);
-    }
+	/**
+	 * Register hooks to include template in user profile
+	 */
+	public function __construct() {
+		add_action( 'show_user_profile', [ $this, 'load_template' ] );
+		add_action( 'edit_user_profile', [ $this, 'load_template' ] );
+	}
 
-    /**
-     * Include the alias emails template
-     *
-     * @param \WP_User $user
-     */
-    public function load_template( $user ) {
-        require_once LABGENZ_CM_TEMPLATES_DIR . '/wp-profile/alias-emails.php';
-    }
+	/**
+	 * Include the alias emails template
+	 *
+	 * @param \WP_User $user
+	 */
+	public function load_template( $user ) {
+		require_once LABGENZ_CM_TEMPLATES_DIR . '/wp-profile/alias-emails.php';
+	}
 }

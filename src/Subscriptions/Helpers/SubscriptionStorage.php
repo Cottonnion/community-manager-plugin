@@ -35,7 +35,7 @@ class SubscriptionStorage {
 	/**
 	 * Get the highest user subscription based on a defined priority order.
 	 *
-	 * @param int $user_id User ID
+	 * @param int        $user_id User ID
 	 * @param array|null $priority_order Optional. Array of subscription types in descending priority.
 	 * @return array|null The highest priority active subscription, or null if none found.
 	 */
@@ -72,7 +72,7 @@ class SubscriptionStorage {
 	/**
 	 * Get the highest user subscription name (beautified).
 	 *
-	 * @param int $user_id User ID
+	 * @param int        $user_id User ID
 	 * @param array|null $priority_order Optional. Array of subscription types in descending priority.
 	 * @return string|null Subscription name, or null if none.
 	 */

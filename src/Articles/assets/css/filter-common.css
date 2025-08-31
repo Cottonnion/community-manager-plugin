@@ -181,16 +181,16 @@
 
 /* New improved video filter section styles */
 .mlmmc-video-filter-section {
-    /* margin-top: 15px; */
-    padding: 9px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    border: 1px solid #e9ecef;
-    display: flex;
+	/* margin-top: 15px; */
+	padding: 9px;
+	background: #f8f9fa;
+	border-radius: 8px;
+	border: 1px solid #e9ecef;
+	display: flex;
 }
 .mlmmc-video-filter-wrapper {
-    display: flex;
-    padding-right: 10px;
+	display: flex;
+	padding-right: 10px;
 }
 
 .mlmmc-video-checkbox-label {

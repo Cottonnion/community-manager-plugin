@@ -12,7 +12,7 @@ use LABGENZ_CM\Articles\Authors\AuthorDisplayHandler;
  */
 class ArticleCardDisplayHandler {
 	public const POST_TYPE = 'mlmmc_artiicle';
-	public const SHORTCODE  = 'mlmmc_articles';
+	public const SHORTCODE = 'mlmmc_articles';
 
 	/**
 	 * Asset handles
@@ -23,9 +23,9 @@ class ArticleCardDisplayHandler {
 	/**
 	 * AJAX actions
 	 */
-	public const AJAX_ACTION_SEARCH     = 'mlmmc_articles_search';
-	public const AJAX_ACTION_AUTHORS    = 'mlmmc_get_article_authors';
-	public const AJAX_ACTION_CATEGORIES = 'mlmmc_get_article_categories';
+	public const AJAX_ACTION_SEARCH       = 'mlmmc_articles_search';
+	public const AJAX_ACTION_AUTHORS      = 'mlmmc_get_article_authors';
+	public const AJAX_ACTION_CATEGORIES   = 'mlmmc_get_article_categories';
 	public const AJAX_ACTION_CLEAR_CACHES = 'mlmmc_clear_article_caches';
 
 	/**
@@ -43,8 +43,10 @@ class ArticleCardDisplayHandler {
 	 * Initialize class hooks.
 	 */
 	private function init_hooks(): void {
-		add_action('wp_head', function() {
-			?>
+		add_action(
+			'wp_head',
+			function () {
+				?>
 				<style>
 					.container {
 						max-width: 1450px !important;
@@ -53,12 +55,13 @@ class ArticleCardDisplayHandler {
 						width: 100%; */
 					}
 				</style>
-			<?php
-		});
+				<?php
+			}
+		);
 
 		add_shortcode( self::SHORTCODE, [ $this, 'render_articles_shortcode' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'register_assets' ] );
-		
+
 		// AJAX handlers
 		add_action( 'wp_ajax_' . self::AJAX_ACTION_SEARCH, [ $this, 'ajax_search_articles' ] );
 		add_action( 'wp_ajax_nopriv_' . self::AJAX_ACTION_SEARCH, [ $this, 'ajax_search_articles' ] );
@@ -69,8 +72,7 @@ class ArticleCardDisplayHandler {
 		add_action( 'wp_ajax_' . self::AJAX_ACTION_CATEGORIES, [ $this, 'ajax_get_article_categories' ] );
 		add_action( 'wp_ajax_nopriv_' . self::AJAX_ACTION_CATEGORIES, [ $this, 'ajax_get_article_categories' ] );
 
-        add_action( 'wp_ajax_' . self::AJAX_ACTION_CLEAR_CACHES, [ 'LABGENZ_CM\\Articles\\Helpers\\ArticleCacheHelper', 'clear_article_caches' ] );
-
+		add_action( 'wp_ajax_' . self::AJAX_ACTION_CLEAR_CACHES, [ 'LABGENZ_CM\\Articles\\Helpers\\ArticleCacheHelper', 'clear_article_caches' ] );
 
 		add_action( 'labgenz_cm_after_article_header', [ $this, 'render_article_video' ], 20, 1 );
 	}
@@ -156,270 +158,281 @@ class ArticleCardDisplayHandler {
 		);
 	}
 
-/**
- * Render the articles shortcode with optimized database queries.
- *
- * @param array $atts Shortcode attributes
- * @return string
- */
-public function render_articles_shortcode( array $atts = [] ): string {
-	// Enqueue assets
-	wp_enqueue_style( self::ASSET_HANDLE_CSS . '-improved-dropdown' );
-	wp_enqueue_style( self::ASSET_HANDLE_CSS );
-	wp_enqueue_script( self::ASSET_HANDLE_JS . '-author' );
-	wp_enqueue_script( self::ASSET_HANDLE_JS . '-category' );
-	wp_enqueue_script( self::ASSET_HANDLE_JS );
-	wp_enqueue_script( self::ASSET_HANDLE_JS . '-rating' );
+	/**
+	 * Render the articles shortcode with optimized database queries.
+	 *
+	 * @param array $atts Shortcode attributes
+	 * @return string
+	 */
+	public function render_articles_shortcode( array $atts = [] ): string {
+		// Enqueue assets
+		wp_enqueue_style( self::ASSET_HANDLE_CSS . '-improved-dropdown' );
+		wp_enqueue_style( self::ASSET_HANDLE_CSS );
+		wp_enqueue_script( self::ASSET_HANDLE_JS . '-author' );
+		wp_enqueue_script( self::ASSET_HANDLE_JS . '-category' );
+		wp_enqueue_script( self::ASSET_HANDLE_JS );
+		wp_enqueue_script( self::ASSET_HANDLE_JS . '-rating' );
 
-	// Get cached categories with counts for localization
-	$categories_with_counts = $this->get_article_counts_by_meta( 'mlmmc_article_category' );
+		// Get cached categories with counts for localization
+		$categories_with_counts = $this->get_article_counts_by_meta( 'mlmmc_article_category' );
 
-	// Localize script
-	wp_localize_script(
-		self::ASSET_HANDLE_JS,
-		'mlmmcArticlesData',
-		[
-			'ajaxUrl'              => admin_url( 'admin-ajax.php' ),
-			'searchAction'         => self::AJAX_ACTION_SEARCH,
-			'authorsAction'        => self::AJAX_ACTION_AUTHORS,
-			'categoriesAction'     => self::AJAX_ACTION_CATEGORIES,
-			'nonce'                => wp_create_nonce( 'mlmmc_articles_ajax_nonce' ),
-			'categoriesWithCounts' => $categories_with_counts,
-			'i18n'                 => [
-				'selectCategories' => __( 'Select categories', 'labgenz-community-management' ),
-				'clearAll'         => __( 'Clear All', 'labgenz-community-management' ),
-				'apply'            => __( 'Apply', 'labgenz-community-management' ),
-				'noResults'        => __( 'No results found', 'labgenz-community-management' ),
+		// Localize script
+		wp_localize_script(
+			self::ASSET_HANDLE_JS,
+			'mlmmcArticlesData',
+			[
+				'ajaxUrl'              => admin_url( 'admin-ajax.php' ),
+				'searchAction'         => self::AJAX_ACTION_SEARCH,
+				'authorsAction'        => self::AJAX_ACTION_AUTHORS,
+				'categoriesAction'     => self::AJAX_ACTION_CATEGORIES,
+				'nonce'                => wp_create_nonce( 'mlmmc_articles_ajax_nonce' ),
+				'categoriesWithCounts' => $categories_with_counts,
+				'i18n'                 => [
+					'selectCategories' => __( 'Select categories', 'labgenz-community-management' ),
+					'clearAll'         => __( 'Clear All', 'labgenz-community-management' ),
+					'apply'            => __( 'Apply', 'labgenz-community-management' ),
+					'noResults'        => __( 'No results found', 'labgenz-community-management' ),
+				],
+			]
+		);
+
+		$atts = shortcode_atts(
+			[
+				'posts_per_page' => 20,
+				'category'       => '',
+				'author'         => '',
+				'orderby'        => 'date',
+				'order'          => 'DESC',
+				'columns'        => 4,
+				'layout'         => 'list',
+				'show_excerpt'   => 'true',
+				'excerpt_length' => 20,
+				'show_author'    => 'true',
+				'show_date'      => 'true',
+				'show_category'  => 'true',
+				'show_rating'    => 'true',
+				'show_search'    => 'true',
+				'show_filters'   => 'true',
 			],
-		]
-	);
+			$atts
+		);
 
-	$atts = shortcode_atts(
-		[
-			'posts_per_page' => 20,
-			'category'       => '',
-			'author'         => '',
-			'orderby'        => 'date',
-			'order'          => 'DESC',
-			'columns'        => 4,
-			'layout'         => 'list',
-			'show_excerpt'   => 'true',
-			'excerpt_length' => 20,
-			'show_author'    => 'true',
-			'show_date'      => 'true',
-			'show_category'  => 'true',
-			'show_rating'    => 'true',
-			'show_search'    => 'true',
-			'show_filters'   => 'true',
-		],
-		$atts
-	);
+		// Sanitize attributes
+		$posts_per_page = intval( $atts['posts_per_page'] );
+		$columns        = intval( $atts['columns'] );
+		$excerpt_length = intval( $atts['excerpt_length'] );
+		$layout         = in_array( $atts['layout'], [ 'grid', 'list' ] ) ? $atts['layout'] : 'grid';
+		$show_excerpt   = $atts['show_excerpt'] === 'true';
+		$show_author    = $atts['show_author'] === 'true';
+		$show_date      = $atts['show_date'] === 'true';
+		$show_category  = $atts['show_category'] === 'true';
+		$show_rating    = $atts['show_rating'] === 'true';
+		$show_search    = $atts['show_search'] === 'true';
+		$show_filters   = $atts['show_filters'] === 'true';
 
-	// Sanitize attributes
-	$posts_per_page = intval( $atts['posts_per_page'] );
-	$columns        = intval( $atts['columns'] );
-	$excerpt_length = intval( $atts['excerpt_length'] );
-	$layout         = in_array( $atts['layout'], ['grid', 'list'] ) ? $atts['layout'] : 'grid';
-	$show_excerpt   = $atts['show_excerpt'] === 'true';
-	$show_author    = $atts['show_author'] === 'true';
-	$show_date      = $atts['show_date'] === 'true';
-	$show_category  = $atts['show_category'] === 'true';
-	$show_rating    = $atts['show_rating'] === 'true';
-	$show_search    = $atts['show_search'] === 'true';
-	$show_filters   = $atts['show_filters'] === 'true';
-
-	// Build query args
-	$args = [
-		'post_type'      => self::POST_TYPE,
-		'post_status'    => 'publish',
-		'posts_per_page' => $posts_per_page,
-		'orderby'        => $atts['orderby'],
-		'order'          => $atts['order'],
-	];
-
-	// Add meta queries for category/author filters
-	if ( ! empty( $atts['category'] ) ) {
-		$args['meta_query'][] = [
-			'key'     => 'mlmmc_article_category',
-			'value'   => $atts['category'],
-			'compare' => '=',
+		// Build query args
+		$args = [
+			'post_type'      => self::POST_TYPE,
+			'post_status'    => 'publish',
+			'posts_per_page' => $posts_per_page,
+			'orderby'        => $atts['orderby'],
+			'order'          => $atts['order'],
 		];
-	}
 
-	if ( ! empty( $atts['author'] ) ) {
-		$args['meta_query'][] = [
-			'key'     => 'mlmmc_article_author',
-			'value'   => $atts['author'],
-			'compare' => '=',
-		];
-	}
-
-	if ( isset( $args['meta_query'] ) && count( $args['meta_query'] ) > 1 ) {
-		$args['meta_query']['relation'] = 'AND';
-	}
-
-	// Execute main query
-	$query = new \WP_Query( $args );
-	$total_articles = $query->found_posts;
-	$max_pages = $query->max_num_pages;
-
-	// Get all post IDs for bulk meta loading
-	$post_ids = [];
-	if ( $query->have_posts() ) {
-		while ( $query->have_posts() ) {
-			$query->the_post();
-			$post_ids[] = get_the_ID();
-		}
-		wp_reset_postdata();
-		$query->rewind_posts();
-	}
-
-	// OPTIMIZATION: Bulk load all meta data in single queries
-	$all_meta = [];
-	$author_images = [];
-	$ratings = [];
-	$rating_counts = [];
-
-	if ( ! empty( $post_ids ) ) {
-		// Load all postmeta in one query
-		global $wpdb;
-		$post_ids_str = implode( ',', array_map( 'intval', $post_ids ) );
-		$meta_results = $wpdb->get_results( $wpdb->prepare(
-			"SELECT post_id, meta_key, meta_value FROM {$wpdb->postmeta} 
-			 WHERE post_id IN ($post_ids_str) 
-			 AND meta_key IN ('mlmmc_article_author', 'mlmmc_article_category', 'mlmmc_author_photo', 'mlmmc_video_link', %s)",
-			ReviewsHandler::META_KEY_RATING
-		) );
-
-		// Organize meta by post ID
-		foreach ( $meta_results as $meta ) {
-			$all_meta[ $meta->post_id ][ $meta->meta_key ] = $meta->meta_value;
-		}
-
-		// Initialize handlers once
-		$articles_handler = new ArticlesHandler();
-		$reviews_handler = class_exists( '\LABGENZ_CM\Articles\ReviewsHandler' ) ? new ReviewsHandler() : null;
-
-		// If we have reviews handler, get ratings in bulk
-		if ( $reviews_handler ) {
-			foreach ( $post_ids as $post_id ) {
-				$ratings[ $post_id ] = method_exists( $reviews_handler, 'get_average_rating' ) ?
-					$reviews_handler->get_average_rating( $post_id ) : 0;
-				$rating_counts[ $post_id ] = method_exists( $reviews_handler, 'get_rating_count' ) ?
-					$reviews_handler->get_rating_count( $post_id ) : 0;
-			}
-		}
-	}
-
-	// Get cached filter data
-	$categories = $this->get_article_categories();
-	$categories_with_counts = $this->get_article_categories_with_counts();
-	$rating_counts_filter = $this->get_rating_counts();
-
-	// Process articles with pre-loaded data
-	$articles = [];
-	if ( $query->have_posts() ) {
-		while ( $query->have_posts() ) {
-			$query->the_post();
-			$post_id = get_the_ID();
-
-			// Get metadata from bulk-loaded data
-			$post_meta = $all_meta[ $post_id ] ?? [];
-			
-			$author_name = $post_meta['mlmmc_article_author'] ?? '';
-			if ( empty( $author_name ) ) {
-				$author_name = get_the_author();
-			}
-
-			$category = $post_meta['mlmmc_article_category'] ?? '';
-			$average_rating = $ratings[ $post_id ] ?? 0;
-			$rating_count = $rating_counts[ $post_id ] ?? 0;
-
-			// Get images
-			$thumb_url = get_the_post_thumbnail_url( $post_id, 'medium' );
-			$has_thumb = ! empty( $thumb_url );
-
-			$author_image_id = $post_meta['mlmmc_author_photo'] ?? '';
-			$author_image = $author_image_id ? wp_get_attachment_image_url( $author_image_id, 'thumbnail' ) : '';
-
-			if ( ! $author_image ) {
-				$author_id = get_post_field( 'post_author', $post_id );
-				$author_image = get_avatar_url( $author_id, [ 'size' => 40 ] );
-			}
-
-			// Get excerpt and video status
-			$excerpt = $show_excerpt ? wp_trim_words( get_the_excerpt(), $excerpt_length, '...' ) : '';
-			$mlm_video_link = $post_meta['mlmmc_video_link'] ?? '';
-			$has_video = ! empty( $mlm_video_link );
-
-			$author_display_handler = new AuthorDisplayHandler();
-			$author_url = $author_display_handler->get_author_url($post_id);
-
-			$articles[] = [
-				'id'             => $post_id,
-				'title'          => get_the_title(),
-				'permalink'      => get_permalink(),
-				'excerpt'        => $excerpt,
-				'thumbnail'      => $thumb_url,
-				'author_name'    => $author_name,
-				'author_image'   => $author_image,
-				'category'       => $category,
-				'date'           => get_the_date( 'M j, Y' ),
-				'average_rating' => $average_rating,
-				'rating_count'   => $rating_count,
-				'has_video'      => $has_video,
-				'author_url'	 => $author_url
+		// Add meta queries for category/author filters
+		if ( ! empty( $atts['category'] ) ) {
+			$args['meta_query'][] = [
+				'key'     => 'mlmmc_article_category',
+				'value'   => $atts['category'],
+				'compare' => '=',
 			];
 		}
-		wp_reset_postdata();
+
+		if ( ! empty( $atts['author'] ) ) {
+			$args['meta_query'][] = [
+				'key'     => 'mlmmc_article_author',
+				'value'   => $atts['author'],
+				'compare' => '=',
+			];
+		}
+
+		if ( isset( $args['meta_query'] ) && count( $args['meta_query'] ) > 1 ) {
+			$args['meta_query']['relation'] = 'AND';
+		}
+
+		// Execute main query
+		$query          = new \WP_Query( $args );
+		$total_articles = $query->found_posts;
+		$max_pages      = $query->max_num_pages;
+
+		// Get all post IDs for bulk meta loading
+		$post_ids = [];
+		if ( $query->have_posts() ) {
+			while ( $query->have_posts() ) {
+				$query->the_post();
+				$post_ids[] = get_the_ID();
+			}
+			wp_reset_postdata();
+			$query->rewind_posts();
+		}
+
+		// OPTIMIZATION: Bulk load all meta data in single queries
+		$all_meta      = [];
+		$author_images = [];
+		$ratings       = [];
+		$rating_counts = [];
+
+		if ( ! empty( $post_ids ) ) {
+			// Load all postmeta in one query
+			global $wpdb;
+			$post_ids_str = implode( ',', array_map( 'intval', $post_ids ) );
+			$meta_results = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT post_id, meta_key, meta_value FROM {$wpdb->postmeta} 
+			 WHERE post_id IN ($post_ids_str) 
+			 AND meta_key IN ('mlmmc_article_author', 'mlmmc_article_category', 'mlmmc_author_photo', 'mlmmc_video_link', %s)",
+					ReviewsHandler::META_KEY_RATING
+				)
+			);
+
+			// Organize meta by post ID
+			foreach ( $meta_results as $meta ) {
+				$all_meta[ $meta->post_id ][ $meta->meta_key ] = $meta->meta_value;
+			}
+
+			// Initialize handlers once
+			$articles_handler = new ArticlesHandler();
+			$reviews_handler  = class_exists( '\LABGENZ_CM\Articles\ReviewsHandler' ) ? new ReviewsHandler() : null;
+
+			// If we have reviews handler, get ratings in bulk
+			if ( $reviews_handler ) {
+				foreach ( $post_ids as $post_id ) {
+					$ratings[ $post_id ]       = method_exists( $reviews_handler, 'get_average_rating' ) ?
+					$reviews_handler->get_average_rating( $post_id ) : 0;
+					$rating_counts[ $post_id ] = method_exists( $reviews_handler, 'get_rating_count' ) ?
+					$reviews_handler->get_rating_count( $post_id ) : 0;
+				}
+			}
+		}
+
+		// Get cached filter data
+		$categories             = $this->get_article_categories();
+		$categories_with_counts = $this->get_article_categories_with_counts();
+		$rating_counts_filter   = $this->get_rating_counts();
+
+		// Process articles with pre-loaded data
+		$articles = [];
+		if ( $query->have_posts() ) {
+			while ( $query->have_posts() ) {
+				$query->the_post();
+				$post_id = get_the_ID();
+
+				// Get metadata from bulk-loaded data
+				$post_meta = $all_meta[ $post_id ] ?? [];
+
+				$author_name = $post_meta['mlmmc_article_author'] ?? '';
+				if ( empty( $author_name ) ) {
+					$author_name = get_the_author();
+				}
+
+				$category       = $post_meta['mlmmc_article_category'] ?? '';
+				$average_rating = $ratings[ $post_id ] ?? 0;
+				$rating_count   = $rating_counts[ $post_id ] ?? 0;
+
+				// Get images
+				$thumb_url = get_the_post_thumbnail_url( $post_id, 'medium' );
+				$has_thumb = ! empty( $thumb_url );
+
+				$author_image_id = $post_meta['mlmmc_author_photo'] ?? '';
+				$author_image    = $author_image_id ? wp_get_attachment_image_url( $author_image_id, 'thumbnail' ) : '';
+
+				if ( ! $author_image ) {
+					$author_id    = get_post_field( 'post_author', $post_id );
+					$author_image = get_avatar_url( $author_id, [ 'size' => 40 ] );
+				}
+
+				// Get excerpt and video status
+				$excerpt        = $show_excerpt ? wp_trim_words( get_the_excerpt(), $excerpt_length, '...' ) : '';
+				$mlm_video_link = $post_meta['mlmmc_video_link'] ?? '';
+				$has_video      = ! empty( $mlm_video_link );
+
+				$author_display_handler = new AuthorDisplayHandler();
+				$author_url             = $author_display_handler->get_author_url( $post_id );
+
+				$articles[] = [
+					'id'             => $post_id,
+					'title'          => get_the_title(),
+					'permalink'      => get_permalink(),
+					'excerpt'        => $excerpt,
+					'thumbnail'      => $thumb_url,
+					'author_name'    => $author_name,
+					'author_image'   => $author_image,
+					'category'       => $category,
+					'date'           => get_the_date( 'M j, Y' ),
+					'average_rating' => $average_rating,
+					'rating_count'   => $rating_count,
+					'has_video'      => $has_video,
+					'author_url'     => $author_url,
+				];
+			}
+			wp_reset_postdata();
+		}
+
+		// Include template
+		ob_start();
+		$template_path = LABGENZ_CM_PATH . 'templates/articles/article-cards.php';
+		include $template_path;
+		return ob_get_clean();
 	}
 
-	// Include template
-	ob_start();
-	$template_path = LABGENZ_CM_PATH . 'templates/articles/article-cards.php';
-	include $template_path;
-	return ob_get_clean();
-}
+	/**
+	 * Get all article categories with caching.
+	 *
+	 * @return array
+	 */
+	public function get_article_categories(): array {
+		$cache_key = ArticleCacheHelper::get_categories_cache_key( self::POST_TYPE );
 
-    /**
-     * Get all article categories with caching.
-     *
-     * @return array
-     */
-    public function get_article_categories(): array {
-        $cache_key = ArticleCacheHelper::get_categories_cache_key(self::POST_TYPE);
-        
-        return ArticleCacheHelper::get_or_set($cache_key, function() {
-            return ArticleMetaHelper::get_article_categories(self::POST_TYPE);
-        });
-    }
+		return ArticleCacheHelper::get_or_set(
+			$cache_key,
+			function () {
+				return ArticleMetaHelper::get_article_categories( self::POST_TYPE );
+			}
+		);
+	}
 
-    /**
-     * Get all article authors with caching.
-     *
-     * @return array
-     */
-    public function get_article_authors(): array {
-        $cache_key = ArticleCacheHelper::get_authors_cache_key(self::POST_TYPE);
-        
-        return ArticleCacheHelper::get_or_set($cache_key, function() {
-            return ArticleMetaHelper::get_article_authors(self::POST_TYPE);
-        });
-    }
+	/**
+	 * Get all article authors with caching.
+	 *
+	 * @return array
+	 */
+	public function get_article_authors(): array {
+		$cache_key = ArticleCacheHelper::get_authors_cache_key( self::POST_TYPE );
 
-    /**
-     * Get article counts grouped by meta key with caching.
-     *
-     * @param string $meta_key The meta key to group by.
-     * @return array
-     */
-    public function get_article_counts_by_meta($meta_key) {
-        $cache_key = ArticleCacheHelper::get_counts_cache_key($meta_key, self::POST_TYPE);
-        
-        return ArticleCacheHelper::get_or_set($cache_key, function() use ($meta_key) {
-            return ArticleMetaHelper::get_article_counts_by_meta($meta_key, self::POST_TYPE);
-        });
-    }
+		return ArticleCacheHelper::get_or_set(
+			$cache_key,
+			function () {
+				return ArticleMetaHelper::get_article_authors( self::POST_TYPE );
+			}
+		);
+	}
+
+	/**
+	 * Get article counts grouped by meta key with caching.
+	 *
+	 * @param string $meta_key The meta key to group by.
+	 * @return array
+	 */
+	public function get_article_counts_by_meta( $meta_key ) {
+		$cache_key = ArticleCacheHelper::get_counts_cache_key( $meta_key, self::POST_TYPE );
+
+		return ArticleCacheHelper::get_or_set(
+			$cache_key,
+			function () use ( $meta_key ) {
+				return ArticleMetaHelper::get_article_counts_by_meta( $meta_key, self::POST_TYPE );
+			}
+		);
+	}
 
 	/**
 	 * AJAX handler for searching articles with caching.
@@ -427,31 +440,31 @@ public function render_articles_shortcode( array $atts = [] ): string {
 	public function ajax_search_articles(): void {
 		// Get search parameters
 		$search_params = [
-			'search_term' => sanitize_text_field($_POST['search_term'] ?? ''),
-			'authors' => $_POST['authors'] ?? [],
-			'categories' => $_POST['categories'] ?? [],
-			'ratings' => $_POST['ratings'] ?? [],
-			'page' => intval($_POST['page'] ?? 1),
-			'posts_per_page' => intval($_POST['posts_per_page'] ?? 20)
+			'search_term'    => sanitize_text_field( $_POST['search_term'] ?? '' ),
+			'authors'        => $_POST['authors'] ?? [],
+			'categories'     => $_POST['categories'] ?? [],
+			'ratings'        => $_POST['ratings'] ?? [],
+			'page'           => intval( $_POST['page'] ?? 1 ),
+			'posts_per_page' => intval( $_POST['posts_per_page'] ?? 20 ),
 		];
-		
+
 		// Try to get from cache first
-		$cache_key = ArticleCacheHelper::get_search_cache_key($search_params);
-		$cached_result = ArticleCacheHelper::get($cache_key);
-		
-		if (false !== $cached_result) {
-			wp_send_json_success($cached_result);
+		$cache_key     = ArticleCacheHelper::get_search_cache_key( $search_params );
+		$cached_result = ArticleCacheHelper::get( $cache_key );
+
+		if ( false !== $cached_result ) {
+			wp_send_json_success( $cached_result );
 			wp_die();
 		}
-		
+
 		// If not cached, perform search and cache result
 		ob_start();
-		ArticleSearchHelper::handle_ajax_search(self::POST_TYPE);
+		ArticleSearchHelper::handle_ajax_search( self::POST_TYPE );
 		$output = ob_get_clean();
-		
+
 		// Cache the result for 15 minutes (search results change frequently)
-		ArticleCacheHelper::set($cache_key, $output, 900);
-		
+		ArticleCacheHelper::set( $cache_key, $output, 900 );
+
 		echo $output;
 		wp_die();
 	}
@@ -572,27 +585,34 @@ public function render_articles_shortcode( array $atts = [] ): string {
 	 * @return array
 	 */
 	private function get_article_categories_with_counts(): array {
-		$cache_key = ArticleCacheHelper::get_counts_cache_key('categories_with_counts', self::POST_TYPE);
-		
-		return ArticleCacheHelper::get_or_set($cache_key, function() {
-			return ArticleMetaHelper::get_article_categories_with_counts(self::POST_TYPE);
-		});
+		$cache_key = ArticleCacheHelper::get_counts_cache_key( 'categories_with_counts', self::POST_TYPE );
+
+		return ArticleCacheHelper::get_or_set(
+			$cache_key,
+			function () {
+				return ArticleMetaHelper::get_article_categories_with_counts( self::POST_TYPE );
+			}
+		);
 	}
 
 	/**
 	 * Get rating counts with caching.
 	 *
 	 * @param array $authors
-	 * @param array $categories 
+	 * @param array $categories
 	 * @param array $ratings
 	 * @return array
 	 */
-	public function get_rating_counts(array $authors = [], array $categories = [], array $ratings = []): array {
-		$cache_key = ArticleCacheHelper::get_ratings_cache_key($authors, $categories, $ratings);
-		
-		return ArticleCacheHelper::get_or_set($cache_key, function() use ($authors, $categories, $ratings) {
-			return ArticleSearchHelper::get_rating_counts($authors, $categories, $ratings);
-		}, 1800); // 30 minutes for search-specific data
+	public function get_rating_counts( array $authors = [], array $categories = [], array $ratings = [] ): array {
+		$cache_key = ArticleCacheHelper::get_ratings_cache_key( $authors, $categories, $ratings );
+
+		return ArticleCacheHelper::get_or_set(
+			$cache_key,
+			function () use ( $authors, $categories, $ratings ) {
+				return ArticleSearchHelper::get_rating_counts( $authors, $categories, $ratings );
+			},
+			1800
+		); // 30 minutes for search-specific data
 	}
 
 	/**

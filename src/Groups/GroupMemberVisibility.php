@@ -85,7 +85,7 @@ class GroupMemberVisibility {
 	/**
 	 * Filter group admins for bp_group_list_admins().
 	 *
-	 * @param array $admins Array of admin objects.
+	 * @param array  $admins Array of admin objects.
 	 * @param object $group Group object.
 	 * @return array Filtered array of admin objects.
 	 */

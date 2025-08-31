@@ -67,7 +67,7 @@ class UserMenuHandler {
 			}
 
 			// Add Organization Access button
-			if ( is_user_logged_in() && ! current_user_can( 'manage_options') && SubscriptionHandler::user_has_resource_access( $user_id, 'organization_access' ) ) {
+			if ( is_user_logged_in() && ! current_user_can( 'manage_options' ) && SubscriptionHandler::user_has_resource_access( $user_id, 'organization_access' ) ) {
 				$org_button = '<li>
 					<button id="labgenz-org-access-btn"><span></span></button>
 				</li>';
@@ -77,5 +77,4 @@ class UserMenuHandler {
 
 		return $items;
 	}
-
 }
