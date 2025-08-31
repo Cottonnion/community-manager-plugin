@@ -30,7 +30,7 @@ function render_alias_emails_field(): void {
         <label for="alias_emails" class="alias-emails-label">
             <?php esc_html_e('Other Emails', 'labgenz-cm'); ?>
             <span class="woocommerce-help-tip" 
-            data-tip="<?php esc_attr_e('Add additional email addresses here. Each will require verification. Once verified, they can be used as alternative logins alongside your primary email.', 'labgenz-cm'); ?>">?</span>
+            data-this-mean="<?php esc_attr_e('Add additional email addresses here. Each will require verification. Once verified, they can be used as alternative logins alongside your primary email.', 'labgenz-cm'); ?>">?</span>
         </label>
 
         <input 
@@ -47,9 +47,9 @@ function render_alias_emails_field(): void {
                     <?php echo esc_html($alias->alias_email); ?>
                     <span class="remove-tag">×</span>
                     <?php if ($alias->is_verified): ?>
-                        <span data-this-mean="This email address is not verified yet and cannot be used to login." class="verified-badge"><?php esc_html_e('Verified', 'labgenz-cm'); ?></span>
+                        <span data-this-mean="This email address is verified and can be used to login." class="verified-badge"><?php esc_html_e('Verified', 'labgenz-cm'); ?></span>
                     <?php else: ?>
-                        <span data-this-mean="This email address is verified and can be used to login." class="unverified-badge"><?php esc_html_e('Unverified', 'labgenz-cm'); ?></span>
+                        <span data-this-mean="This email address is not verified yet and cannot be used to login." class="unverified-badge"><?php esc_html_e('Unverified', 'labgenz-cm'); ?></span>
                     <?php endif; ?>
                 </li>
             <?php endforeach; ?>

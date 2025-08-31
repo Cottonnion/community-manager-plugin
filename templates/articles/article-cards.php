@@ -50,8 +50,8 @@ if (!defined('ABSPATH')) {
         <?php if ($show_search): ?>
         <div class="mlmmc-search-row">
             <div class="mlmmc-search-box">
-                <input type="text" id="mlmmc-search-input" placeholder="<?php _e('Search articles by name or content...', 'labgenz-community-management'); ?>">
-                <button id="mlmmc-search-button" aria-label="<?php _e('Search', 'labgenz-community-management'); ?>">
+                <input type="text" id="mlmmc-search-input" placeholder="<?php _e('Search articles by name or content...', 'labgenz-community-management'); ?>" data-this-mean="Type keywords to find specific articles">
+                <button id="mlmmc-search-button" aria-label="<?php _e('Search', 'labgenz-community-management'); ?>" data-this-mean="Click to search for articles">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                         <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
                     </svg>
@@ -60,12 +60,12 @@ if (!defined('ABSPATH')) {
 
             <!-- Layout Toggle -->
             <div class="mlmmc-layout-toggle">
-                <button id="mlmmc-grid-view" class="mlmmc-layout-btn <?php echo $layout === 'grid' ? 'active' : ''; ?>" title="<?php _e('Grid View', 'labgenz-community-management'); ?>">
+                <button data-this-mean="View the articles in grid layout" id="mlmmc-grid-view" class="mlmmc-layout-btn <?php echo $layout === 'grid' ? 'active' : ''; ?>" title="<?php _e('Grid View', 'labgenz-community-management'); ?>">
                     <svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
                         <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5v-3zm8 0A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5v-3zm-8 8A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5v-3zm8 0A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5v-3z"/>
                     </svg>
                 </button>
-                <button id="mlmmc-list-view" class="mlmmc-layout-btn <?php echo $layout === 'list' ? 'active' : ''; ?>" title="<?php _e('List View', 'labgenz-community-management'); ?>">
+                <button data-this-mean="View the articles in list layout" id="mlmmc-list-view" class="mlmmc-layout-btn <?php echo $layout === 'list' ? 'active' : ''; ?>" title="<?php _e('List View', 'labgenz-community-management'); ?>">
                     <svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
                         <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
                     </svg>
@@ -75,31 +75,31 @@ if (!defined('ABSPATH')) {
             
             <?php if ($show_filters): ?>
                 <div class="mlmmc-filter-dropdown">
-                    <button id="mlmmc-author-filter-toggle">
+                    <button id="mlmmc-author-filter-toggle" data-this-mean="Filter articles by who wrote them">
                         <span><?php _e('show by Author', 'labgenz-community-management'); ?></span>
                         <span class="chevron-icon">▼</span>
                     </button>
                     <div id="mlmmc-author-dropdown">
                         <div class="mlmmc-dropdown-header">
-                            <input type="text" id="mlmmc-author-search" placeholder="<?php _e('Search authors by name...', 'labgenz-community-management'); ?>">
+                            <input type="text" id="mlmmc-author-search" placeholder="<?php _e('Search authors by name...', 'labgenz-community-management'); ?>" data-this-mean="Type the name of the writer you're looking for">
                         </div>
                         <div class="mlmmc-author-options mlmmc-category-options"></div>
                         <div class="mlmmc-dropdown-footer">
-                            <button id="mlmmc-clear-authors"><?php _e('Clear All', 'labgenz-community-management'); ?></button>
-                            <button id="mlmmc-apply-filter"><?php _e('Apply', 'labgenz-community-management'); ?></button>
+                            <button id="mlmmc-clear-authors" data-this-mean="Remove all selected authors from the filter"><?php _e('Clear All', 'labgenz-community-management'); ?></button>
+                            <button id="mlmmc-apply-filter" data-this-mean="Apply the selected authors to filter the articles"><?php _e('Apply', 'labgenz-community-management'); ?></button>
                         </div>
                     </div>
                     <!-- <div class="mlmmc-selected-authors"></div> -->
                 </div>
                 
                 <div class="mlmmc-filter-dropdown">
-                    <button id="mlmmc-category-filter-toggle">
+                    <button id="mlmmc-category-filter-toggle" data-this-mean="Filter articles by topic or subject area">
                         <span><?php _e('show by Category', 'labgenz-community-management'); ?></span>
                         <span class="chevron-icon">▼</span>
                     </button>
                     <div id="mlmmc-category-dropdown">
                         <div class="mlmmc-dropdown-header">
-                            <input type="text" id="mlmmc-category-search" placeholder="<?php _e('Search categories by name...', 'labgenz-community-management'); ?>">
+                            <input type="text" id="mlmmc-category-search" placeholder="<?php _e('Search categories by name...', 'labgenz-community-management'); ?>" data-this-mean="Type the topic or subject you're interested in">
                         </div>
                         <div class="mlmmc-category-options">
                             <div class="mlmmc-checkbox-option">
@@ -132,15 +132,15 @@ if (!defined('ABSPATH')) {
                             <?php endforeach; ?>
                         </div>
                         <div class="mlmmc-dropdown-footer">
-                            <button id="mlmmc-clear-categories"><?php _e('Clear All', 'labgenz-community-management'); ?></button>
-                            <button id="mlmmc-apply-categories"><?php _e('Apply', 'labgenz-community-management'); ?></button>
+                            <button id="mlmmc-clear-categories" data-this-mean="Remove all selected categories from the filter"><?php _e('Clear All', 'labgenz-community-management'); ?></button>
+                            <button id="mlmmc-apply-categories" data-this-mean="Apply the selected categories to filter the articles"><?php _e('Apply', 'labgenz-community-management'); ?></button>
                         </div>
                     </div>
                     <!-- <div class="mlmmc-selected-categories"></div> -->
                 </div>
                 
                 <div class="mlmmc-filter-dropdown">
-                    <button id="mlmmc-rating-filter-toggle">
+                    <button id="mlmmc-rating-filter-toggle" data-this-mean="Filter articles by their star ratings">
                         <span><?php _e('show by Rating', 'labgenz-community-management'); ?></span>
                         <span class="chevron-icon">▼</span>
                     </button>
@@ -163,8 +163,8 @@ if (!defined('ABSPATH')) {
                             <?php endfor; ?>
                         </div>
                         <div class="mlmmc-dropdown-footer">
-                            <button id="mlmmc-clear-ratings"><?php _e('Clear All', 'labgenz-community-management'); ?></button>
-                            <button id="mlmmc-apply-ratings"><?php _e('Apply', 'labgenz-community-management'); ?></button>
+                            <button id="mlmmc-clear-ratings" data-this-mean="Remove all selected ratings from the filter"><?php _e('Clear All', 'labgenz-community-management'); ?></button>
+                            <button id="mlmmc-apply-ratings" data-this-mean="Apply the selected ratings to filter the articles"><?php _e('Apply', 'labgenz-community-management'); ?></button>
                         </div>
                     </div>
                 </div>
@@ -172,7 +172,7 @@ if (!defined('ABSPATH')) {
                 <div class="mlmmc-video-filter-section">
                     <div class="mlmmc-video-filter-wrapper">
                         <label class="mlmmc-video-checkbox-label">
-                            <input type="checkbox" id="mlmmc-video-only" value="true">
+                            <input type="checkbox" id="mlmmc-video-only" value="true" data-this-mean="Only show articles that include videos">
                             <span class="mlmmc-checkbox-custom"></span>
                             <span class="mlmmc-checkbox-text"><?php _e('Show only articles with videos', 'labgenz-community-management'); ?></span>
                         </label>
@@ -229,7 +229,7 @@ if (!defined('ABSPATH')) {
         
         <?php if (!empty($articles) && $max_pages > 1): ?>
         <div class="mlmmc-articles-pagination" style="margin-top: 40px; text-align: center;">
-            <button id="mlmmc-load-more" class="mlmmc-load-more-button" data-page="1" data-max-pages="<?php echo esc_attr($max_pages); ?>">
+            <button id="mlmmc-load-more" class="mlmmc-load-more-button" data-page="1" data-max-pages="<?php echo esc_attr($max_pages); ?>" data-this-mean="Click to load more articles below the current ones">
                 <?php _e('Load More Articles', 'labgenz-community-management'); ?>
             </button>
         </div>
