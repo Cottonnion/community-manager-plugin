@@ -82,7 +82,7 @@ class AuthorDisplayHandler {
 
         // Default output if no template found
         get_header();
-        include __DIR__ . '/templates/author-single.php'; // optional fallback
+        echo '<div class="no-template-found"> There been an error getting the author template. Please contact the site administrator. </div>';
         get_footer();
     }
 

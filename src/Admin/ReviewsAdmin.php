@@ -62,7 +62,7 @@ class ReviewsAdmin {
 		$reviews_data = $this->get_reviews_data();
 
 		// Include template
-		include plugin_dir_path( dirname( __DIR__ ) ) . 'templates/admin/article-reviews.php';
+		include LABGENZ_CM_TEMPLATES_DIR . '/admin/article-reviews.php';
 	}
 
 	/**

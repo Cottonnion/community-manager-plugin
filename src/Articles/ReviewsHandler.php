@@ -340,7 +340,7 @@ class ReviewsHandler {
 		
 		// Load template
 		ob_start();
-		include plugin_dir_path(dirname(__DIR__)) . 'templates/reviews/article-rating.php';
+		include LABGENZ_CM_TEMPLATES_DIR . '/reviews/article-rating.php';
 		return ob_get_clean();
 	}
 }
