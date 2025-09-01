@@ -43,13 +43,13 @@ jQuery(function($){
                     $saveBtn.prop('disabled', true).text('Removing...');
                     $.post(aliase_emails_data.ajax_url, { action: 'remove_email_alias', email, nonce: aliase_emails_data.nonce })
                         .done(res => {
-                            $saveBtn.prop('disabled', false).text('Save Emails');
+                            $saveBtn.prop('disabled', false).text('Add Email');
                             if(res.success){
                                 $tag.fadeOut(300,function(){ $(this).remove(); });
                                 Swal.fire('Removed!','Email removed successfully','success');
                             } else Swal.fire('Error', res.data || 'Failed to remove email','error');
                         }).fail(()=>{
-                            $saveBtn.prop('disabled', false).text('Save Emails');
+                            $saveBtn.prop('disabled', false).text('Add Email');
                             Swal.fire('Error','AJAX request failed','error');
                         });
                 }
@@ -71,7 +71,7 @@ jQuery(function($){
         $saveBtn.prop('disabled', true).text('Adding...');
         $.post(aliase_emails_data.ajax_url, { action: 'add_email_alias', email, nonce: aliase_emails_data.nonce })
             .done(res => {
-                $saveBtn.prop('disabled', false).text('Save Emails');
+                $saveBtn.prop('disabled', false).text('Add Email');
                 if(res.success){
                     const $newTag = createTagElement(email,false);
                     $tagList.append($newTag.hide().fadeIn(300));
@@ -80,7 +80,7 @@ jQuery(function($){
                     Swal.fire('Success', res.data || 'Verification email sent','success');
                 } else Swal.fire('Error', res.data || 'Failed to add email','error');
             }).fail(()=>{
-                $saveBtn.prop('disabled', false).text('Save Emails');
+                $saveBtn.prop('disabled', false).text('Add Email');
                 Swal.fire('Error','AJAX request failed','error');
             });
     }

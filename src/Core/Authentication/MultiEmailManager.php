@@ -207,7 +207,7 @@ class MultiEmailManager {
 			)
 		);
 		if ( $alias_count >= $this->max_aliases_per_user ) {
-			wp_send_json_error( "Maximum {$this->max_aliases_per_user} aliases allowed per account" );
+			wp_send_json_error( "Maximum {$this->max_aliases_per_user} other emails allowed per account" );
 		}
 
 		// Block disposable email domains
