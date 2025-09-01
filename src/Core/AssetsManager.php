@@ -110,6 +110,29 @@ class AssetsManager {
 		add_action(
 			'wp_enqueue_scripts',
 			function () {
+				wp_enqueue_style(
+					'labgenz-cm-authors-archive',
+					LABGENZ_CM_URL . 'src/Public/assets/css/authors-archive.css',
+					[],
+					LABGENZ_CM_VERSION
+				);
+				
+				// Enqueue font awesome if needed for author cards
+				if ( is_post_type_archive( 'mlmmc_author' ) || is_singular( 'mlmmc_author' ) || is_page() || is_single() ) {
+					wp_enqueue_style(
+						'font-awesome',
+						'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css',
+						[],
+						'5.15.4'
+					);
+				}
+			},
+			1
+		);
+
+		add_action(
+			'wp_enqueue_scripts',
+			function () {
 				wp_enqueue_script(
 					'buddypanel-controller-js-file',
 					get_stylesheet_directory_uri() . '/template-parts/buddypanel/buddypanel-controller.js',

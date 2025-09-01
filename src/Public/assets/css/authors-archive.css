@@ -1,0 +1,219 @@
+/**
+ * Authors Archive Styling
+ * 
+ * Provides styling for the authors archive page and shortcode output
+ */
+
+/* Main Container */
+.mlmmc-authors-archive {
+    margin: 2rem 0;
+}
+
+.mlmmc-authors-archive-title {
+    margin-bottom: 2rem;
+    text-align: center;
+    color: var(--bb-headings-color);
+}
+
+/* Grid Layout */
+.mlmmc-authors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 30px;
+    margin-bottom: 2rem;
+}
+
+/* List Layout */
+.mlmmc-authors-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 2rem;
+}
+
+/* Author Card - Shared Styles */
+.mlmmc-author-card {
+    background: var(--bb-content-background-color);
+    border-radius: var(--bb-block-radius);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.mlmmc-author-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Grid Card Specific */
+.mlmmc-authors-grid .mlmmc-author-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* List Card Specific */
+.mlmmc-authors-list .mlmmc-author-card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 15px;
+}
+
+.mlmmc-authors-list .mlmmc-author-thumbnail {
+    width: 100px;
+    flex-shrink: 0;
+    margin-right: 20px;
+}
+
+.mlmmc-authors-list .mlmmc-author-content {
+    flex-grow: 1;
+}
+
+/* Author Thumbnail */
+.mlmmc-author-thumbnail {
+    position: relative;
+    padding-top: 100%; /* 1:1 Aspect Ratio */
+    overflow: hidden;
+    background-color: var(--bb-light-background-color);
+}
+
+.mlmmc-author-thumbnail img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.mlmmc-author-card:hover .mlmmc-author-thumbnail img {
+    transform: scale(1.05);
+}
+
+/* Author Content */
+.mlmmc-author-content {
+    padding: 15px;
+}
+
+.mlmmc-author-name {
+    font-size: 1.2rem;
+    margin: 0 0 0.5rem;
+    color: var(--bb-headings-color);
+}
+
+.mlmmc-author-title {
+    font-size: 0.9rem;
+    color: var(--bb-alternate-text-color);
+    margin: 0 0 0.8rem;
+}
+
+.mlmmc-author-bio {
+    font-size: 0.9rem;
+    color: var(--bb-body-text-color);
+    margin: 0 0 1rem;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.mlmmc-author-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 0.8rem;
+    border-top: 1px solid var(--bb-content-border-color);
+    font-size: 0.85rem;
+    color: var(--bb-alternate-text-color);
+}
+
+.mlmmc-author-articles-count {
+    display: flex;
+    align-items: center;
+}
+
+.mlmmc-author-articles-count i {
+    margin-right: 5px;
+}
+
+.mlmmc-author-read-more {
+    color: var(--bb-primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.mlmmc-author-read-more:hover {
+    color: var(--bb-primary-color-hover);
+}
+
+/* Compact View */
+.mlmmc-authors-compact .mlmmc-author-card {
+    text-align: center;
+}
+
+.mlmmc-authors-compact .mlmmc-author-thumbnail {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin: 0 auto 10px;
+    padding-top: 0;
+}
+
+.mlmmc-authors-compact .mlmmc-author-bio {
+    display: none;
+}
+
+/* Pagination */
+.mlmmc-authors-pagination {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+.mlmmc-authors-pagination .page-numbers {
+    padding: 5px 12px;
+    margin: 0 5px;
+    border-radius: var(--bb-button-radius);
+    background: var(--bb-content-alternate-background-color);
+    color: var(--bb-body-text-color);
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.mlmmc-authors-pagination .page-numbers.current {
+    background: var(--bb-primary-color);
+    color: var(--bb-primary-button-text-color);
+}
+
+.mlmmc-authors-pagination .page-numbers:hover:not(.current) {
+    background: var(--bb-content-border-color);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .mlmmc-authors-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+    }
+    
+    .mlmmc-authors-list .mlmmc-author-card {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .mlmmc-authors-list .mlmmc-author-thumbnail {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .mlmmc-authors-grid {
+        grid-template-columns: 1fr;
+    }
+}
