@@ -74,6 +74,20 @@
     }
     
     /**
+     * Sort authors alphabetically by name
+     * 
+     * @param {Array} authors List of author objects with name
+     * @returns {Array} Sorted list of authors
+     */
+    function sortAuthorsByName(authors) {
+        return authors.sort((a, b) => {
+            const nameA = (a.name || a).toLowerCase();
+            const nameB = (b.name || b).toLowerCase();
+            return nameA.localeCompare(nameB);
+        });
+    }
+
+    /**
      * Load available authors via AJAX
      */
     function loadAuthors() {
@@ -86,7 +100,7 @@
             },
             success: function(response) {
                 if (response.success && response.data && response.data.authors) {
-                    availableAuthors = response.data.authors;
+                    availableAuthors = sortAuthorsByName(response.data.authors);
                     renderAuthorOptions(availableAuthors);
                 } else {
                     $('.mlmmc-author-options').html('<div class="mlmmc-no-authors">No authors found.</div>');

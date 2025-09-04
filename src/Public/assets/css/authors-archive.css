@@ -18,64 +18,186 @@
 /* Grid Layout */
 .mlmmc-authors-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 30px;
     margin-bottom: 2rem;
 }
 
-/* List Layout */
-.mlmmc-authors-list {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    margin-bottom: 2rem;
-}
-
-/* Author Card - Shared Styles */
+/* Author Card - Modern Design */
 .mlmmc-author-card {
-    background: var(--bb-content-background-color);
-    border-radius: var(--bb-block-radius);
-    overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    background: var(--bb-content-background-color, white);
+    border-radius: 12px;
+    padding: 28px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--bb-content-border-color, #e9ecef);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .mlmmc-author-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
 }
 
-/* Grid Card Specific */
-.mlmmc-authors-grid .mlmmc-author-card {
+/* Author Header with Avatar and Info */
+.mlmmc-author-header {
     display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-
-/* List Card Specific */
-.mlmmc-authors-list .mlmmc-author-card {
-    display: flex;
-    flex-direction: row;
     align-items: center;
-    padding: 15px;
+    gap: 16px;
+    margin-bottom: 20px;
 }
 
-.mlmmc-authors-list .mlmmc-author-thumbnail {
-    width: 100px;
-    flex-shrink: 0;
-    margin-right: 20px;
-}
-
-.mlmmc-authors-list .mlmmc-author-content {
-    flex-grow: 1;
-}
-
-/* Author Thumbnail */
-.mlmmc-author-thumbnail {
-    position: relative;
-    padding-top: 100%; /* 1:1 Aspect Ratio */
+/* Author Avatar */
+.mlmmc-author-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
     overflow: hidden;
-    background-color: var(--bb-light-background-color);
+    flex-shrink: 0;
+}
+
+.mlmmc-author-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Author Initials for when no image is available */
+.mlmmc-author-initials {
+    color: white;
+    font-weight: 600;
+    font-size: 18px;
+    letter-spacing: 0.5px;
+}
+
+/* Author Info Section */
+.mlmmc-author-info h3 {
+    margin: 0 0 4px 0;
+    font-size: 20px;
+    color: var(--bb-headings-color, #333);
+    line-height: 1.2;
+}
+
+.mlmmc-author-role {
+    margin: 0;
+    color: var(--bb-alternate-text-color, #666);
+    font-size: 14px;
+}
+
+/* Author Bio */
+.mlmmc-author-bio {
+    color: var(--bb-body-text-color, #555);
+    line-height: 1.5;
+    margin-bottom: 20px;
+    font-size: 15px;
+}
+
+/* Author Stats */
+.mlmmc-author-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+    margin-bottom: 20px;
+    padding: 16px;
+    background: var(--bb-light-background-color, #f8f9fa);
+    border-radius: 8px;
+    border: 1px solid var(--bb-content-border-color, #dee2e6);
+}
+
+.mlmmc-stat {
+    text-align: center;
+}
+
+.mlmmc-stat-number {
+    display: block;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--bb-headings-color, #333);
+}
+
+.mlmmc-stat-label {
+    font-size: 12px;
+    color: var(--bb-alternate-text-color, #999);
+}
+
+
+/* Pagination */
+.mlmmc-authors-pagination {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+.mlmmc-authors-pagination .page-numbers {
+    padding: 5px 12px;
+    margin: 0 5px;
+    border-radius: var(--bb-button-radius, 4px);
+    background: var(--bb-content-alternate-background-color, #f5f5f5);
+    color: var(--bb-body-text-color, #555);
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.mlmmc-authors-pagination .page-numbers.current {
+    background: var(--bb-primary-color, #667eea);
+    color: var(--bb-primary-button-text-color, white);
+}
+
+.mlmmc-authors-pagination .page-numbers:hover:not(.current) {
+    background: var(--bb-content-border-color, #e1e1e1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .mlmmc-authors-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .mlmmc-authors-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 20px;
+    }
+    
+    .mlmmc-author-card {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .mlmmc-authors-grid {
+        grid-template-columns: 1fr;
+        max-width: 320px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .mlmmc-author-header {
+        gap: 12px;
+    }
+    
+    .mlmmc-author-avatar {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .mlmmc-author-info h3 {
+        font-size: 18px;
+    }
+    
+    /* Keep the 3-column grid on mobile */
+    .mlmmc-author-stats {
+        gap: 2px;
+        padding: 12px 5px;
+    }
+    
+    .mlmmc-stat-number {
+        font-size: 16px;
+    }
+    
+    .mlmmc-stat-label {
+        font-size: 10px;
+    }
 }
 
 .mlmmc-author-thumbnail img {
@@ -84,8 +206,27 @@
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: cover; /* Keep this to ensure the image covers the area */
+    object-position: center top; /* Focus on the top part (face) of the image */
     transition: transform 0.3s ease;
+    image-rendering: -webkit-optimize-contrast; /* Sharpen images on Webkit browsers */
+    image-rendering: crisp-edges; /* Modern approach for crisp edges */
+    transform: translateZ(0); /* Force GPU acceleration for smoother scaling */
+    backface-visibility: hidden; /* Prevent flickering in some browsers */
+}
+
+/* Special handling for small author images */
+.mlmmc-author-thumbnail img.small-author-image {
+    object-fit: contain; /* Don't crop small images */
+    background-color: var(--bb-light-background-color); /* Background color to fill empty space */
+    padding: 10px; /* Add some padding */
+    max-width: 90%; /* Don't stretch all the way to edges */
+    max-height: 90%;
+    margin: auto;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
 }
 
 .mlmmc-author-card:hover .mlmmc-author-thumbnail img {
@@ -116,6 +257,7 @@
     line-height: 1.5;
     display: -webkit-box;
     -webkit-line-clamp: 3;
+    line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
@@ -156,11 +298,25 @@
 }
 
 .mlmmc-authors-compact .mlmmc-author-thumbnail {
-    width: 80px;
-    height: 80px;
+    width: 120px;
+    height: 120px;
     border-radius: 50%;
-    margin: 0 auto 10px;
+    margin: 0 auto 15px;
     padding-top: 0;
+    overflow: hidden;
+}
+
+.mlmmc-authors-compact .mlmmc-author-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 15%; /* Focus slightly above center for faces */
+}
+
+/* Small image handling for compact view */
+.mlmmc-authors-compact .mlmmc-author-thumbnail img.small-author-image {
+    object-fit: contain;
+    padding: 8px;
 }
 
 .mlmmc-authors-compact .mlmmc-author-bio {
@@ -196,24 +352,44 @@
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .mlmmc-authors-grid {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
         gap: 20px;
+    }
+    
+    .mlmmc-author-thumbnail {
+        padding-top: 130%; /* Slightly taller on mobile for better visibility */
     }
     
     .mlmmc-authors-list .mlmmc-author-card {
         flex-direction: column;
         text-align: center;
+        padding: 20px 15px;
     }
     
     .mlmmc-authors-list .mlmmc-author-thumbnail {
-        width: 80px;
-        height: 80px;
+        width: 150px;
+        height: 180px;
         margin: 0 auto 15px;
+    }
+    
+    .mlmmc-author-content {
+        padding: 10px 5px;
     }
 }
 
 @media (max-width: 480px) {
     .mlmmc-authors-grid {
         grid-template-columns: 1fr;
+        max-width: 280px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .mlmmc-author-thumbnail {
+        padding-top: 125%; /* Even taller on very small screens */
+    }
+    
+    .mlmmc-authors-grid .mlmmc-author-thumbnail {
+        padding-top: 125%; /* Even taller aspect ratio on smaller screens */
     }
 }

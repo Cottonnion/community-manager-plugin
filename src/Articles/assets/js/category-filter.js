@@ -132,6 +132,20 @@ function updateCategoryToggleText() {
 	}
 }
 
+/**
+ * Sort categories alphabetically by name
+ * 
+ * @param {Array} categories List of category objects with name
+ * @returns {Array} Sorted list of categories
+ */
+function sortCategoriesByName(categories) {
+	return categories.sort((a, b) => {
+		const nameA = (a.name || a).toLowerCase();
+		const nameB = (b.name || b).toLowerCase();
+		return nameA.localeCompare(nameB);
+	});
+}
+
 // Update the performSearch function to use selectedCategories
 const originalPerformSearch = window.performSearch;
 window.performSearch        = function (append) {
@@ -153,6 +167,9 @@ window.performSearch        = function (append) {
 		const excerptLength = $container.data( 'excerpt-length' );
 		const postsPerPage  = $container.data( 'posts-per-page' );
 
+		// Sort selected categories before sending
+		const sortedCategories = sortCategoriesByName(selectedCategories);
+
 		// Perform AJAX request
 		$.ajax(
 			{
@@ -162,7 +179,7 @@ window.performSearch        = function (append) {
 					action: mlmmcArticlesData.searchAction,
 					nonce: mlmmcArticlesData.nonce,
 					search: currentSearchTerm,
-					categories: selectedCategories, // Use selectedCategories array
+					categories: sortedCategories, // Use sorted categories
 					authors: selectedAuthors,
 					page: currentPage,
 					posts_per_page: postsPerPage,

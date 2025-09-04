@@ -12,10 +12,13 @@
      */
     function init() {
         // Fetch categories initially
-        // fetchCategories();
+        fetchCategories();
         
         // Make the update function globally available
         window.updateCategoriesFilter = updateCategoriesFilter;
+        
+        // Sort existing categories in the DOM
+        sortExistingCategoriesInDOM();
         
         // Toggle dropdown
         $('#mlmmc-category-filter-toggle').on('click', function() {
@@ -136,25 +139,47 @@
             return;
         }
         
+        // Sort the categories alphabetically by name
+        // filteredCategories = sortCategoriesByName(filteredCategories);
+        
         // Save the currently selected categories for later
         const selectedCategoryNames = selectedCategories.slice();
         
-        // Get all category names from the filtered list
-        const filteredCategoryNames = filteredCategories.map(category => category.name);
+        // Get all category slugs from the filtered list (create slugs if needed)
+        const filteredCategorySlugs = filteredCategories.map(category => {
+            return category.slug || category.name.toLowerCase().replace(/[\s\.\'\"\&\+\-\_\(\)]+/g, '-').replace(/\-+/g, '-');
+        });
         
         // Show/hide categories based on the filtered list
         $('.mlmmc-checkbox-option').each(function() {
-            const categoryName = $(this).find('input').val();
-            if (filteredCategoryNames.includes(categoryName)) {
+            const categoryValue = $(this).find('input').val();
+            
+            // Skip the "All Categories" option
+            if (categoryValue === 'all') {
+                $(this).show();
+                return;
+            }
+            
+            if (filteredCategorySlugs.includes(categoryValue)) {
                 $(this).show();
                 
                 // Update the count if provided
-                const countSpan = $(this).find('.mlmmc-category-count');    
-                if (countSpan.length) {
-                    const categoryData = filteredCategories.find(c => c.name === categoryName);
-                    if (categoryData && categoryData.count !== undefined) {
-                        countSpan.text(`(${categoryData.count})`);
-                    }
+                const categoryData = filteredCategories.find(c => {
+                    const slug = c.slug || c.name.toLowerCase().replace(/[\s\.\'\"\&\+\-\_\(\)]+/g, '-').replace(/\-+/g, '-');
+                    return slug === categoryValue;
+                });
+                
+                if (categoryData && categoryData.count !== undefined) {
+                    // Update both the label text and count
+                    const $label = $(this).find('label');
+                    const $input = $(this).find('input');
+                    
+                    // Reconstruct the label with updated count
+                    $label.html(`
+                        <input type="checkbox" class="mlmmc-category-checkbox" value="${categoryValue}" ${$input.is(':checked') ? 'checked' : ''}>
+                        <span class="mlmmc-category-name">${categoryData.name}</span> 
+                        <span class="mlmmc-category-count">(${categoryData.count})</span>
+                    `);
                 }
             } else {
                 $(this).hide();
@@ -163,7 +188,7 @@
         
         // Keep only selected categories that are still available
         selectedCategories = selectedCategoryNames.filter(categoryName => 
-            filteredCategoryNames.includes(categoryName)
+            filteredCategorySlugs.includes(categoryName)
         );
         
         // Update the selected category tags
@@ -189,11 +214,33 @@
         const displayLimit = 3;
         const categoriesToShow = selectedCategories.slice(0, displayLimit);
         
-        categoriesToShow.forEach(function(category) {
+        // Get a mapping of slugs to display names
+        const slugToNameMap = {};
+        $('.mlmmc-checkbox-option').each(function() {
+            const $checkbox = $(this).find('input');
+            const value = $checkbox.val();
+            if (value !== 'all') {
+                // Get the category name from the span or fallback to parsing the text
+                const $nameSpan = $(this).find('.mlmmc-category-name');
+                let labelText;
+                if ($nameSpan.length) {
+                    labelText = $nameSpan.text().trim();
+                } else {
+                    // Fallback: parse the text and remove count
+                    labelText = $(this).text().trim().replace(/\(\d+\)$/, '').trim();
+                }
+                slugToNameMap[value] = labelText;
+            }
+        });
+        
+        categoriesToShow.forEach(function(categorySlug) {
+            // Use the display name if available, otherwise use the slug
+            const displayName = slugToNameMap[categorySlug] || categorySlug;
+            
             html += `
                 <div class="mlmmc-selected-category">
-                    ${category}
-                    <button type="button" class="remove-category" data-category="${category}">×</button>
+                    ${displayName}
+                    <button type="button" class="remove-category" data-category="${categorySlug}">×</button>
                 </div>
             `;
         });
@@ -201,9 +248,14 @@
         // Add a +X more indicator if there are more than the display limit
         if (selectedCategories.length > displayLimit) {
             const extraCount = selectedCategories.length - displayLimit;
-            const hiddenCategories = selectedCategories.slice(displayLimit).join(', ');
+            
+            // Get display names for hidden categories
+            const hiddenCategoriesDisplay = selectedCategories.slice(displayLimit).map(slug => 
+                slugToNameMap[slug] || slug
+            ).join(', ');
+            
             html += `
-                <div class="mlmmc-selected-category mlmmc-more-indicator" data-hidden-authors="${hiddenCategories}">
+                <div class="mlmmc-selected-category mlmmc-more-indicator" data-hidden-categories="${hiddenCategoriesDisplay}">
                     +${extraCount} more
                 </div>
             `;
@@ -251,13 +303,76 @@
     }
     
     /**
+     * Update the visual state of the category filter based on a selected category slug
+     * 
+     * @param {string} categorySlug The selected category slug
+     */
+    function updateCategoryFilterVisual(categorySlug) {
+        // Uncheck "All Categories"
+        $('.mlmmc-category-checkbox[value="all"]').prop('checked', false);
+        
+        // Check the matching category
+        $(`.mlmmc-category-checkbox[value="${categorySlug}"]`).prop('checked', true);
+        
+        // Add to selected categories if not already there
+        if (!selectedCategories.includes(categorySlug)) {
+            selectedCategories.push(categorySlug);
+        }
+        
+        // Update UI
+        updateSelectedCategoriesUI();
+    }
+    
+    // Make functions available globally
+    window.updateCategoryFilterVisual = updateCategoryFilterVisual;
+    window.updateSelectedCategoriesUI = updateSelectedCategoriesUI;
+    
+    /**
+     * Sort categories alphabetically by name
+     * 
+     * @param {Array} categories List of category objects with name
+     * @returns {Array} Sorted list of categories
+     */
+    function sortCategoriesByName(categories) {
+        return categories.sort((a, b) => {
+            const nameA = (a.name || a).toLowerCase();
+            const nameB = (b.name || b).toLowerCase();
+            return nameA.localeCompare(nameB);
+        });
+    }
+    
+    /**
+     * Sort existing categories in the DOM
+     */
+    function sortExistingCategoriesInDOM() {
+        const $categoryOptions = $('.mlmmc-category-options');
+        const $allCategoriesOption = $categoryOptions.find('.mlmmc-checkbox-option:first');
+        const $categoryItems = $categoryOptions.find('.mlmmc-checkbox-option:not(:first)').detach().toArray();
+        
+        // Sort the detached category items
+        $categoryItems.sort(function(a, b) {
+            const textA = $(a).text().trim().toLowerCase();
+            const textB = $(b).text().trim().toLowerCase();
+            return textA.localeCompare(textB);
+        });
+        
+        // Reattach the "All Categories" option first
+        $categoryOptions.append($allCategoriesOption);
+        
+        // Reattach the sorted category items
+        $.each($categoryItems, function(index, item) {
+            $categoryOptions.append(item);
+        });
+    }
+
+    /**
      * Fetch categories via AJAX
      */
     function fetchCategories() {
         if (typeof mlmmcArticlesData === 'undefined') {
             return;
         }
-        
+
         $.ajax({
             url: mlmmcArticlesData.ajaxUrl,
             type: 'POST',
@@ -267,11 +382,14 @@
             },
             success: function(response) {
                 if (response.success && response.data && response.data.categories) {
-                    populateCategoryDropdown(response.data.categories);
+                    const sortedCategories = sortCategoriesByName(response.data.categories);
+                    populateCategoryDropdown(sortedCategories);
                 } else {
+                    // Handle error or empty response
                 }
             },
             error: function(xhr, status, error) {
+                // Handle AJAX error
             }
         });
     }
@@ -285,13 +403,17 @@
         // Clear existing options except the "All Categories" option
         $categoryOptions.find('.mlmmc-checkbox-option:not(:first)').remove();
         
-        // Add categories
+        // Add categories with separate spans for name and count
         categories.forEach(function(category) {
+            // Create a slug from the category name if one doesn't exist
+            const categorySlug = category.slug || category.name.toLowerCase().replace(/[\s\.\'\"\&\+\-\_\(\)]+/g, '-').replace(/\-+/g, '-');
+            
             $categoryOptions.append(`
                 <div class="mlmmc-checkbox-option">
                     <label>
-                        <input type="checkbox" class="mlmmc-category-checkbox" value="${category.slug}">
-                        ${category.name} (${category.count})
+                        <input type="checkbox" class="mlmmc-category-checkbox" value="${categorySlug}">
+                        <span class="mlmmc-category-name">${category.name}</span> 
+                        <span class="mlmmc-category-count">(${category.count})</span>
                     </label>
                 </div>
             `);

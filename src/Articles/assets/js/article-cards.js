@@ -19,134 +19,201 @@
 	window.selectedCategories = [];
 	window.selectedRatings    = [];
 
-	/**
-	 * Initialize the functionality
-	 */
-	function init() {
-		// Store original content for reset
-		originalContent = $( '.mlmmc-articles-grid' ).html();
+/**
+ * Initialize the functionality
+ */
+function init() {
+	// Store original content for reset
+	originalContent = $( '.mlmmc-articles-grid' ).html();
 
-		// Initialize event handlers
-		initSearchHandlers();
-		initLoadMoreButton();
+	// Check for URL parameters on page load
+	checkUrlParameters();
 
-		// Make performSearch function available globally
-		window.performSearch = performSearch;
-	}
+	// Initialize event handlers
+	initSearchHandlers();
+	initLoadMoreButton();
 
-	/**
-	 * Initialize search functionality
-	 */
-	function initSearchHandlers() {
-		// Search input handler with debounce
-		$( '#mlmmc-search-input' ).on(
-			'input',
-			function () {
-				clearTimeout( searchTimeout );
-				currentSearchTerm = $( this ).val().trim();
+	// Make performSearch function available globally
+	window.performSearch = performSearch;
+}
 
-				searchTimeout = setTimeout(
-					function () {
-						window.currentPage = 1;
-						performSearch();
-					},
-					500
-				);
-			}
-		);
-
-		// Search button click handler
-		$( '#mlmmc-search-button' ).on(
-			'click',
-			function () {
-				window.currentPage = 1;
-				performSearch();
-			}
-		);
-
-		// Trigger search immediately when "Show only articles with videos" is toggled
-		$( '#mlmmc-video-only' ).on(
-			'change',
-			function () {
-				window.currentPage = 1;
-				performSearch();
-			}
-		);
-	}
-
-	/**
-	 * Initialize load more button
-	 */
-	function initLoadMoreButton() {
-		$( document ).on(
-			'click',
-			'#mlmmc-load-more',
-			function () {
-				const maxPages = parseInt( $( this ).data( 'max-pages' ) );
-				window.currentPage++;
-
-				if (window.currentPage <= maxPages) {
-					performSearch( true ); // True means append results
-					$( this ).data( 'page', window.currentPage );
-				}
-
-				if (window.currentPage >= maxPages) {
-					$( this ).hide();
-				}
-			}
-		);
-	}
-
-	/**
-	 * Perform search with current filters
-	 *
-	 * @param {boolean} append Whether to append results or replace them
-	 */
-	function performSearch(append = false) {
-		// Prevent multiple simultaneous searches
-		if (isLoading) {
-			return;
+/**
+ * Check URL parameters and trigger search if needed
+ */
+function checkUrlParameters() {
+	// Get query parameters
+	const urlParams = new URLSearchParams(window.location.search);
+	
+	// Check for article category parameter
+	if (urlParams.has('ac')) {
+		let category = urlParams.get('ac');
+		
+		// Special cases: keep hyphens for "the-why-" and "the-why"
+		if (category !== 'the-why-' && category !== 'the-why') {
+			// Replace all hyphens with spaces for other categories
+			category = category.replace(/-/g, ' ');
 		}
+		
+		console.log('MLMMC: Category from URL parameter:', category);
+		
+		// Set the category in the global selected categories
+		window.selectedCategories = [category];
+		
+		// Trigger search with this category
+		setTimeout(function() {
+			performSearch();
+			
+			// If category filter exists, update its visual state
+			if (typeof window.updateCategoryFilterVisual === 'function') {
+				window.updateCategoryFilterVisual(category);
+			}
+			
+			// Check the corresponding checkbox in the category filter
+			$(`.mlmmc-category-checkbox[value="${category}"]`).prop('checked', true);
+			
+			// Update the UI
+			if (typeof window.updateSelectedCategoriesUI === 'function') {
+				window.updateSelectedCategoriesUI();
+			}
+			
+			// Log for debugging
+			console.log('MLMMC: Search triggered with category:', window.selectedCategories);
+		}, 100);
+	}
+}
 
-		isLoading = true;
+/**
+ * Initialize search functionality
+ */
+function initSearchHandlers() {
+	// Search input handler with debounce
+	$( '#mlmmc-search-input' ).on(
+		'input',
+		function () {
+			clearTimeout( searchTimeout );
+			currentSearchTerm = $( this ).val().trim();
 
-		// Show loading
-		$( '.mlmmc-articles-loading' ).fadeIn( 200 );
+			searchTimeout = setTimeout(
+				function () {
+					window.currentPage = 1;
+					performSearch();
+				},
+				500
+			);
+		}
+	);
 
-		const $grid = $( '.mlmmc-articles-grid' );
+	// Search button click handler
+	$( '#mlmmc-search-button' ).on(
+		'click',
+		function () {
+			window.currentPage = 1;
+			performSearch();
+		}
+	);
 
-		// Clear the grid when starting a new search (not when appending or clicking "Load More")
-		// if (!append) {
-			// Remove any "no articles found" message and clean the grid
-		$grid.empty();
-		$grid.css( 'opacity', '0.3' );
-		// }
+	// Trigger search immediately when "Show only articles with videos" is toggled
+	$( '#mlmmc-video-only' ).on(
+		'change',
+		function () {
+			window.currentPage = 1;
+			performSearch();
+		}
+	);
+}
 
-		// Get categories from window.selectedCategories (set by category-filter.js)
-		const categories = window.selectedCategories || [];
+/**
+ * Initialize load more button
+ */
+function initLoadMoreButton() {
+	$( document ).on(
+		'click',
+		'#mlmmc-load-more',
+		function () {
+			const maxPages = parseInt( $( this ).data( 'max-pages' ) );
+			window.currentPage++;
 
-		// Get authors from window.selectedAuthors (set by author-filter.js)
-		const authors = window.selectedAuthors || [];
+			if (window.currentPage <= maxPages) {
+				performSearch( true ); // True means append results
+				$( this ).data( 'page', window.currentPage );
+			}
 
-		// Get ratings from window.selectedRatings (set by rating-filter.js)
-		const ratings = window.selectedRatings || [];
+			if (window.currentPage >= maxPages) {
+				$( this ).hide();
+			}
+		}
+	);
+}
 
-		// Get video-only filter state
-		const videoOnly = $( '#mlmmc-video-only' ).is( ':checked' );
+/**
+ * Perform search with current filters
+ *
+ * @param {boolean} append Whether to append results or replace them
+ */
+function performSearch(append = false) {
+	// Prevent multiple simultaneous searches
+	if (isLoading) {
+		return;
+	}
 
-		// Debug log to confirm the state of filters
-		// console.log(
-		// 'MLMMC Debug - Performing search with filters:',
-		// {
-		// authors: authors,
-		// categories: categories,
-		// ratings: ratings,
-		// page: window.currentPage,
-		// search: currentSearchTerm
-		// }
-		// );
+	isLoading = true;
 
-		// Get container data attributes
+	// Show loading
+	$( '.mlmmc-articles-loading' ).fadeIn( 200 );
+
+	const $grid = $( '.mlmmc-articles-grid' );
+
+	// Clear the grid when starting a new search (not when appending or clicking "Load More")
+	// if (!append) {
+		// Remove any "no articles found" message and clean the grid
+	$grid.empty();
+	$grid.css( 'opacity', '0.3' );
+	// }
+
+	// Get categories from window.selectedCategories (set by category-filter.js)
+	let categories = window.selectedCategories || [];
+	
+	// Process categories - replace hyphens with spaces except for special cases
+	categories = categories.map(function(category) {
+		// Special cases: keep hyphens for "the-why-" and "the-why"
+		if (category !== 'the-why-' && category !== 'the-why') {
+			// Replace all hyphens with spaces for other categories
+			return category.replace(/-/g, ' ');
+		}
+		return category;
+	});
+	
+	// Debug log to confirm categories are properly processed
+	console.log('MLMMC Debug - Categories being sent to AJAX:', categories);
+
+	// Get authors from window.selectedAuthors (set by author-filter.js)
+	let authors = window.selectedAuthors || [];
+	
+	// Process authors - replace hyphens with spaces
+	authors = authors.map(function(author) {
+		return author.replace(/-/g, ' ');
+	});
+
+	// Get ratings from window.selectedRatings (set by rating-filter.js)
+	const ratings = window.selectedRatings || [];
+
+	// Get video-only filter state
+	const videoOnly = $( '#mlmmc-video-only' ).is( ':checked' );
+	
+	// Always update URL with current category
+	updateUrlWithCategory(categories);
+
+	// Debug log to confirm the state of filters
+	// console.log(
+	// 'MLMMC Debug - Performing search with filters:',
+	// {
+	// authors: authors,
+	// categories: categories,
+	// ratings: ratings,
+	// page: window.currentPage,
+	// search: currentSearchTerm
+	// }
+	// );		// Get container data attributes
 		const $container    = $( '.mlmmc-articles-container' );
 		const layout 	    = $container.data( 'layout' ) || 'grid';
 		const showExcerpt   = $container.data( 'show-excerpt' );
@@ -255,5 +322,35 @@
 
 	// Initialize when document is ready
 	$( document ).ready( init );
+	
+	/**
+	 * Update the URL with the current category filter
+	 * 
+	 * @param {Array} categories The currently selected categories
+	 */
+	function updateUrlWithCategory(categories) {
+		// Get the current URL
+		const currentUrl = new URL(window.location.href);
+		
+		// If we have exactly one category selected, update the URL
+		if (categories && categories.length === 1) {
+			const category = categories[0];
+			
+			// Special cases: keep as-is for "the-why-" and "the-why"
+			if (category === 'the-why-' || category === 'the-why') {
+				currentUrl.searchParams.set('ac', category);
+			} else {
+				// Convert spaces back to hyphens for URL for other categories
+				const categorySlug = category.replace(/ /g, '-');
+				currentUrl.searchParams.set('ac', categorySlug);
+			}
+		} else if (categories && categories.length === 0) {
+			// If no categories selected, remove the parameter
+			currentUrl.searchParams.delete('ac');
+		}
+		
+		// Update the URL without reloading the page
+		window.history.replaceState({}, '', currentUrl);
+	}
 
 })( jQuery );
