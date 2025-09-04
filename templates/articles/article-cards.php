@@ -199,7 +199,7 @@ if (!defined('ABSPATH')) {
         </div>
         
         <div class="mlmmc-selected-authors"></div>
-        <div class="mlmmc-selected-categories"></div>
+        <div class="mlmmc-selected-categories" style="margin-top: 10px"></div>
         <div class="mlmmc-selected-ratings"></div>
         <?php endif; // End if show_search ?>
     </div>

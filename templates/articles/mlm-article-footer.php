@@ -62,10 +62,16 @@ $author_avatar = $daily_article_admin->get_article_author_image_url($post_id);
                                     <?php echo esc_html($publish_date); ?>
                                 </time>
                             </span>
-                            
-                            <?php if ($category): ?>
+                            <?php if ($category): 
+                                $category_slug = sanitize_title($category);
+                                if ($category === 'The "WHY"') {
+                                    $category_slug = 'the-why';
+                                }
+                            ?>
                                 <span class="article-category">
-                                    • <span class="category-label"><?php echo esc_html($category); ?></span>
+                                    • <a href="<?php echo esc_url(home_url('/mlmmc-articles/?ac=' . $category_slug)); ?>" class="category-label">
+                                        <?php echo esc_html($category); ?>
+                                    </a>
                                 </span>
                             <?php endif; ?>
                         </div>

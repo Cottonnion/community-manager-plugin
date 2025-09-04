@@ -22,6 +22,35 @@ if ($post_type !== ReviewsHandler::POST_TYPE) {
     return;
 }
 
+// Add inline CSS for the category link
+?>
+<style>
+.article-category .category-label {
+    color: inherit;
+    text-decoration: none;
+    position: relative;
+    transition: color 0.2s ease;
+}
+.article-category .category-label:hover {
+    color: #0073aa; /* WordPress blue */
+}
+.article-category .category-label:after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    bottom: -2px;
+    left: 0;
+    background-color: #0073aa;
+    transform: scaleX(0);
+    transition: transform 0.2s ease;
+}
+.article-category .category-label:hover:after {
+    transform: scaleX(1);
+}
+</style>
+<?php
+
 $daily_article_admin = new DailyArticleAdmin();
 $article_handler     = new ArticlesHandler();
 $author_handler      = new AuthorDisplayHandler();
@@ -33,6 +62,15 @@ $author_url    = $author_handler->get_author_url($post_id);
 $publish_date  = get_the_date('F j, Y', $post_id);
 $article_title = get_the_title($post_id);
 
+// Generate a category slug for linking
+$category_slug = sanitize_title($category);
+// Special handling for "The WHY" category
+if ($category === 'The "WHY"') {
+    $category_slug = 'the-why';
+}
+
+// Debug log
+error_log('MLMMC Article Header - Category: ' . $category . ', Generated slug: ' . $category_slug);
 
 // Ratings
 $average = null;
@@ -75,7 +113,7 @@ if (class_exists('LABGENZ_CM\\Articles\\ReviewsHandler')) {
 
                         <?php if ($category): ?>
                             <span class="article-category">
-                                • <span class="category-label"><?php echo esc_html($category); ?></span>
+                                • <a href="<?php echo esc_url(home_url('/mlmmc-articles/?ac=' . $category_slug)); ?>" class="category-label"><?php echo esc_html($category); ?></a>
                             </span>
                         <?php endif; ?>
                         <?php if ($average !== null && $count > 0): ?>
