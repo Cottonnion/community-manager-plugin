@@ -449,8 +449,8 @@ class SubscriptionDetailsShortcode {
 	 */
 	private function get_formatted_subscription_name( string $subscription_type ): string {
 		$subscription_names = [
-			'basic'                             => __( 'Basic Subscription', 'labgenz-community-management' ),
-			'monthly-basic-subscription'        => __( 'Basic Monthly Subscription', 'labgenz-community-management' ),
+			'basic'                             => __( 'Discovery Annual Subscription', 'labgenz-community-management' ),
+			'monthly-basic-subscription'        => __( 'Discovery Monthly Subscription', 'labgenz-community-management' ),
 			'organization'                      => __( 'Organization Subscription', 'labgenz-community-management' ),
 			'monthly-organization-subscription' => __( 'Organization Monthly Subscription', 'labgenz-community-management' ),
 			'articles-annual-subscription'      => __( 'Articles Annual Subscription', 'labgenz-community-management' ),
@@ -472,7 +472,7 @@ class SubscriptionDetailsShortcode {
 		// Course categories
 		if ( isset( $resources['course_categories'] ) ) {
 			$course_levels = [
-				'basic-courses'        => __( 'Basic Courses Access', 'labgenz-community-management' ),
+				'basic-courses'        => __( 'Discovery Courses Access', 'labgenz-community-management' ),
 				'organization-courses' => __( 'Organization Courses Access', 'labgenz-community-management' ),
 				'advanced-courses'     => __( 'Advanced Courses Access', 'labgenz-community-management' ),
 			];
@@ -503,32 +503,32 @@ class SubscriptionDetailsShortcode {
 			'enabled' => $resources['advanced_features'] ?? false,
 		];
 
-		// MLM Articles access
+		// Success Library Articles access
 		$benefits[] = [
-			'label'   => __( 'MLM Articles Access', 'labgenz-community-management' ),
+			'label'   => __( 'Success Library Articles Access', 'labgenz-community-management' ),
 			'enabled' => $resources['can_view_mlm_articles'] ?? false,
 		];
 
-		// MLM Articles creation
+		// Success Library Articles creation
 		if ( isset( $resources['can_create_articles'] ) ) {
 			$benefits[] = [
-				'label'   => __( 'MLM Articles Creation', 'labgenz-community-management' ),
+				'label'   => __( 'Success Library Articles Creation', 'labgenz-community-management' ),
 				'enabled' => $resources['can_create_articles'],
 			];
 		}
 
-		// MLM Articles editing
+		// Success Library Articles editing
 		if ( isset( $resources['can_edit_articles'] ) ) {
 			$benefits[] = [
-				'label'   => __( 'MLM Articles Editing', 'labgenz-community-management' ),
+				'label'   => __( 'Success Library Articles Editing', 'labgenz-community-management' ),
 				'enabled' => $resources['can_edit_articles'],
 			];
 		}
 
-		// MLM Articles filtering
+		// Success Library Articles filtering
 		if ( isset( $resources['can_filter_articles'] ) ) {
 			$benefits[] = [
-				'label'   => __( 'MLM Articles Filtering', 'labgenz-community-management' ),
+				'label'   => __( 'Success Library Articles Filtering', 'labgenz-community-management' ),
 				'enabled' => $resources['can_filter_articles'],
 			];
 		}

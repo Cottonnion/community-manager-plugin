@@ -179,7 +179,7 @@ class SubscriptionProcessor {
 			$custom_text .= '
                 <li>✅ Organization creation and management</li>
                 <li>✅ Organization access features</li>
-                <li>✅ MLM articles access</li>
+                <li>✅ Success Library Articles access</li>
                 <li>✅ and some other things</li>';
 		} else {
 			$custom_text .= '

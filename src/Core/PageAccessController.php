@@ -342,7 +342,7 @@ class PageAccessController {
 				});
 			} else {
 				// Fallback if SweetAlert is not available
-				alert('<?php echo esc_js( __( 'You need an Organization subscription to access MLM articles.', 'labgenz-community-management' ) ); ?>');
+				alert('<?php echo esc_js( __( 'You need an Organization subscription to access Success Library Articles.', 'labgenz-community-management' ) ); ?>');
 				if (window.history.replaceState) {
 					window.history.replaceState({}, document.title, '<?php echo esc_url( home_url() ); ?>');
 				}
