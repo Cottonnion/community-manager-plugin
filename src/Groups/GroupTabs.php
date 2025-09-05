@@ -29,6 +29,7 @@ class GroupTabs {
 	private function __construct() {
 		add_action( 'bp_groups_setup_nav', [ $this, 'setup_manage_members_tab' ], 20 );
 		add_action( 'bp_groups_setup_nav', [ $this, 'setup_map_members_tab' ], 20 );
+		add_action( 'bp_groups_setup_nav', [ $this, 'setup_leaderboard_tab' ], 20 );
 		add_action( 'bp_actions', [ $this, 'remove_group_tabs' ], 5 );
 	}
 
@@ -108,6 +109,35 @@ class GroupTabs {
 		);
 	}
 
+	/*
+	* setup leaderboard tab
+	*/
+	public function setup_leaderboard_tab() {
+		// Only proceed if BuddyPress and BuddyBoss are active
+		if ( ! function_exists( 'bp_is_active' ) || ! bp_is_active( 'groups' ) ) {
+			return;
+		}
+
+		$group = groups_get_current_group();
+
+		// Return early if not on a group page or not a valid group
+		if ( empty( $group ) || ! bp_is_group() ) {
+			return;
+		}
+
+		bp_core_new_subnav_item(
+			[
+				'name'            => __( 'Leaderboard', 'buddyboss' ),
+				'slug'            => 'leaderboard',
+				'parent_url'      => bp_get_group_permalink( $group ),
+				'parent_slug'     => $group->slug,
+				'screen_function' => [ $this, 'display_leaderboard_gamipress_page' ],
+				'position'        => 25,
+				'user_has_access' => true, // Everyone in the group can see the map
+				'item_css_id'     => 'leaderboard',
+			]
+		);
+	}
 	/**
 	 * Display the Manage Members tab content
 	 */
@@ -167,6 +197,29 @@ class GroupTabs {
 		}
 	}
 
+	/**
+	 * Display the Leaderboard tab content
+	 */
+	public function display_leaderboard_gamipress_page() {
+		// Add title and content to the template
+		add_action( 'bp_template_content', [ $this, 'leaderboard_tab_content' ] );
+
+		// Load the appropriate template
+		bp_core_load_template( apply_filters( 'bp_core_template_plugin', 'groups/single/plugins' ) );
+	}
+	/**
+	 * Leaderboard tab content
+	 */
+	public function leaderboard_tab_content() {
+		// Include the template file
+		$template_file = LABGENZ_CM_TEMPLATES_DIR . '/buddypress/groups/leaderboard.php';
+
+		if ( file_exists( $template_file ) ) {
+			include $template_file;
+		} else {
+			echo '<div class="leaderboard-container">Leaderboard content goes here. (Template file not found)</div>';
+		}
+	}
 	/**
 	 * Check if a group has the organization group type
 	 *
