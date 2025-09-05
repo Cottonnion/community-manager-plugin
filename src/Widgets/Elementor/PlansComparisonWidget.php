@@ -45,13 +45,13 @@ class PlansComparisonWidget extends Widget_Base {
 	 * @return array
 	 */
 	public function get_categories() {
-		return [ 'general' ];
+		return [ 'labgenz-widgets' ];
 	}
 
 	/**
 	 * Register widget controls
 	 */
-	protected function _register_controls() {
+	protected function register_controls() {
 		$this->start_controls_section(
 			'content_section',
 			[
@@ -68,7 +68,92 @@ class PlansComparisonWidget extends Widget_Base {
 				'default' => __( 'Compare Our Plans', 'labgenz-community-management' ),
 			]
 		);
+		
+		$this->add_control(
+			'use_custom_benefits',
+			[
+				'label' => __('Use Custom Benefits', 'labgenz-community-management'),
+				'type' => Controls_Manager::SWITCHER,
+				'label_on' => __('Yes', 'labgenz-community-management'),
+				'label_off' => __('No', 'labgenz-community-management'),
+				'return_value' => 'yes',
+				'default' => 'no',
+				'description' => __('Enable to override the default benefits with custom ones for this instance', 'labgenz-community-management'),
+			]
+		);
 
+		$this->end_controls_section();
+		
+		// Advanced section for custom benefits
+		$this->start_controls_section(
+			'benefits_section',
+			[
+				'label' => __('Custom Benefits', 'labgenz-community-management'),
+				'tab' => Controls_Manager::TAB_CONTENT,
+				'condition' => [
+					'use_custom_benefits' => 'yes',
+				],
+			]
+		);
+		
+		$repeater = new \Elementor\Repeater();
+		
+		$repeater->add_control(
+			'benefit_name',
+			[
+				'label' => __('Benefit Name', 'labgenz-community-management'),
+				'type' => Controls_Manager::TEXT,
+				'default' => __('New Benefit', 'labgenz-community-management'),
+			]
+		);
+		
+		$repeater->add_control(
+			'basic_availability',
+			[
+				'label' => __('Available in Discovery?', 'labgenz-community-management'),
+				'type' => Controls_Manager::SWITCHER,
+				'label_on' => __('Yes', 'labgenz-community-management'),
+				'label_off' => __('No', 'labgenz-community-management'),
+				'return_value' => 'yes',
+				'default' => 'no',
+			]
+		);
+		
+		$repeater->add_control(
+			'team_leader_availability',
+			[
+				'label' => __('Available in Team Leader?', 'labgenz-community-management'),
+				'type' => Controls_Manager::SWITCHER,
+				'label_on' => __('Yes', 'labgenz-community-management'),
+				'label_off' => __('No', 'labgenz-community-management'),
+				'return_value' => 'yes',
+				'default' => 'no',
+			]
+		);
+		
+		$repeater->add_control(
+			'freedom_builder_availability',
+			[
+				'label' => __('Available in Freedom Builder?', 'labgenz-community-management'),
+				'type' => Controls_Manager::SWITCHER,
+				'label_on' => __('Yes', 'labgenz-community-management'),
+				'label_off' => __('No', 'labgenz-community-management'),
+				'return_value' => 'yes',
+				'default' => 'yes',
+			]
+		);
+		
+		$this->add_control(
+			'custom_benefits',
+			[
+				'label' => __('Benefits', 'labgenz-community-management'),
+				'type' => Controls_Manager::REPEATER,
+				'fields' => $repeater->get_controls(),
+				'title_field' => '{{{ benefit_name }}}',
+				'default' => [],
+			]
+		);
+		
 		$this->end_controls_section();
 	}
 
@@ -92,23 +177,17 @@ class PlansComparisonWidget extends Widget_Base {
 					$current_plan_key = 'freedom_builder';
 				} elseif ( strpos( $current_type, 'team-leader' ) !== false ) {
 					$current_plan_key = 'team_leader';
-				} elseif ( strpos( $current_type, 'apprentice' ) !== false ) {
-					$current_plan_key = 'apprentice';
 				} elseif ( strpos( $current_type, 'basic' ) !== false ) {
-					$current_plan_key = 'basic';
+					$current_plan_key = 'discovery';
 				}
 			}
 		}
 
 		// Map plan keys to display names and subtitles
 		$plans = [
-			'basic'           => [
-				'label'    => 'Basic',
+			'discovery'       => [
+				'label'    => 'Discovery',
 				'subtitle' => '',
-			],
-			'apprentice'      => [
-				'label'    => 'Apprentice',
-				'subtitle' => 'New Distributor',
 			],
 			'team_leader'     => [
 				'label'    => 'Team Leader',
@@ -122,20 +201,15 @@ class PlansComparisonWidget extends Widget_Base {
 
 		// Get product SKUs and URLs
 		$skus = [
-			'basic'           => 'basic-subscription',
-			'apprentice'      => 'mlm-apprentice-yearly',
+			'discovery'       => 'basic-subscription', // Keep the same SKU for backward compatibility
 			'team_leader'     => 'mlm-team-leader-yearly',
 			'freedom_builder' => 'mlm-freedom-builder-yearly',
 		];
 
 		$product_urls = [];
-		foreach ( $skus as $plan_key => $sku ) {
-			$product_id = wc_get_product_id_by_sku( $sku );
-			if ( $product_id ) {
-				$product_urls[ $plan_key ] = get_permalink( $product_id );
-			} else {
-				$product_urls[ $plan_key ] = '';
-			}
+		foreach ( $plans as $plan_key => $plan ) {
+			// All join links now point to home URL with #pricing fragment
+			$product_urls[ $plan_key ] = home_url( '/#pricing' );
 		}
 
 		echo '<div class="plans-comparison-widget">';
@@ -156,27 +230,30 @@ class PlansComparisonWidget extends Widget_Base {
 
 		// Table body
 		echo '<tbody>';
-		$benefits = [
-			'Free Membership Updates'                     => [ true, true, true, true ],
-			'Business Support Community'                  => [ false, true, true, true ],
-			'Earn Points For Free Content'                => [ false, true, true, true ],
-			'MLM Business Training'                       => [ false, true, true, true ],
-			'Live "Planning Your Week" Zoom Calls'        => [ false, false, true, true ],
-			'Live Team Leader Office Hour Zoom Calls'     => [ false, false, true, true ],
-			'Access To Zoom Call Recordings'              => [ false, false, true, true ],
-			'FREE Access To MLM Success Library (Y/L)'    => [ false, false, true, true ],
-			'Worldwide Member Map Access (Bonus)'         => [ false, false, true, true ],
-			'Live Freedom Builder Office Hour Zoom Calls' => [ false, false, false, true ],
-			'Mastermind Group Coaching Calls'             => [ false, false, false, true ],
-			'FREE Access To Workshops (Bonus)'            => [ false, false, false, true ],
-			'1 FREE Personal Coaching Call (Y)'           => [ false, false, false, true ],
-			'3 FREE Personal Coaching Calls (L)'          => [ false, false, false, true ],
-			'FREE Simple Connector Access (Y/L)'          => [ false, false, false, true ],
-			'FREE Legal Website Pages (Y/L)'              => [ false, false, false, true ],
-			'4 (1 Year) Team Leader Memberships (L)'      => [ false, false, false, true ],
-			'2 FREE (1 Month) Apprentice Memberships (L)' => [ false, false, false, true ],
-		];
-		foreach ( $benefits as $benefit => $availability ) {
+		
+		// Determine which benefits to use - default or custom
+		if ($settings['use_custom_benefits'] === 'yes' && !empty($settings['custom_benefits'])) {
+			$custom_benefits = [];
+			
+			foreach ($settings['custom_benefits'] as $benefit) {
+				// We've removed Apprentice, so we need to adjust the availability array
+				// to match the new structure: [Discovery, Team Leader, Freedom Builder]
+				$availability = [
+					$benefit['basic_availability'] === 'yes',      // Discovery (was Basic)
+					$benefit['team_leader_availability'] === 'yes', // Team Leader
+					$benefit['freedom_builder_availability'] === 'yes' // Freedom Builder
+				];
+				
+				$custom_benefits[$benefit['benefit_name']] = $availability;
+			}
+			
+			$benefits_to_display = $custom_benefits;
+		} else {
+			// Get benefits from options or use defaults
+			$benefits_to_display = $this->get_default_benefits();
+		}
+		
+		foreach ( $benefits_to_display as $benefit => $availability ) {
 			echo '<tr><td>' . esc_html( $benefit ) . '</td>';
 			$i = 0;
 			foreach ( $plans as $plan_key => $plan ) {
@@ -209,5 +286,41 @@ class PlansComparisonWidget extends Widget_Base {
 		echo '</table>';
 		echo '<p>Note: Y or L = Founder Bonuses for Yearly or Lifetime Members Only</p>';
 		echo '</div>';
+	}
+	
+	/**
+	 * Get default benefits from options or fallback to hardcoded defaults
+	 * 
+	 * @return array Array of benefits with availability for each plan
+	 */
+	public function get_default_benefits() {
+		// Try to get benefits from options
+		$saved_benefits = get_option('mlmmc_plan_comparison_benefits_v2', null);
+		
+		if (!empty($saved_benefits) && is_array($saved_benefits)) {
+			return $saved_benefits;
+		}
+		
+		// Fallback to default benefits
+		return [
+			'Free Membership Updates'                     => [ true, true, true ],
+			'Business Support Community'                  => [ false, true, true ],
+			'Earn Points For Free Content'                => [ false, true, true ],
+			'MLM Business Training'                       => [ false, true, true ],
+			'Live "Planning Your Week" Zoom Calls'        => [ false, true, true ],
+			'Live Team Leader Office Hour Zoom Calls'     => [ false, true, true ],
+			'Access To Zoom Call Recordings'              => [ false, true, true ],
+			'FREE Access To MLM Success Library (Y/L)'    => [ false, true, true ],
+			'Worldwide Member Map Access (Bonus)'         => [ false, true, true ],
+			'Live Freedom Builder Office Hour Zoom Calls' => [ false, false, true ],
+			'Mastermind Group Coaching Calls'             => [ false, false, true ],
+			'FREE Access To Workshops (Bonus)'            => [ false, false, true ],
+			'1 FREE Personal Coaching Call (Y)'           => [ false, false, true ],
+			'3 FREE Personal Coaching Calls (L)'          => [ false, false, true ],
+			'FREE Simple Connector Access (Y/L)'          => [ false, false, true ],
+			'FREE Legal Website Pages (Y/L)'              => [ false, false, true ],
+			'4 (1 Year) Team Leader Memberships (L)'      => [ false, false, true ],
+			'2 FREE (1 Month) Apprentice Memberships (L)' => [ false, false, true ],
+		];
 	}
 }
