@@ -27,9 +27,9 @@ class ArticlesHandler {
 		// add_action( 'wp_ajax_search_mlmmc_articles', [ $this, 'handle_articles_search' ] );
 		add_action( 'wp_ajax_get_mlmmc_categories', [ $this, 'handle_get_categories' ] );
 		add_action( 'wp_ajax_get_mlmmc_authors', [ $this, 'handle_get_authors' ] );
-		// add_action('wp_ajax_nopriv_search_mlmmc_articles', '__return_false');
-		// add_action('wp_ajax_nopriv_get_mlmmc_categories', '__return_false');
-		// add_action('wp_ajax_nopriv_get_mlmmc_authors', '__return_false');
+		add_action( 'wp_ajax_get_articles_sidebar', [ $this, 'get_articles_sidebar_ajax' ] );
+		add_action( 'wp_ajax_nopriv_get_articles_sidebar', [ $this, 'get_articles_sidebar_ajax' ] );
+
 		add_filter(
 			'single_template',
 			function ( $single_template ) {
@@ -41,10 +41,107 @@ class ArticlesHandler {
 						return $template_path;
 					}
 				}
-
 				return $single_template;
 			}
 		);
+		
+		// Add sidebar to news feed page
+		add_action('wp_footer', [$this, 'add_sidebar_to_news_feed']);
+	}
+	
+	/**
+	 * Add the articles sidebar to the news feed page
+	 */
+	public function add_sidebar_to_news_feed(): void {
+		// Only run on the news feed page
+		if (!is_page('news-feed')) {
+			return;
+		}
+		
+		?>
+		<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			// Target the news feed main content area
+			const feedContent = document.querySelector('.activity-update-form, .bp-feedback');
+			
+			if (feedContent) {
+				// Create sidebar container
+				const sidebarContainer = document.createElement('div');
+				sidebarContainer.className = 'news-feed-articles-sidebar';
+				sidebarContainer.style.width = '30%';
+				sidebarContainer.style.minWidth = '280px';
+				
+				// Create wrapper for layout
+				const wrapper = document.createElement('div');
+				wrapper.className = 'news-feed-with-sidebar';
+				wrapper.style.display = 'flex';
+				wrapper.style.gap = '30px';
+				wrapper.style.flexWrap = 'wrap';
+				
+				// Get the parent node
+				const parentNode = feedContent.parentNode;
+				
+				// Create main content container
+				const mainContent = document.createElement('div');
+				mainContent.className = 'news-feed-main-content';
+				mainContent.style.flex = '1';
+				mainContent.style.minWidth = '65%';
+				
+				// Clone all child nodes to the main content
+				Array.from(parentNode.childNodes).forEach(node => {
+					mainContent.appendChild(node.cloneNode(true));
+				});
+				
+				// Clear the parent
+				while (parentNode.firstChild) {
+					parentNode.removeChild(parentNode.firstChild);
+				}
+				
+				// Add sidebar HTML
+				const xhr = new XMLHttpRequest();
+				xhr.onreadystatechange = function() {
+					if (this.readyState === 4 && this.status === 200) {
+						const response = JSON.parse(this.responseText);
+						sidebarContainer.innerHTML = response.data;
+						
+						// Add responsiveness
+						const style = document.createElement('style');
+						style.textContent = `
+							@media (max-width: 991px) {
+								.news-feed-with-sidebar {
+									flex-direction: column;
+								}
+								.news-feed-articles-sidebar {
+									width: 100% !important;
+								}
+							}
+						`;
+						document.head.appendChild(style);
+						
+						// Add the main content and sidebar to the wrapper
+						wrapper.appendChild(mainContent);
+						wrapper.appendChild(sidebarContainer);
+						
+						// Add the wrapper to the parent
+						parentNode.appendChild(wrapper);
+					}
+				};
+				xhr.open('GET', '<?php echo esc_url(admin_url('admin-ajax.php')); ?>?action=get_articles_sidebar', true);
+				xhr.send();
+			}
+		});
+		</script>
+		<?php
+	}
+	
+	/**
+	 * AJAX handler to get the articles sidebar HTML
+	 */
+	public function get_articles_sidebar_ajax(): void {
+		ob_start();
+		self::render_articles_sidebar();
+		$sidebar_html = ob_get_clean();
+		wp_send_json_success($sidebar_html);
 	}
 
 	/**
@@ -468,5 +565,151 @@ class ArticlesHandler {
 	*/
 	public function get_article_author_bio( int $post_id ): string {
 		return get_post_meta( $post_id, 'mlmmc_author_bio', true );
+	}
+
+	/**
+	 * Render the articles sidebar
+	 * This function can be used to display the article sidebar on any page
+	 * 
+	 * @return void
+	 */
+	public static function render_articles_sidebar(): void {
+		// Get random articles
+		$daily_article_handler = new DailyArticleHandler();
+		$random_articles = $daily_article_handler->get_random_articles('mixed', 9, 10);
+
+		if (!empty($random_articles)) :
+		?>
+			<div class="random-articles-sidebar">
+				<h3 class="sidebar-title">Other Articles</h3>
+
+				<?php 
+				// Check for subscription access
+				$show_access_button = false;
+				if (class_exists('\\LABGENZ_CM\\Subscriptions\\SubscriptionHandler')) {
+					$subscription_handler = \LABGENZ_CM\Subscriptions\SubscriptionHandler::get_instance();
+					if (!$subscription_handler->user_has_resource_access(get_current_user_id(), 'can_view_mlm_articles')) {
+						$show_access_button = true;
+					}
+				}
+				
+				if ($show_access_button) : 
+				?>
+					<div class="bb-button-wrapper">
+						<button onclick="location.href='<?php echo esc_url(\LABGENZ_CM\Subscriptions\SubscriptionHandler::get_article_upsell_url()); ?>'" class="bb-button bb-button--primary">
+							Get Access to ALL Success Library Articles
+						</button>
+					</div>
+				<?php endif; ?>
+
+				<ul class="random-articles-list"><?php foreach ($random_articles as $article) :
+						$category_name = !empty($article['category']) ? $article['category'] : 'Uncategorized';
+						$rating = $article['avg_rating'];
+					?>
+						<li class="random-article-item">
+							<a href="<?php echo esc_url($article['link']); ?>" class="article-title">
+								<?php echo esc_html($article['title']); ?>
+							</a>
+							<p class="article-category">Category: <?php echo esc_html($category_name); ?></p>
+
+							<?php if ($article['has_video']) : ?>
+								<span class="article-video-badge">
+									Has Video
+								</span>
+							<?php endif; ?>
+
+							<?php if ($rating !== null) : ?>
+								<div class="article-rating">
+									<?php
+									$max_stars = 5;
+									$filled    = floor($rating);
+									$half      = ($rating - $filled >= 0.5) ? 1 : 0;
+									$empty     = $max_stars - $filled - $half;
+
+									echo '<span class="star-filled">' . str_repeat('★', $filled) . '</span>';
+									if ($half) echo '<span class="star-filled">☆</span>';
+									echo '<span class="star-empty">' . str_repeat('☆', $empty) . '</span>';
+									echo ' (' . number_format($rating, 1) . ')';
+									?>
+								</div>
+							<?php endif; ?>
+						</li>
+					<?php endforeach; ?>
+				</ul>
+			</div>
+			<style>
+				.random-articles-sidebar {
+					margin-top: 30px;
+					padding: 20px;
+					background: #fff;
+					border-radius: 8px;
+					box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+				}
+				.sidebar-title {
+					margin-bottom: 15px;
+					font-size: 18px;
+					color: var(--bb-primary-color, #385DFF);
+					font-weight: 600;
+				}
+				.bb-button-wrapper {
+					margin: 20px 0;
+					text-align: center;
+				}
+				.random-articles-list {
+					list-style: none;
+					padding: 0;
+					margin: 0;
+				}
+				.random-article-item {
+					margin-bottom: 20px;
+					padding: 15px;
+					border: 1px solid #eee;
+					border-radius: 5px;
+					transition: all 0.2s ease;
+				}
+				.random-article-item:hover {
+					border-color: var(--bb-primary-color, #385DFF);
+					box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+				}
+				.article-title {
+					font-weight: bold;
+					font-size: 16px;
+					text-decoration: none;
+					color: var(--bb-headings-color, #122b46);
+					display: block;
+					margin-bottom: 8px;
+					transition: color 0.2s ease;
+				}
+				.article-title:hover {
+					color: var(--bb-primary-color, #385DFF);
+				}
+				.article-category {
+					margin: 5px 0;
+					font-size: 14px;
+					color: #666;
+				}
+				.article-video-badge {
+					display: inline-block;
+					background-color: #28a745;
+					color: white;
+					padding: 3px 8px;
+					font-size: 12px;
+					border-radius: 3px;
+					margin-bottom: 5px;
+				}
+				.article-rating {
+					margin-top: 5px;
+					font-size: 14px;
+					color: #444;
+				}
+				.star-filled {
+					color: #f5c518;
+				}
+				.star-empty {
+					color: #ddd;
+				}
+			</style>
+		<?php
+		endif;
 	}
 }

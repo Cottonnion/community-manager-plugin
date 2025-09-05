@@ -12,33 +12,31 @@ class ArticleMetaHelper {
 	 * @return array Associative array of meta values and their corresponding article counts.
 	 */
 	public static function get_article_counts_by_meta( string $meta_key, string $post_type ): array {
-		$args = [
-			'post_type'      => $post_type,
-			'post_status'    => 'publish',
-			'posts_per_page' => -1,
-			'fields'         => 'ids',
-			'meta_query'     => [
-				[
-					'key'     => $meta_key,
-					'compare' => 'EXISTS',
-				],
-			],
-		];
-
-		$query = new \WP_Query( $args );
-		$posts = $query->posts;
-
+		global $wpdb;
+		
+		// Direct SQL query to count posts by meta value - much more efficient
+		$query = $wpdb->prepare(
+			"SELECT pm.meta_value, COUNT(DISTINCT pm.post_id) as count 
+			FROM {$wpdb->postmeta} pm
+			INNER JOIN {$wpdb->posts} p ON pm.post_id = p.ID
+			WHERE pm.meta_key = %s
+			AND p.post_type = %s
+			AND p.post_status = 'publish'
+			AND pm.meta_value != ''
+			GROUP BY pm.meta_value",
+			$meta_key,
+			$post_type
+		);
+		
+		$results = $wpdb->get_results($query);
 		$counts = [];
-		foreach ( $posts as $post_id ) {
-			$meta_value = get_post_meta( $post_id, $meta_key, true );
-			if ( ! empty( $meta_value ) ) {
-				if ( ! isset( $counts[ $meta_value ] ) ) {
-					$counts[ $meta_value ] = 0;
-				}
-				++$counts[ $meta_value ];
+		
+		if (!empty($results)) {
+			foreach ($results as $result) {
+				$counts[$result->meta_value] = (int) $result->count;
 			}
 		}
-
+		
 		return $counts;
 	}
 
@@ -111,8 +109,12 @@ class ArticleMetaHelper {
 
 		// Format the results
 		foreach ( $all_categories as $category ) {
+			// Create a slug for the category
+			$slug = sanitize_title( $category );
+			
 			$categories[] = [
 				'name'  => $category,
+				'slug'  => $slug,
 				'count' => isset( $category_counts[ $category ] ) ? (int) $category_counts[ $category ] : 0,
 			];
 		}

@@ -118,7 +118,7 @@ class ArticleCardDisplayHandler {
 			self::ASSET_HANDLE_CSS,
 			LABGENZ_CM_URL . 'src/Articles/assets/css/article-cards.css',
 			[ self::ASSET_HANDLE_CSS . '-filter-common' ],
-			'1.1.8'
+			'1.3.6'
 		);
 
 		// Register category filter JS
@@ -126,7 +126,7 @@ class ArticleCardDisplayHandler {
 			self::ASSET_HANDLE_JS . '-category',
 			LABGENZ_CM_URL . 'src/Articles/assets/js/category-filter-new.js',
 			[ 'jquery' ],
-			'1.1.2',
+			'1.2.2',
 			true
 		);
 
@@ -135,7 +135,7 @@ class ArticleCardDisplayHandler {
 			self::ASSET_HANDLE_JS . '-author',
 			LABGENZ_CM_URL . 'src/Articles/assets/js/author-filter.js',
 			[ 'jquery' ],
-			'1.0.9',
+			'1.2.0',
 			true
 		);
 
@@ -153,7 +153,7 @@ class ArticleCardDisplayHandler {
 			self::ASSET_HANDLE_JS,
 			LABGENZ_CM_URL . 'src/Articles/assets/js/article-cards.js',
 			[ 'jquery', self::ASSET_HANDLE_JS . '-category', self::ASSET_HANDLE_JS . '-author' ],
-			'1.3.0',
+			'1.3.8',
 			true
 		);
 	}

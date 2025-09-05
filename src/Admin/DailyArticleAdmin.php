@@ -151,7 +151,7 @@ class DailyArticleAdmin {
 	private function render_articles_section( $articles, $search_query, $current_daily_data ): void {
 		?>
 		<div class="card" style="max-width: 1200px; margin: 0 auto 30px auto; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-			<h2 style="margin-top:0;">All MLM Articles</h2>
+			<h2 style="margin-top:0;">All Success Library Articles</h2>
 			<form id="mlmmc-article-search-form" method="get" action="" style="margin-bottom: 15px;">
 				<input type="hidden" name="page" value="daily-article-management" />
 				<input type="text" name="mlmmc_article_search" id="mlmmc_article_search" 
@@ -585,7 +585,7 @@ class DailyArticleAdmin {
 	}
 
 	/**
-	 * Get all MLM articles
+	 * Get all Success Library Articles
 	 */
 	private function get_all_articles( string $search_query = '' ): array {
 		$args = [

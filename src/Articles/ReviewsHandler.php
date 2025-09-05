@@ -9,7 +9,7 @@ class ReviewsHandler {
 	public const META_KEY_RATING       = 'mlmmc_article_rating';
 	public const META_KEY_RATING_COUNT = 'mlmmc_article_rating_count';
 	public const META_KEY_USER_RATINGS = 'mlmmc_article_user_ratings';
-	public const POST_TYPE             = 'mlmmc_artiicle';
+	public const POST_TYPE             = 'mlmmc_artiicle'; // Note the double 'i' in 'artiicle'
 	public const NONCE_ACTION          = 'mlmmc_article_review';
 	public const NONCE_NAME            = 'mlmmc_article_review_nonce';
 
@@ -222,6 +222,71 @@ class ReviewsHandler {
 
 		$rating = get_post_meta( $post_id, self::META_KEY_RATING, true );
 		return $rating ? (float) $rating : 0;
+	}
+	
+	/**
+	 * Get the average rating for all articles by an author.
+	 *
+	 * @param string $author_name The name of the author
+	 * @return array An array containing average rating and total articles count
+	 */
+	public function get_author_average_rating( string $author_name ): array {
+		if ( empty( $author_name ) ) {
+			return [
+				'average'       => 0,
+				'article_count' => 0,
+				'rated_count'   => 0,
+			];
+		}
+		
+		// Query for all published articles by this author
+		$args = [
+			'post_type'      => self::POST_TYPE,
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
+			'fields'         => 'ids', // Only get post IDs for efficiency
+			'meta_query'     => [
+				[
+					'key'     => 'mlmmc_article_author',
+					'value'   => $author_name,
+					'compare' => 'LIKE',
+				]
+			]
+		];
+		
+		$articles = new \WP_Query( $args );
+		$article_count = $articles->found_posts;
+		
+		if ( $article_count === 0 ) {
+			return [
+				'average'       => 0,
+				'article_count' => 0,
+				'rated_count'   => 0,
+			];
+		}
+		
+		// Calculate sum of all ratings
+		$total_rating = 0;
+		$rated_articles_count = 0;
+		
+		foreach ( $articles->posts as $article_id ) {
+			$article_rating = $this->get_average_rating( $article_id );
+			$rating_count = $this->get_rating_count( $article_id );
+			
+			if ( $article_rating !== null && $rating_count > 0 ) {
+				$total_rating += $article_rating;
+				$rated_articles_count++;
+			}
+		}
+		
+		// Calculate average rating
+		$average_rating = $rated_articles_count > 0 ? round( $total_rating / $rated_articles_count, 1 ) : 0;
+		
+		return [
+			'average'       => $average_rating,
+			'article_count' => $article_count,
+			'rated_count'   => $rated_articles_count,
+		];
 	}
 
 	/**

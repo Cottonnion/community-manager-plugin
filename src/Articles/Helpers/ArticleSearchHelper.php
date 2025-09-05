@@ -113,7 +113,7 @@ class ArticleSearchHelper {
 		return $args;
 	}
 
-	/**
+/**
 	 * Builds a meta query filter for a specific key.
 	 *
 	 * @param string $key The meta key.
@@ -121,6 +121,38 @@ class ArticleSearchHelper {
 	 * @return array The meta query.
 	 */
 	private static function build_meta_filter( string $key, array $values ): array {
+		// Special handling for category filtering
+		if ( $key === 'mlmmc_article_category' ) {
+			$processed_values = [];
+			
+			foreach ( $values as $value ) {
+				// Handle "The WHY" category specifically - match exact values from JS
+				if ( $value === 'the-why-' || $value === 'the-why' || preg_match('/^the[\s\-\_]*why[\s\-\_]*$/i', $value) ) {
+					$processed_values[] = 'The "WHY"';
+					error_log('MLMMC Debug - Matched "The WHY" from input: "' . $value . '"');
+				} else if ( $value !== 'undefined' && $value !== '' ) {
+					// For other categories, keep as is but filter out undefined
+					$processed_values[] = $value;
+					error_log('MLMMC Debug - Other category: "' . $value . '"');
+				}
+			}
+			
+			// Replace original values with processed ones
+			$values = array_filter($processed_values);
+			
+			// Debug: Log what we're actually searching for
+			error_log('MLMMC Debug - Final search values: ' . print_r($values, true));
+			
+			// If after filtering we have no values, return empty to avoid errors
+			if ( empty($values) ) {
+				return [
+					'key'     => $key,
+					'value'   => '',
+					'compare' => '!=',
+				];
+			}
+		}
+		
 		if ( count( $values ) === 1 ) {
 			return [
 				'key'     => $key,
@@ -219,7 +251,25 @@ class ArticleSearchHelper {
 
 		// If no ratings but categories are selected
 		if ( is_array( $categories ) && count( $categories ) > 0 ) {
-			$filtered_authors = ArticleMetaHelper::get_filtered_authors_by_categories( $categories, ArticleCardDisplayHandler::POST_TYPE );
+			$author_data = ArticleMetaHelper::get_filtered_authors_by_categories( $categories, ArticleCardDisplayHandler::POST_TYPE );
+			
+			// Convert authors to array with name and count
+			if (is_array($author_data)) {
+				foreach ($author_data as $author) {
+					if (is_array($author) && isset($author['name'])) {
+						$filtered_authors[] = [
+							'name' => $author['name'],
+							'count' => isset($author['count']) ? (int)$author['count'] : 1
+						];
+					} elseif (is_string($author)) {
+						// Legacy support for simple string arrays
+						$filtered_authors[] = [
+							'name' => $author,
+							'count' => 1 // Default count if not provided
+						];
+					}
+				}
+			}
 
 			// If authors are also selected, filter categories by authors
 			if ( is_array( $authors ) && count( $authors ) > 0 ) {
@@ -244,8 +294,42 @@ class ArticleSearchHelper {
 
 		// Always filter by authors selection if provided
 		if ( is_array( $authors ) && count( $authors ) > 0 ) {
-			// Simply use the requested authors
-			$filtered_authors = $authors;
+			// When filtering by authors, get ALL authors with their counts
+			global $wpdb;
+			
+			// Query to get counts for ALL authors, not just the selected ones
+			$query = $wpdb->prepare(
+				"SELECT pm.meta_value as name, COUNT(DISTINCT pm.post_id) as count 
+				FROM {$wpdb->postmeta} pm
+				INNER JOIN {$wpdb->posts} p ON pm.post_id = p.ID
+				WHERE pm.meta_key = 'mlmmc_article_author'
+				AND p.post_type = %s
+				AND p.post_status = 'publish'
+				GROUP BY pm.meta_value",
+				ArticleCardDisplayHandler::POST_TYPE
+			);
+			
+			$results = $wpdb->get_results($query);
+			
+			// Create author objects with name and count
+			$filtered_authors = [];
+			if ($results) {
+				foreach ($results as $row) {
+					$filtered_authors[] = [
+						'name' => $row->name,
+						'count' => (int)$row->count
+					];
+				}
+			} else {
+				// Fallback if query returns no results
+				// Just include the selected authors as a minimum
+				foreach ($authors as $author) {
+					$filtered_authors[] = [
+						'name' => $author,
+						'count' => 1 // Default count if query fails
+					];
+				}
+			}
 		}
 
 		// For ratings, always prepare data for display with counts regardless of selection
@@ -272,7 +356,28 @@ class ArticleSearchHelper {
 			'filtered_ratings'    => $filtered_ratings,
 		];
 	}
-
+	/**
+	 * Process categories to handle special cases consistently
+	 *
+	 * @param array $categories Raw categories from request
+	 * @return array Processed categories
+	 */
+	private static function process_categories( array $categories ): array {
+		$processed_categories = [];
+		
+		foreach ( $categories as $category ) {
+			// Handle "The WHY" category specifically - match exact values from JS
+			if ( $category === 'the-why-' || $category === 'the-why' || preg_match('/^the[\s\-\_]*why[\s\-\_]*$/i', $category) ) {
+				$processed_categories[] = 'The "WHY"';
+				error_log('MLMMC Debug - Matched "The WHY" from category: "' . $category . '"');
+			} else if ( $category !== 'undefined' && $category !== '' ) {
+				// Keep other valid categories
+				$processed_categories[] = $category;
+			}
+		}
+		
+		return array_filter($processed_categories);
+	}
 	/**
 	 * Count articles by rating while respecting other filters - using exact rating matching
 	 *
@@ -363,14 +468,19 @@ class ArticleSearchHelper {
 		); // Cache for 15 minutes
 	}
 
-	public static function handle_ajax_search() {
+public static function handle_ajax_search() {
 		// Check nonce
 		if ( ! self::validate_nonce( $_POST['nonce'] ) ) {
 			wp_send_json_error( [ 'message' => 'Security check failed' ] );
 			wp_die();
 		}
 
-		// Get search parameters
+		// Debug log for debugging category issues
+		if ( isset( $_POST['categories'] ) && is_array( $_POST['categories'] ) ) {
+			error_log( 'MLMMC Debug - Raw categories in request: ' . print_r( $_POST['categories'], true ) );
+		}
+
+		// Get and process search parameters
 		$search_params = [
 			'search'         => isset( $_POST['search'] ) ? sanitize_text_field( $_POST['search'] ) : '',
 			'authors'        => isset( $_POST['authors'] ) && is_array( $_POST['authors'] ) ? array_map(
@@ -378,7 +488,8 @@ class ArticleSearchHelper {
 					return trim( wp_unslash( $author ) ); },
 				$_POST['authors']
 			) : [],
-			'categories'     => isset( $_POST['categories'] ) && is_array( $_POST['categories'] ) ? array_map( 'sanitize_text_field', $_POST['categories'] ) : [],
+			'categories'     => isset( $_POST['categories'] ) && is_array( $_POST['categories'] ) ? 
+				self::process_categories( array_map( 'sanitize_text_field', $_POST['categories'] ) ) : [],
 			'ratings'        => isset( $_POST['ratings'] ) && is_array( $_POST['ratings'] ) ? array_map( 'intval', $_POST['ratings'] ) : [],
 			'vid_only'       => isset( $_POST['vid_only'] ) && $_POST['vid_only'] === 'true' ? true : false,
 			'page'           => isset( $_POST['page'] ) ? intval( $_POST['page'] ) : 1,
@@ -464,27 +575,30 @@ class ArticleSearchHelper {
 				$has_filters = true;
 			}
 
-			// Add category filter
-			if ( ! empty( $categories ) ) {
-				if ( count( $categories ) == 1 ) {
-					$meta_query[] = [
+		if ( ! empty( $search_params['categories'] ) ) {
+			$categories = $search_params['categories']; // Already processed
+			
+			if ( count( $categories ) == 1 ) {
+				$meta_query[] = [
+					'key'     => 'mlmmc_article_category',
+					'value'   => $categories[0],
+					'compare' => '=',
+				];
+				error_log('MLMMC Debug - Single category query: "' . $categories[0] . '"');
+			} else {
+				$category_subquery = [ 'relation' => 'OR' ];
+				foreach ( $categories as $category ) {
+					$category_subquery[] = [
 						'key'     => 'mlmmc_article_category',
-						'value'   => $categories[0],
+						'value'   => $category,
 						'compare' => '=',
 					];
-				} else {
-					$category_subquery = [ 'relation' => 'OR' ];
-					foreach ( $categories as $category ) {
-						$category_subquery[] = [
-							'key'     => 'mlmmc_article_category',
-							'value'   => $category,
-							'compare' => '=',
-						];
-					}
-					$meta_query[] = $category_subquery;
 				}
-				$has_filters = true;
+				$meta_query[] = $category_subquery;
+				error_log('MLMMC Debug - Multiple categories query: ' . print_r($categories, true));
 			}
+			$has_filters = true;
+		}
 
 			// Add rating filter
 			if ( ! empty( $ratings ) ) {
