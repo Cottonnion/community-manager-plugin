@@ -42,6 +42,6 @@ $loader = \LABGENZ_CM\Core\LabgenzCmLoader::get_instance();
 $loader->run();
 
 // Include testing helpers (remove for production)
-if ( file_exists( LABGENZ_CM_PATH . 'testing-helpers.php' ) ) {
-	require_once LABGENZ_CM_PATH . 'testing-helpers.php';
-}
+// if ( file_exists( LABGENZ_CM_PATH . 'testing-helpers.php' ) ) {
+// 	require_once LABGENZ_CM_PATH . 'testing-helpers.php';
+// }
