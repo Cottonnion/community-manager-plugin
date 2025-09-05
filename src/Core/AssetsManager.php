@@ -101,7 +101,7 @@ class AssetsManager {
 					'single-author-css',
 					LABGENZ_CM_URL . 'src/Public/assets/css/single-author.css',
 					[],
-					'1.0.2'
+					'1.0.4'
 				);
 			},
 			1
@@ -114,7 +114,7 @@ class AssetsManager {
 					'labgenz-cm-authors-archive',
 					LABGENZ_CM_URL . 'src/Public/assets/css/authors-archive.css',
 					[],
-					LABGENZ_CM_VERSION
+					'1.2.4'
 				);
 				
 				// Enqueue font awesome if needed for author cards
@@ -688,19 +688,27 @@ class AssetsManager {
 			[]
 		);
 
-		$this->add_frontend_asset(
-			'aliase-emails',
-			[ '' ],
-			'alias-emails.js',
-			[ 'jquery' ],
-			'1.1.4',
-			true,
-			'js',
-			[
-				'ajax_url' => admin_url( 'admin-ajax.php' ),
-				'nonce'    => wp_create_nonce( 'email_alias_nonce' ),
-			]
-		);
+		// Only load alias emails script on the account edit page
+		add_action('wp_enqueue_scripts', function() {
+			// Check if we're on the my-account/edit-account page
+			if (function_exists('is_account_page') && is_account_page() && is_wc_endpoint_url('edit-account')) {
+				wp_enqueue_script(
+					'aliase-emails',
+					LABGENZ_CM_URL . 'src/Public/assets/js/alias-emails.js',
+					[ 'jquery' ],
+					'1.1.4',
+					true
+				);
+				wp_localize_script(
+					'aliase-emails',
+					'aliase_emails_data',
+					[
+						'ajax_url' => admin_url( 'admin-ajax.php' ),
+						'nonce'    => wp_create_nonce( 'email_alias_nonce' ),
+					]
+				);
+			}
+		}, 30);
 
 		$this->add_frontend_asset(
 			'single-article-js',
@@ -729,20 +737,24 @@ class AssetsManager {
 			[ '' ],
 			'members-widget.css',
 			[],
-			'1.1.7',
+			'1.1.8',
 			false,
 			'css'
 		);
 
-		$this->add_frontend_asset(
-			'alias-emails-css',
-			[ '' ],
-			'alias-emails.css',
-			[],
-			'1.1.9',
-			false,
-			'css'
-		);
+		// Only load alias emails CSS on the account edit page
+		add_action('wp_enqueue_scripts', function() {
+			// Check if we're on the my-account/edit-account page
+			if (function_exists('is_account_page') && is_account_page() && is_wc_endpoint_url('edit-account')) {
+				wp_enqueue_style(
+					'alias-emails-css',
+					LABGENZ_CM_URL . 'src/Public/assets/css/alias-emails.css',
+					[],
+					'1.1.9',
+					false
+				);
+			}
+		}, 30);
 
 		$this->add_frontend_asset(
 			'labgenz-gamipress-header-css',
@@ -1096,7 +1108,7 @@ class AssetsManager {
 								
 								if (tooltipText) {
 									// Append to the field-visibility-text span
-									$(this).find(".field-visibility-text").after(\'<span class="visibility-info-icon" title="\' + tooltipText + \'">ⓘ</span>\');
+									$(this).find(".field-visibility-text").after(\'<span class="visibility-info-icon" data-this-mean="\' + tooltipText + \'">ⓘ</span>\');
 								}
 							}
 						}
