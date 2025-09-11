@@ -125,6 +125,7 @@ class GroupTabs {
 			return;
 		}
 
+		// Add main Leaderboard tab
 		bp_core_new_subnav_item(
 			[
 				'name'            => __( 'Leaderboard', 'buddyboss' ),
@@ -133,8 +134,36 @@ class GroupTabs {
 				'parent_slug'     => $group->slug,
 				'screen_function' => [ $this, 'display_leaderboard_gamipress_page' ],
 				'position'        => 25,
-				'user_has_access' => true, // Everyone in the group can see the map
+				'user_has_access' => true, // Everyone in the group can see the leaderboard
 				'item_css_id'     => 'leaderboard',
+			]
+		);
+		
+		// Add All-Time leaderboard tab
+		bp_core_new_subnav_item(
+			[
+				'name'            => __( 'All-Time', 'buddyboss' ),
+				'slug'            => 'all-time',
+				'parent_url'      => bp_get_group_permalink( $group ) . 'leaderboard/',
+				'parent_slug'     => 'leaderboard',
+				'screen_function' => [ $this, 'display_leaderboard_gamipress_page' ],
+				'position'        => 10,
+				'user_has_access' => true,
+				'item_css_id'     => 'all-time-leaderboard',
+			]
+		);
+		
+		// Add Weekly leaderboard tab
+		bp_core_new_subnav_item(
+			[
+				'name'            => __( 'Weekly', 'buddyboss' ),
+				'slug'            => 'weekly',
+				'parent_url'      => bp_get_group_permalink( $group ) . 'leaderboard/',
+				'parent_slug'     => 'leaderboard',
+				'screen_function' => [ $this, 'display_leaderboard_gamipress_page' ],
+				'position'        => 20,
+				'user_has_access' => true,
+				'item_css_id'     => 'weekly-leaderboard',
 			]
 		);
 	}
@@ -201,6 +230,9 @@ class GroupTabs {
 	 * Display the Leaderboard tab content
 	 */
 	public function display_leaderboard_gamipress_page() {
+		// Check if we have a specific sub-tab
+		$sub_tab = bp_action_variable( 0 );
+		
 		// Add title and content to the template
 		add_action( 'bp_template_content', [ $this, 'leaderboard_tab_content' ] );
 
