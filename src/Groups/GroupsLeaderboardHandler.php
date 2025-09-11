@@ -270,11 +270,11 @@ class GroupsLeaderboardHandler {
      * Get leaderboard data for a specific group
      *
      * @param int $group_id The group ID
-     * @param int $limit The number of members to include (default: 10)
+     * @param int $limit The number of members to include (default: 100)
      * @param int $page The page number for pagination (default: 1)
      * @return array Leaderboard data
      */
-    public function get_group_leaderboard($group_id, $limit = 10, $page = 1) {
+    public function get_group_leaderboard($group_id, $limit = 100, $page = 1) {
         // Get group members
         $members = $this->get_group_members($group_id, $limit, $page);
         
@@ -315,7 +315,7 @@ class GroupsLeaderboardHandler {
      * @param int $page The page number for pagination
      * @return array Array of user objects
      */
-    private function get_group_members($group_id, $limit = 10, $page = 1) {
+    private function get_group_members($group_id, $limit = 100, $page = 1) {
         $members = [];
         
         if (!function_exists('groups_get_group_members')) {
@@ -478,7 +478,7 @@ class GroupsLeaderboardHandler {
      * @param int $limit The number of users to include
      * @return array Leaderboard data
      */
-    public function get_global_leaderboard($limit = 10) {
+    public function get_global_leaderboard($limit = 100) {
         global $wpdb;
         
         // Check if GamiPress functions exist
@@ -598,11 +598,11 @@ class GroupsLeaderboardHandler {
      * Get weekly leaderboard data for a specific group
      *
      * @param int $group_id The group ID
-     * @param int $limit The number of members to include (default: 10)
+     * @param int $limit The number of members to include (default: 100)
      * @param int $page The page number for pagination (default: 1)
      * @return array Weekly leaderboard data
      */
-    public function get_weekly_group_leaderboard($group_id, $limit = 10, $page = 1) {
+    public function get_weekly_group_leaderboard($group_id, $limit = 100, $page = 1) {
         // Get group members
         $members = $this->get_group_members($group_id, $limit, $page);
         
