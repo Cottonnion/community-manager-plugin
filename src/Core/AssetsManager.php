@@ -74,6 +74,13 @@ class AssetsManager {
 			},
 			20
 		);
+		
+		// Add leaderboard styles and scripts
+		add_action(
+			'wp_enqueue_scripts',
+			[ $this, 'enqueue_leaderboard_assets' ],
+			25
+		);
 
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_assets' ], 40, 1 );
 		add_action( 'wp_enqueue_scripts', [ $this, 'register_assets_to_enqueue' ], 20, 0 );
@@ -88,7 +95,7 @@ class AssetsManager {
 					'buddyboss-buddypanel-css',
 					LABGENZ_CM_URL . 'src/Public/assets/css/lab-buddypanel.css',
 					[],
-					'4.6.0'
+					'4.6.1'
 				);
 			},
 			1
@@ -137,7 +144,7 @@ class AssetsManager {
 					'buddypanel-controller-js-file',
 					get_stylesheet_directory_uri() . '/template-parts/buddypanel/buddypanel-controller.js',
 					[ 'jquery' ],
-					'1.4.0	',
+					'1.4.2',
 					true
 				);
 
@@ -145,7 +152,7 @@ class AssetsManager {
 					'lab-commons',
 					LABGENZ_CM_URL . 'src/Public/assets/js/commons.js',
 					[ 'jquery' ],
-					'1.0.7',
+					'1.0.8',
 					true
 				);
 
@@ -737,7 +744,7 @@ class AssetsManager {
 			[ '' ],
 			'members-widget.css',
 			[],
-			'1.1.8',
+			'1.1.9',
 			false,
 			'css'
 		);
@@ -1141,5 +1148,52 @@ class AssetsManager {
 				],
 			]
 		);
+	}
+
+	/**
+	 * Enqueue leaderboard assets if we're on a group leaderboard page
+	 *
+	 * @return void
+	 */
+	public function enqueue_leaderboard_assets() {
+		// Only enqueue if we're on a group leaderboard page
+		if ( bp_is_group() && bp_is_current_action( 'leaderboard' ) ) {
+			wp_enqueue_style(
+				'leaderboard-css',
+				LABGENZ_CM_URL . 'src/Public/assets/css/leaderboard/leaderboard.css',
+				[],
+				'1.1.4'
+			);
+			
+			wp_enqueue_script(
+				'leaderboard-js',
+				LABGENZ_CM_URL . 'src/Public/assets/js/leaderboard/leaderboard.js',
+				[ 'jquery' ],
+				'1.0.1',
+				true
+			);
+
+			// Localize script data for inline JS and AJAX functionality
+			wp_localize_script(
+				'jquery',
+				'labgenz_leaderboard',
+				[
+					'ajax_url'      => admin_url( 'admin-ajax.php' ),
+					'nonce'         => wp_create_nonce( 'mlmmc_leaderboard_nonce' ),
+					'group_id'      => bp_get_current_group_id(),
+					'current_user_id' => get_current_user_id(),
+				]
+			);
+			
+			// Localize i18n strings
+			wp_localize_script(
+				'jquery',
+				'labgenz_i18n',
+				[
+					'loading_message' => esc_html__('Loading leaderboard data...', 'labgenz-cm'),
+					'error_message'   => esc_html__('Could not load leaderboard data. Please try again.', 'labgenz-cm'),
+				]
+			);
+		}
 	}
 }

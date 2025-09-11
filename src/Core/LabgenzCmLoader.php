@@ -102,6 +102,7 @@ class LabgenzCmLoader {
 			'groups.members_map_handler'              => \LABGENZ_CM\Groups\MembersMapHandler::class,
 			'groups.member_visibility'                => \LABGENZ_CM\Groups\GroupMemberVisibility::class,
 			'groups.filters_handler'                  => \LABGENZ_CM\Groups\GroupFiltersHandler::class,
+			'groups.leaderboard_handler'              => \LABGENZ_CM\Groups\GroupsLeaderboardHandler::class,
 
 			'articles.articles_post_type'             => \LABGENZ_CM\Articles\ArticlesPostType::class,
 			'articles.core_handler'                   => \LABGENZ_CM\Articles\ArticlesHandler::class,
