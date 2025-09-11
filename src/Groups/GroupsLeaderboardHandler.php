@@ -80,7 +80,6 @@ class GroupsLeaderboardHandler {
     private function init_hooks() {
         // Add AJAX hooks for leaderboard functionality
         add_action('wp_ajax_fetch_leaderboard_data', [$this, 'fetch_leaderboard_data']);
-        add_action('wp_ajax_nopriv_fetch_leaderboard_data', [$this, 'fetch_leaderboard_data']); // Allow non-logged in users to view leaderboard
     }
 
     /**
