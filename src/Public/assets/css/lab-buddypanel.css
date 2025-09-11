@@ -1,6 +1,6 @@
 :root {
 	/* Primary colors */
-	--lab-primary: #5271ff;
+	--lab-primary: var(--bb-primary-color);
 	--lab-primary-light: #e3f0ff;
 	--lab-primary-dark: #1a237e;
 	--lab-accent: #51cbee;

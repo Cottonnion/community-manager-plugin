@@ -19,6 +19,7 @@ class PageEnhancer {
     init() {
         this.removeRedirectFilters();
         this.initDailyArticleHeight();
+        this.initUserWrapHover(); // <-- added
     }
     
     /**
@@ -92,6 +93,22 @@ class PageEnhancer {
             childList: true,
             subtree: true,
             characterData: true
+        });
+    }
+
+    /**
+     * Add hover behavior to user-wrap element
+     */
+    initUserWrapHover() {
+        const $userWrap = jQuery('.user-wrap.user-wrap-container.menu-item-has-children');
+        if ($userWrap.length === 0) return;
+
+        $userWrap.on('mouseenter', () => {
+            $userWrap.addClass('selected');
+        });
+
+        $userWrap.on('mouseleave', () => {
+            $userWrap.removeClass('selected');
         });
     }
     
