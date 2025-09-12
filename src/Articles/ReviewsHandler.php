@@ -223,7 +223,7 @@ class ReviewsHandler {
 		$rating = get_post_meta( $post_id, self::META_KEY_RATING, true );
 		return $rating ? (float) $rating : 0;
 	}
-	
+
 	/**
 	 * Get the average rating for all articles by an author.
 	 *
@@ -238,7 +238,7 @@ class ReviewsHandler {
 				'rated_count'   => 0,
 			];
 		}
-		
+
 		// Query for all published articles by this author
 		$args = [
 			'post_type'      => self::POST_TYPE,
@@ -250,13 +250,13 @@ class ReviewsHandler {
 					'key'     => 'mlmmc_article_author',
 					'value'   => $author_name,
 					'compare' => 'LIKE',
-				]
-			]
+				],
+			],
 		];
-		
-		$articles = new \WP_Query( $args );
+
+		$articles      = new \WP_Query( $args );
 		$article_count = $articles->found_posts;
-		
+
 		if ( $article_count === 0 ) {
 			return [
 				'average'       => 0,
@@ -264,24 +264,24 @@ class ReviewsHandler {
 				'rated_count'   => 0,
 			];
 		}
-		
+
 		// Calculate sum of all ratings
-		$total_rating = 0;
+		$total_rating         = 0;
 		$rated_articles_count = 0;
-		
+
 		foreach ( $articles->posts as $article_id ) {
 			$article_rating = $this->get_average_rating( $article_id );
-			$rating_count = $this->get_rating_count( $article_id );
-			
+			$rating_count   = $this->get_rating_count( $article_id );
+
 			if ( $article_rating !== null && $rating_count > 0 ) {
 				$total_rating += $article_rating;
-				$rated_articles_count++;
+				++$rated_articles_count;
 			}
 		}
-		
+
 		// Calculate average rating
 		$average_rating = $rated_articles_count > 0 ? round( $total_rating / $rated_articles_count, 1 ) : 0;
-		
+
 		return [
 			'average'       => $average_rating,
 			'article_count' => $article_count,

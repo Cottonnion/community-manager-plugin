@@ -138,7 +138,7 @@ class GroupTabs {
 				'item_css_id'     => 'leaderboard',
 			]
 		);
-		
+
 		// Add All-Time leaderboard tab
 		bp_core_new_subnav_item(
 			[
@@ -152,7 +152,7 @@ class GroupTabs {
 				'item_css_id'     => 'all-time-leaderboard',
 			]
 		);
-		
+
 		// Add Weekly leaderboard tab
 		bp_core_new_subnav_item(
 			[
@@ -232,7 +232,7 @@ class GroupTabs {
 	public function display_leaderboard_gamipress_page() {
 		// Check if we have a specific sub-tab
 		$sub_tab = bp_action_variable( 0 );
-		
+
 		// Add title and content to the template
 		add_action( 'bp_template_content', [ $this, 'leaderboard_tab_content' ] );
 

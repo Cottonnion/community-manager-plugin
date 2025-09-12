@@ -13,7 +13,7 @@ class ArticleMetaHelper {
 	 */
 	public static function get_article_counts_by_meta( string $meta_key, string $post_type ): array {
 		global $wpdb;
-		
+
 		// Direct SQL query to count posts by meta value - much more efficient
 		$query = $wpdb->prepare(
 			"SELECT pm.meta_value, COUNT(DISTINCT pm.post_id) as count 
@@ -27,16 +27,16 @@ class ArticleMetaHelper {
 			$meta_key,
 			$post_type
 		);
-		
-		$results = $wpdb->get_results($query);
-		$counts = [];
-		
-		if (!empty($results)) {
-			foreach ($results as $result) {
-				$counts[$result->meta_value] = (int) $result->count;
+
+		$results = $wpdb->get_results( $query );
+		$counts  = [];
+
+		if ( ! empty( $results ) ) {
+			foreach ( $results as $result ) {
+				$counts[ $result->meta_value ] = (int) $result->count;
 			}
 		}
-		
+
 		return $counts;
 	}
 
@@ -111,7 +111,7 @@ class ArticleMetaHelper {
 		foreach ( $all_categories as $category ) {
 			// Create a slug for the category
 			$slug = sanitize_title( $category );
-			
+
 			$categories[] = [
 				'name'  => $category,
 				'slug'  => $slug,

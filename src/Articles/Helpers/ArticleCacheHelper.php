@@ -16,7 +16,7 @@ class ArticleCacheHelper {
 	 * Default cache expiration time (1 hour)
 	 */
 	public const DEFAULT_EXPIRATION = 3600;
-	
+
 	/**
 	 * Search cache expiration time (15 minutes)
 	 */

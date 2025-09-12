@@ -74,7 +74,7 @@ class AssetsManager {
 			},
 			20
 		);
-		
+
 		// Add leaderboard styles and scripts
 		add_action(
 			'wp_enqueue_scripts',
@@ -123,7 +123,7 @@ class AssetsManager {
 					[],
 					'1.2.4'
 				);
-				
+
 				// Enqueue font awesome if needed for author cards
 				if ( is_post_type_archive( 'mlmmc_author' ) || is_singular( 'mlmmc_author' ) || is_page() || is_single() ) {
 					wp_enqueue_style(
@@ -696,26 +696,30 @@ class AssetsManager {
 		);
 
 		// Only load alias emails script on the account edit page
-		add_action('wp_enqueue_scripts', function() {
-			// Check if we're on the my-account/edit-account page
-			if (function_exists('is_account_page') && is_account_page() && is_wc_endpoint_url('edit-account')) {
-				wp_enqueue_script(
-					'aliase-emails',
-					LABGENZ_CM_URL . 'src/Public/assets/js/alias-emails.js',
-					[ 'jquery' ],
-					'1.1.4',
-					true
-				);
-				wp_localize_script(
-					'aliase-emails',
-					'aliase_emails_data',
-					[
-						'ajax_url' => admin_url( 'admin-ajax.php' ),
-						'nonce'    => wp_create_nonce( 'email_alias_nonce' ),
-					]
-				);
-			}
-		}, 30);
+		add_action(
+			'wp_enqueue_scripts',
+			function () {
+				// Check if we're on the my-account/edit-account page
+				if ( function_exists( 'is_account_page' ) && is_account_page() && is_wc_endpoint_url( 'edit-account' ) ) {
+					wp_enqueue_script(
+						'aliase-emails',
+						LABGENZ_CM_URL . 'src/Public/assets/js/alias-emails.js',
+						[ 'jquery' ],
+						'1.1.4',
+						true
+					);
+					wp_localize_script(
+						'aliase-emails',
+						'aliase_emails_data',
+						[
+							'ajax_url' => admin_url( 'admin-ajax.php' ),
+							'nonce'    => wp_create_nonce( 'email_alias_nonce' ),
+						]
+					);
+				}
+			},
+			30
+		);
 
 		$this->add_frontend_asset(
 			'single-article-js',
@@ -750,18 +754,22 @@ class AssetsManager {
 		);
 
 		// Only load alias emails CSS on the account edit page
-		add_action('wp_enqueue_scripts', function() {
-			// Check if we're on the my-account/edit-account page
-			if (function_exists('is_account_page') && is_account_page() && is_wc_endpoint_url('edit-account')) {
-				wp_enqueue_style(
-					'alias-emails-css',
-					LABGENZ_CM_URL . 'src/Public/assets/css/alias-emails.css',
-					[],
-					'1.1.9',
-					false
-				);
-			}
-		}, 30);
+		add_action(
+			'wp_enqueue_scripts',
+			function () {
+				// Check if we're on the my-account/edit-account page
+				if ( function_exists( 'is_account_page' ) && is_account_page() && is_wc_endpoint_url( 'edit-account' ) ) {
+					wp_enqueue_style(
+						'alias-emails-css',
+						LABGENZ_CM_URL . 'src/Public/assets/css/alias-emails.css',
+						[],
+						'1.1.9',
+						false
+					);
+				}
+			},
+			30
+		);
 
 		$this->add_frontend_asset(
 			'labgenz-gamipress-header-css',
@@ -1164,7 +1172,7 @@ class AssetsManager {
 				[],
 				'1.1.4'
 			);
-			
+
 			wp_enqueue_script(
 				'leaderboard-js',
 				LABGENZ_CM_URL . 'src/Public/assets/js/leaderboard/leaderboard.js',
@@ -1178,20 +1186,20 @@ class AssetsManager {
 				'jquery',
 				'labgenz_leaderboard',
 				[
-					'ajax_url'      => admin_url( 'admin-ajax.php' ),
-					'nonce'         => wp_create_nonce( 'mlmmc_leaderboard_nonce' ),
-					'group_id'      => bp_get_current_group_id(),
+					'ajax_url'        => admin_url( 'admin-ajax.php' ),
+					'nonce'           => wp_create_nonce( 'mlmmc_leaderboard_nonce' ),
+					'group_id'        => bp_get_current_group_id(),
 					'current_user_id' => get_current_user_id(),
 				]
 			);
-			
+
 			// Localize i18n strings
 			wp_localize_script(
 				'jquery',
 				'labgenz_i18n',
 				[
-					'loading_message' => esc_html__('Loading leaderboard data...', 'labgenz-cm'),
-					'error_message'   => esc_html__('Could not load leaderboard data. Please try again.', 'labgenz-cm'),
+					'loading_message' => esc_html__( 'Loading leaderboard data...', 'labgenz-cm' ),
+					'error_message'   => esc_html__( 'Could not load leaderboard data. Please try again.', 'labgenz-cm' ),
 				]
 			);
 		}

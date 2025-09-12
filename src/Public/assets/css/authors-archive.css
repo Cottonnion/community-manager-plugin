@@ -1,395 +1,395 @@
 /**
  * Authors Archive Styling
- * 
+ *
  * Provides styling for the authors archive page and shortcode output
  */
 
 /* Main Container */
 .mlmmc-authors-archive {
-    margin: 2rem 0;
+	margin: 2rem 0;
 }
 
 .mlmmc-authors-archive-title {
-    margin-bottom: 2rem;
-    text-align: center;
-    color: var(--bb-headings-color);
+	margin-bottom: 2rem;
+	text-align: center;
+	color: var(--bb-headings-color);
 }
 
 /* Grid Layout */
 .mlmmc-authors-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 30px;
-    margin-bottom: 2rem;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+	gap: 30px;
+	margin-bottom: 2rem;
 }
 
 /* Author Card - Modern Design */
 .mlmmc-author-card {
-    background: var(--bb-content-background-color, white);
-    border-radius: 12px;
-    padding: 28px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    border: 1px solid var(--bb-content-border-color, #e9ecef);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+	background: var(--bb-content-background-color, white);
+	border-radius: 12px;
+	padding: 28px;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+	border: 1px solid var(--bb-content-border-color, #e9ecef);
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .mlmmc-author-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+	transform: translateY(-3px);
+	box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
 }
 
 /* Author Header with Avatar and Info */
 .mlmmc-author-header {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 20px;
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	margin-bottom: 20px;
 }
 
 /* Author Avatar */
 .mlmmc-author-avatar {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    overflow: hidden;
-    flex-shrink: 0;
+	width: 80px;
+	height: 80px;
+	border-radius: 50%;
+	overflow: hidden;
+	flex-shrink: 0;
 }
 
 .mlmmc-author-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
 }
 
 /* Author Initials for when no image is available */
 .mlmmc-author-initials {
-    color: white;
-    font-weight: 600;
-    font-size: 18px;
-    letter-spacing: 0.5px;
+	color: white;
+	font-weight: 600;
+	font-size: 18px;
+	letter-spacing: 0.5px;
 }
 
 /* Author Info Section */
 .mlmmc-author-info h3 {
-    margin: 0 0 4px 0;
-    font-size: 20px;
-    color: var(--bb-headings-color, #333);
-    line-height: 1.2;
+	margin: 0 0 4px 0;
+	font-size: 20px;
+	color: var(--bb-headings-color, #333);
+	line-height: 1.2;
 }
 
 .mlmmc-author-role {
-    margin: 0;
-    color: var(--bb-alternate-text-color, #666);
-    font-size: 14px;
+	margin: 0;
+	color: var(--bb-alternate-text-color, #666);
+	font-size: 14px;
 }
 
 /* Author Bio */
 .mlmmc-author-bio {
-    color: var(--bb-body-text-color, #555);
-    line-height: 1.5;
-    margin-bottom: 20px;
-    font-size: 15px;
+	color: var(--bb-body-text-color, #555);
+	line-height: 1.5;
+	margin-bottom: 20px;
+	font-size: 15px;
 }
 
 /* Author Stats */
 .mlmmc-author-stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 5px;
-    margin-bottom: 20px;
-    padding: 16px;
-    background: var(--bb-light-background-color, #f8f9fa);
-    border-radius: 8px;
-    border: 1px solid var(--bb-content-border-color, #dee2e6);
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 5px;
+	margin-bottom: 20px;
+	padding: 16px;
+	background: var(--bb-light-background-color, #f8f9fa);
+	border-radius: 8px;
+	border: 1px solid var(--bb-content-border-color, #dee2e6);
 }
 
 .mlmmc-stat {
-    text-align: center;
+	text-align: center;
 }
 
 .mlmmc-stat-number {
-    display: block;
-    font-weight: 700;
-    font-size: 18px;
-    color: var(--bb-headings-color, #333);
+	display: block;
+	font-weight: 700;
+	font-size: 18px;
+	color: var(--bb-headings-color, #333);
 }
 
 .mlmmc-stat-label {
-    font-size: 12px;
-    color: var(--bb-alternate-text-color, #999);
+	font-size: 12px;
+	color: var(--bb-alternate-text-color, #999);
 }
 
 
 /* Pagination */
 .mlmmc-authors-pagination {
-    margin-top: 2rem;
-    display: flex;
-    justify-content: center;
+	margin-top: 2rem;
+	display: flex;
+	justify-content: center;
 }
 
 .mlmmc-authors-pagination .page-numbers {
-    padding: 5px 12px;
-    margin: 0 5px;
-    border-radius: var(--bb-button-radius, 4px);
-    background: var(--bb-content-alternate-background-color, #f5f5f5);
-    color: var(--bb-body-text-color, #555);
-    text-decoration: none;
-    transition: all 0.2s ease;
+	padding: 5px 12px;
+	margin: 0 5px;
+	border-radius: var(--bb-button-radius, 4px);
+	background: var(--bb-content-alternate-background-color, #f5f5f5);
+	color: var(--bb-body-text-color, #555);
+	text-decoration: none;
+	transition: all 0.2s ease;
 }
 
 .mlmmc-authors-pagination .page-numbers.current {
-    background: var(--bb-primary-color, #667eea);
-    color: var(--bb-primary-button-text-color, white);
+	background: var(--bb-primary-color, #667eea);
+	color: var(--bb-primary-button-text-color, white);
 }
 
 .mlmmc-authors-pagination .page-numbers:hover:not(.current) {
-    background: var(--bb-content-border-color, #e1e1e1);
+	background: var(--bb-content-border-color, #e1e1e1);
 }
 
 /* Responsive adjustments */
 @media (max-width: 992px) {
-    .mlmmc-authors-grid {
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    }
+	.mlmmc-authors-grid {
+		grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+	}
 }
 
 @media (max-width: 768px) {
-    .mlmmc-authors-grid {
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-        gap: 20px;
-    }
-    
-    .mlmmc-author-card {
-        padding: 20px;
-    }
+	.mlmmc-authors-grid {
+		grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+		gap: 20px;
+	}
+
+	.mlmmc-author-card {
+		padding: 20px;
+	}
 }
 
 @media (max-width: 480px) {
-    .mlmmc-authors-grid {
-        grid-template-columns: 1fr;
-        max-width: 320px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-    
-    .mlmmc-author-header {
-        gap: 12px;
-    }
-    
-    .mlmmc-author-avatar {
-        width: 50px;
-        height: 50px;
-    }
-    
-    .mlmmc-author-info h3 {
-        font-size: 18px;
-    }
-    
-    /* Keep the 3-column grid on mobile */
-    .mlmmc-author-stats {
-        gap: 2px;
-        padding: 12px 5px;
-    }
-    
-    .mlmmc-stat-number {
-        font-size: 16px;
-    }
-    
-    .mlmmc-stat-label {
-        font-size: 10px;
-    }
+	.mlmmc-authors-grid {
+		grid-template-columns: 1fr;
+		max-width: 320px;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	.mlmmc-author-header {
+		gap: 12px;
+	}
+
+	.mlmmc-author-avatar {
+		width: 50px;
+		height: 50px;
+	}
+
+	.mlmmc-author-info h3 {
+		font-size: 18px;
+	}
+
+	/* Keep the 3-column grid on mobile */
+	.mlmmc-author-stats {
+		gap: 2px;
+		padding: 12px 5px;
+	}
+
+	.mlmmc-stat-number {
+		font-size: 16px;
+	}
+
+	.mlmmc-stat-label {
+		font-size: 10px;
+	}
 }
 
 .mlmmc-author-thumbnail img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* Keep this to ensure the image covers the area */
-    object-position: center top; /* Focus on the top part (face) of the image */
-    transition: transform 0.3s ease;
-    image-rendering: -webkit-optimize-contrast; /* Sharpen images on Webkit browsers */
-    image-rendering: crisp-edges; /* Modern approach for crisp edges */
-    transform: translateZ(0); /* Force GPU acceleration for smoother scaling */
-    backface-visibility: hidden; /* Prevent flickering in some browsers */
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover; /* Keep this to ensure the image covers the area */
+	object-position: center top; /* Focus on the top part (face) of the image */
+	transition: transform 0.3s ease;
+	image-rendering: -webkit-optimize-contrast; /* Sharpen images on Webkit browsers */
+	image-rendering: crisp-edges; /* Modern approach for crisp edges */
+	transform: translateZ(0); /* Force GPU acceleration for smoother scaling */
+	backface-visibility: hidden; /* Prevent flickering in some browsers */
 }
 
 /* Special handling for small author images */
 .mlmmc-author-thumbnail img.small-author-image {
-    object-fit: contain; /* Don't crop small images */
-    background-color: var(--bb-light-background-color); /* Background color to fill empty space */
-    padding: 10px; /* Add some padding */
-    max-width: 90%; /* Don't stretch all the way to edges */
-    max-height: 90%;
-    margin: auto;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
+	object-fit: contain; /* Don't crop small images */
+	background-color: var(--bb-light-background-color); /* Background color to fill empty space */
+	padding: 10px; /* Add some padding */
+	max-width: 90%; /* Don't stretch all the way to edges */
+	max-height: 90%;
+	margin: auto;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
 }
 
 .mlmmc-author-card:hover .mlmmc-author-thumbnail img {
-    transform: scale(1.05);
+	transform: scale(1.05);
 }
 
 /* Author Content */
 .mlmmc-author-content {
-    padding: 15px;
+	padding: 15px;
 }
 
 .mlmmc-author-name {
-    font-size: 1.2rem;
-    margin: 0 0 0.5rem;
-    color: var(--bb-headings-color);
+	font-size: 1.2rem;
+	margin: 0 0 0.5rem;
+	color: var(--bb-headings-color);
 }
 
 .mlmmc-author-title {
-    font-size: 0.9rem;
-    color: var(--bb-alternate-text-color);
-    margin: 0 0 0.8rem;
+	font-size: 0.9rem;
+	color: var(--bb-alternate-text-color);
+	margin: 0 0 0.8rem;
 }
 
 .mlmmc-author-bio {
-    font-size: 0.9rem;
-    color: var(--bb-body-text-color);
-    margin: 0 0 1rem;
-    line-height: 1.5;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+	font-size: 0.9rem;
+	color: var(--bb-body-text-color);
+	margin: 0 0 1rem;
+	line-height: 1.5;
+	display: -webkit-box;
+	-webkit-line-clamp: 3;
+	line-clamp: 3;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
 }
 
 .mlmmc-author-meta {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-top: 0.8rem;
-    border-top: 1px solid var(--bb-content-border-color);
-    font-size: 0.85rem;
-    color: var(--bb-alternate-text-color);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding-top: 0.8rem;
+	border-top: 1px solid var(--bb-content-border-color);
+	font-size: 0.85rem;
+	color: var(--bb-alternate-text-color);
 }
 
 .mlmmc-author-articles-count {
-    display: flex;
-    align-items: center;
+	display: flex;
+	align-items: center;
 }
 
 .mlmmc-author-articles-count i {
-    margin-right: 5px;
+	margin-right: 5px;
 }
 
 .mlmmc-author-read-more {
-    color: var(--bb-primary-color);
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.2s ease;
+	color: var(--bb-primary-color);
+	text-decoration: none;
+	font-weight: 500;
+	transition: color 0.2s ease;
 }
 
 .mlmmc-author-read-more:hover {
-    color: var(--bb-primary-color-hover);
+	color: var(--bb-primary-color-hover);
 }
 
 /* Compact View */
 .mlmmc-authors-compact .mlmmc-author-card {
-    text-align: center;
+	text-align: center;
 }
 
 .mlmmc-authors-compact .mlmmc-author-thumbnail {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    margin: 0 auto 15px;
-    padding-top: 0;
-    overflow: hidden;
+	width: 120px;
+	height: 120px;
+	border-radius: 50%;
+	margin: 0 auto 15px;
+	padding-top: 0;
+	overflow: hidden;
 }
 
 .mlmmc-authors-compact .mlmmc-author-thumbnail img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center 15%; /* Focus slightly above center for faces */
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: center 15%; /* Focus slightly above center for faces */
 }
 
 /* Small image handling for compact view */
 .mlmmc-authors-compact .mlmmc-author-thumbnail img.small-author-image {
-    object-fit: contain;
-    padding: 8px;
+	object-fit: contain;
+	padding: 8px;
 }
 
 .mlmmc-authors-compact .mlmmc-author-bio {
-    display: none;
+	display: none;
 }
 
 /* Pagination */
 .mlmmc-authors-pagination {
-    margin-top: 2rem;
-    display: flex;
-    justify-content: center;
+	margin-top: 2rem;
+	display: flex;
+	justify-content: center;
 }
 
 .mlmmc-authors-pagination .page-numbers {
-    padding: 5px 12px;
-    margin: 0 5px;
-    border-radius: var(--bb-button-radius);
-    background: var(--bb-content-alternate-background-color);
-    color: var(--bb-body-text-color);
-    text-decoration: none;
-    transition: all 0.2s ease;
+	padding: 5px 12px;
+	margin: 0 5px;
+	border-radius: var(--bb-button-radius);
+	background: var(--bb-content-alternate-background-color);
+	color: var(--bb-body-text-color);
+	text-decoration: none;
+	transition: all 0.2s ease;
 }
 
 .mlmmc-authors-pagination .page-numbers.current {
-    background: var(--bb-primary-color);
-    color: var(--bb-primary-button-text-color);
+	background: var(--bb-primary-color);
+	color: var(--bb-primary-button-text-color);
 }
 
 .mlmmc-authors-pagination .page-numbers:hover:not(.current) {
-    background: var(--bb-content-border-color);
+	background: var(--bb-content-border-color);
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .mlmmc-authors-grid {
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: 20px;
-    }
-    
-    .mlmmc-author-thumbnail {
-        padding-top: 130%; /* Slightly taller on mobile for better visibility */
-    }
-    
-    .mlmmc-authors-list .mlmmc-author-card {
-        flex-direction: column;
-        text-align: center;
-        padding: 20px 15px;
-    }
-    
-    .mlmmc-authors-list .mlmmc-author-thumbnail {
-        width: 150px;
-        height: 180px;
-        margin: 0 auto 15px;
-    }
-    
-    .mlmmc-author-content {
-        padding: 10px 5px;
-    }
+	.mlmmc-authors-grid {
+		grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+		gap: 20px;
+	}
+
+	.mlmmc-author-thumbnail {
+		padding-top: 130%; /* Slightly taller on mobile for better visibility */
+	}
+
+	.mlmmc-authors-list .mlmmc-author-card {
+		flex-direction: column;
+		text-align: center;
+		padding: 20px 15px;
+	}
+
+	.mlmmc-authors-list .mlmmc-author-thumbnail {
+		width: 150px;
+		height: 180px;
+		margin: 0 auto 15px;
+	}
+
+	.mlmmc-author-content {
+		padding: 10px 5px;
+	}
 }
 
 @media (max-width: 480px) {
-    .mlmmc-authors-grid {
-        grid-template-columns: 1fr;
-        max-width: 280px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-    
-    .mlmmc-author-thumbnail {
-        padding-top: 125%; /* Even taller on very small screens */
-    }
-    
-    .mlmmc-authors-grid .mlmmc-author-thumbnail {
-        padding-top: 125%; /* Even taller aspect ratio on smaller screens */
-    }
+	.mlmmc-authors-grid {
+		grid-template-columns: 1fr;
+		max-width: 280px;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	.mlmmc-author-thumbnail {
+		padding-top: 125%; /* Even taller on very small screens */
+	}
+
+	.mlmmc-authors-grid .mlmmc-author-thumbnail {
+		padding-top: 125%; /* Even taller aspect ratio on smaller screens */
+	}
 }

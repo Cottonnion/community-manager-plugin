@@ -44,20 +44,20 @@ class ArticlesHandler {
 				return $single_template;
 			}
 		);
-		
+
 		// Add sidebar to news feed page
-		add_action('wp_footer', [$this, 'add_sidebar_to_news_feed']);
+		add_action( 'wp_footer', [ $this, 'add_sidebar_to_news_feed' ] );
 	}
-	
+
 	/**
 	 * Add the articles sidebar to the news feed page
 	 */
 	public function add_sidebar_to_news_feed(): void {
 		// Only run on the news feed page
-		if (!is_page('news-feed')) {
+		if ( ! is_page( 'news-feed' ) ) {
 			return;
 		}
-		
+
 		?>
 		<script>
 		document.addEventListener('DOMContentLoaded', function() {
@@ -126,14 +126,14 @@ class ArticlesHandler {
 						parentNode.appendChild(wrapper);
 					}
 				};
-				xhr.open('GET', '<?php echo esc_url(admin_url('admin-ajax.php')); ?>?action=get_articles_sidebar', true);
+				xhr.open('GET', '<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>?action=get_articles_sidebar', true);
 				xhr.send();
 			}
 		});
 		</script>
 		<?php
 	}
-	
+
 	/**
 	 * AJAX handler to get the articles sidebar HTML
 	 */
@@ -141,7 +141,7 @@ class ArticlesHandler {
 		ob_start();
 		self::render_articles_sidebar();
 		$sidebar_html = ob_get_clean();
-		wp_send_json_success($sidebar_html);
+		wp_send_json_success( $sidebar_html );
 	}
 
 	/**
@@ -570,66 +570,70 @@ class ArticlesHandler {
 	/**
 	 * Render the articles sidebar
 	 * This function can be used to display the article sidebar on any page
-	 * 
+	 *
 	 * @return void
 	 */
 	public static function render_articles_sidebar(): void {
 		// Get random articles
 		$daily_article_handler = new DailyArticleHandler();
-		$random_articles = $daily_article_handler->get_random_articles('mixed', 9, 10);
+		$random_articles       = $daily_article_handler->get_random_articles( 'mixed', 9, 10 );
 
-		if (!empty($random_articles)) :
-		?>
+		if ( ! empty( $random_articles ) ) :
+			?>
 			<div class="random-articles-sidebar">
 				<h3 class="sidebar-title">Other Articles</h3>
 
-				<?php 
+				<?php
 				// Check for subscription access
 				$show_access_button = false;
-				if (class_exists('\\LABGENZ_CM\\Subscriptions\\SubscriptionHandler')) {
+				if ( class_exists( '\\LABGENZ_CM\\Subscriptions\\SubscriptionHandler' ) ) {
 					$subscription_handler = \LABGENZ_CM\Subscriptions\SubscriptionHandler::get_instance();
-					if (!$subscription_handler->user_has_resource_access(get_current_user_id(), 'can_view_mlm_articles')) {
+					if ( ! $subscription_handler->user_has_resource_access( get_current_user_id(), 'can_view_mlm_articles' ) ) {
 						$show_access_button = true;
 					}
 				}
-				
-				if ($show_access_button) : 
-				?>
+
+				if ( $show_access_button ) :
+					?>
 					<div class="bb-button-wrapper">
-						<button onclick="location.href='<?php echo esc_url(\LABGENZ_CM\Subscriptions\SubscriptionHandler::get_article_upsell_url()); ?>'" class="bb-button bb-button--primary">
+						<button onclick="location.href='<?php echo esc_url( \LABGENZ_CM\Subscriptions\SubscriptionHandler::get_article_upsell_url() ); ?>'" class="bb-button bb-button--primary">
 							Get Access to ALL Success Library Articles
 						</button>
 					</div>
 				<?php endif; ?>
 
-				<ul class="random-articles-list"><?php foreach ($random_articles as $article) :
-						$category_name = !empty($article['category']) ? $article['category'] : 'Uncategorized';
-						$rating = $article['avg_rating'];
+				<ul class="random-articles-list">
+				<?php
+				foreach ( $random_articles as $article ) :
+						$category_name = ! empty( $article['category'] ) ? $article['category'] : 'Uncategorized';
+						$rating        = $article['avg_rating'];
 					?>
 						<li class="random-article-item">
-							<a href="<?php echo esc_url($article['link']); ?>" class="article-title">
-								<?php echo esc_html($article['title']); ?>
+							<a href="<?php echo esc_url( $article['link'] ); ?>" class="article-title">
+								<?php echo esc_html( $article['title'] ); ?>
 							</a>
-							<p class="article-category">Category: <?php echo esc_html($category_name); ?></p>
+							<p class="article-category">Category: <?php echo esc_html( $category_name ); ?></p>
 
-							<?php if ($article['has_video']) : ?>
+							<?php if ( $article['has_video'] ) : ?>
 								<span class="article-video-badge">
 									Has Video
 								</span>
 							<?php endif; ?>
 
-							<?php if ($rating !== null) : ?>
+							<?php if ( $rating !== null ) : ?>
 								<div class="article-rating">
 									<?php
 									$max_stars = 5;
-									$filled    = floor($rating);
-									$half      = ($rating - $filled >= 0.5) ? 1 : 0;
+									$filled    = floor( $rating );
+									$half      = ( $rating - $filled >= 0.5 ) ? 1 : 0;
 									$empty     = $max_stars - $filled - $half;
 
-									echo '<span class="star-filled">' . str_repeat('★', $filled) . '</span>';
-									if ($half) echo '<span class="star-filled">☆</span>';
-									echo '<span class="star-empty">' . str_repeat('☆', $empty) . '</span>';
-									echo ' (' . number_format($rating, 1) . ')';
+									echo '<span class="star-filled">' . str_repeat( '★', $filled ) . '</span>';
+									if ( $half ) {
+										echo '<span class="star-filled">☆</span>';
+									}
+									echo '<span class="star-empty">' . str_repeat( '☆', $empty ) . '</span>';
+									echo ' (' . number_format( $rating, 1 ) . ')';
 									?>
 								</div>
 							<?php endif; ?>
@@ -709,7 +713,7 @@ class ArticlesHandler {
 					color: #ddd;
 				}
 			</style>
-		<?php
+			<?php
 		endif;
 	}
 }

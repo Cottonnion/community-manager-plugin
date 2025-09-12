@@ -68,92 +68,92 @@ class PlansComparisonWidget extends Widget_Base {
 				'default' => __( 'Compare Our Plans', 'labgenz-community-management' ),
 			]
 		);
-		
+
 		$this->add_control(
 			'use_custom_benefits',
 			[
-				'label' => __('Use Custom Benefits', 'labgenz-community-management'),
-				'type' => Controls_Manager::SWITCHER,
-				'label_on' => __('Yes', 'labgenz-community-management'),
-				'label_off' => __('No', 'labgenz-community-management'),
+				'label'        => __( 'Use Custom Benefits', 'labgenz-community-management' ),
+				'type'         => Controls_Manager::SWITCHER,
+				'label_on'     => __( 'Yes', 'labgenz-community-management' ),
+				'label_off'    => __( 'No', 'labgenz-community-management' ),
 				'return_value' => 'yes',
-				'default' => 'no',
-				'description' => __('Enable to override the default benefits with custom ones for this instance', 'labgenz-community-management'),
+				'default'      => 'no',
+				'description'  => __( 'Enable to override the default benefits with custom ones for this instance', 'labgenz-community-management' ),
 			]
 		);
 
 		$this->end_controls_section();
-		
+
 		// Advanced section for custom benefits
 		$this->start_controls_section(
 			'benefits_section',
 			[
-				'label' => __('Custom Benefits', 'labgenz-community-management'),
-				'tab' => Controls_Manager::TAB_CONTENT,
+				'label'     => __( 'Custom Benefits', 'labgenz-community-management' ),
+				'tab'       => Controls_Manager::TAB_CONTENT,
 				'condition' => [
 					'use_custom_benefits' => 'yes',
 				],
 			]
 		);
-		
+
 		$repeater = new \Elementor\Repeater();
-		
+
 		$repeater->add_control(
 			'benefit_name',
 			[
-				'label' => __('Benefit Name', 'labgenz-community-management'),
-				'type' => Controls_Manager::TEXT,
-				'default' => __('New Benefit', 'labgenz-community-management'),
+				'label'   => __( 'Benefit Name', 'labgenz-community-management' ),
+				'type'    => Controls_Manager::TEXT,
+				'default' => __( 'New Benefit', 'labgenz-community-management' ),
 			]
 		);
-		
+
 		$repeater->add_control(
 			'basic_availability',
 			[
-				'label' => __('Available in Discovery?', 'labgenz-community-management'),
-				'type' => Controls_Manager::SWITCHER,
-				'label_on' => __('Yes', 'labgenz-community-management'),
-				'label_off' => __('No', 'labgenz-community-management'),
+				'label'        => __( 'Available in Discovery?', 'labgenz-community-management' ),
+				'type'         => Controls_Manager::SWITCHER,
+				'label_on'     => __( 'Yes', 'labgenz-community-management' ),
+				'label_off'    => __( 'No', 'labgenz-community-management' ),
 				'return_value' => 'yes',
-				'default' => 'no',
+				'default'      => 'no',
 			]
 		);
-		
+
 		$repeater->add_control(
 			'team_leader_availability',
 			[
-				'label' => __('Available in Team Leader?', 'labgenz-community-management'),
-				'type' => Controls_Manager::SWITCHER,
-				'label_on' => __('Yes', 'labgenz-community-management'),
-				'label_off' => __('No', 'labgenz-community-management'),
+				'label'        => __( 'Available in Team Leader?', 'labgenz-community-management' ),
+				'type'         => Controls_Manager::SWITCHER,
+				'label_on'     => __( 'Yes', 'labgenz-community-management' ),
+				'label_off'    => __( 'No', 'labgenz-community-management' ),
 				'return_value' => 'yes',
-				'default' => 'no',
+				'default'      => 'no',
 			]
 		);
-		
+
 		$repeater->add_control(
 			'freedom_builder_availability',
 			[
-				'label' => __('Available in Freedom Builder?', 'labgenz-community-management'),
-				'type' => Controls_Manager::SWITCHER,
-				'label_on' => __('Yes', 'labgenz-community-management'),
-				'label_off' => __('No', 'labgenz-community-management'),
+				'label'        => __( 'Available in Freedom Builder?', 'labgenz-community-management' ),
+				'type'         => Controls_Manager::SWITCHER,
+				'label_on'     => __( 'Yes', 'labgenz-community-management' ),
+				'label_off'    => __( 'No', 'labgenz-community-management' ),
 				'return_value' => 'yes',
-				'default' => 'yes',
+				'default'      => 'yes',
 			]
 		);
-		
+
 		$this->add_control(
 			'custom_benefits',
 			[
-				'label' => __('Benefits', 'labgenz-community-management'),
-				'type' => Controls_Manager::REPEATER,
-				'fields' => $repeater->get_controls(),
+				'label'       => __( 'Benefits', 'labgenz-community-management' ),
+				'type'        => Controls_Manager::REPEATER,
+				'fields'      => $repeater->get_controls(),
 				'title_field' => '{{{ benefit_name }}}',
-				'default' => [],
+				'default'     => [],
 			]
 		);
-		
+
 		$this->end_controls_section();
 	}
 
@@ -230,29 +230,29 @@ class PlansComparisonWidget extends Widget_Base {
 
 		// Table body
 		echo '<tbody>';
-		
+
 		// Determine which benefits to use - default or custom
-		if ($settings['use_custom_benefits'] === 'yes' && !empty($settings['custom_benefits'])) {
+		if ( $settings['use_custom_benefits'] === 'yes' && ! empty( $settings['custom_benefits'] ) ) {
 			$custom_benefits = [];
-			
-			foreach ($settings['custom_benefits'] as $benefit) {
+
+			foreach ( $settings['custom_benefits'] as $benefit ) {
 				// We've removed Apprentice, so we need to adjust the availability array
 				// to match the new structure: [Discovery, Team Leader, Freedom Builder]
 				$availability = [
 					$benefit['basic_availability'] === 'yes',      // Discovery (was Basic)
 					$benefit['team_leader_availability'] === 'yes', // Team Leader
-					$benefit['freedom_builder_availability'] === 'yes' // Freedom Builder
+					$benefit['freedom_builder_availability'] === 'yes', // Freedom Builder
 				];
-				
-				$custom_benefits[$benefit['benefit_name']] = $availability;
+
+				$custom_benefits[ $benefit['benefit_name'] ] = $availability;
 			}
-			
+
 			$benefits_to_display = $custom_benefits;
 		} else {
 			// Get benefits from options or use defaults
 			$benefits_to_display = $this->get_default_benefits();
 		}
-		
+
 		foreach ( $benefits_to_display as $benefit => $availability ) {
 			echo '<tr><td>' . esc_html( $benefit ) . '</td>';
 			$i = 0;
@@ -287,20 +287,20 @@ class PlansComparisonWidget extends Widget_Base {
 		echo '<p>Note: Y or L = Founder Bonuses for Yearly or Lifetime Members Only</p>';
 		echo '</div>';
 	}
-	
+
 	/**
 	 * Get default benefits from options or fallback to hardcoded defaults
-	 * 
+	 *
 	 * @return array Array of benefits with availability for each plan
 	 */
 	public function get_default_benefits() {
 		// Try to get benefits from options
-		$saved_benefits = get_option('mlmmc_plan_comparison_benefits_v2', null);
-		
-		if (!empty($saved_benefits) && is_array($saved_benefits)) {
+		$saved_benefits = get_option( 'mlmmc_plan_comparison_benefits_v2', null );
+
+		if ( ! empty( $saved_benefits ) && is_array( $saved_benefits ) ) {
 			return $saved_benefits;
 		}
-		
+
 		// Fallback to default benefits
 		return [
 			'Free Membership Updates'                     => [ true, true, true ],
